@@ -1,0 +1,134 @@
+.login__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+}
+.container__login {
+  display: flex;
+  justify-content: center;
+  width: 700px;
+  height: 500px;
+  margin: 0 auto;
+}
+.container__login--modal {
+  background-color: rgba(0, 0, 0, 0.5);
+  filter: blur(5px);
+  display: flex;
+  width: 700px;
+  height: 500px;
+}
+.login__information {
+  background-color: var(--dark-blue);
+  display: flex;
+  align-items: center;
+  width: 45%;
+  border-top-left-radius: 24px;
+  border-bottom-left-radius: 24px;
+}
+.login__forgotpassword {
+  color: #fff;
+}
+.login__texts {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+}
+
+.login__texts h2 {
+  margin-bottom: 20px;
+}
+.login__texts input {
+  background: var(--background2);
+  color: #fff;
+  border: 1px solid var(--color-primary);
+  padding: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.container__formlogin {
+  background-color: var(--background2);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+}
+.login__noaccount {
+  color: #fff;
+}
+.container__formlogin__item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  width: 300px;
+  height: 30px;
+}
+
+.container__formlogin h2 {
+  margin-bottom: 20px;
+}
+
+.container__formlogin__item input {
+  width: 300px;
+  height: 30px;
+  border: none;
+  outline: none;
+  border-radius: 20px;
+  padding: 0 10px;
+  margin-left: 5px;
+}
+
+.button__login {
+  background: transparent;
+  color: #fff;
+  border: 1px solid var(--color-primary);
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.login__forgotpassword {
+  font-size: 1rem;
+  margin: 20px 0;
+}
+.login__noaccount {
+  font-size: 1rem;
+  margin: 20px 0;
+}
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--color-primary);
+  color: #fff;
+  width: 300px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 10px;
+}
+
+.modal p {
+  margin-bottom: 10px;
+  font-size: 2rem;
+}
+
+.modal__content button {
+  background: var(--dark-blue);
+  color: #fff;
+  border: 1px solid var(--dark-blue);
+  padding: 10px 15px;
+  border-radius: 10px;
+  cursor: pointer;
+}

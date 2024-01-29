@@ -1,0 +1,105 @@
+.budget__container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    margin: 0 auto;
+}
+.budget__tablecontainer{
+    width: 1000px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--background2);
+}
+.presupuesto__option{
+    background-color: var(--background2);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 70px;
+    color: #fff;
+    width: 100%;
+}
+.presupuesto__option button{
+    padding:  10px;
+    border-radius: 10px;
+    margin: 10px 0;
+    background-color: var( --color-primary);
+    border: 1px solid var(--color-primary);
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-left: 15px;
+}
+.presupuesto__option__item{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.presupuesto__input{
+    background-color: var(--color-primary);
+    padding: 10px;
+    border-radius: 5px;
+    outline: none;
+    border: 1px solid var(--color-primary);
+    color: #fff;
+    font-size: 1rem;
+}
+.presupuesto__state{
+    display: flex;
+    gap: 1rem;   
+    background-color: var(--dark-blue);
+    width: 100%;
+}
+.presupuesto__state__item{
+    display: flex;
+    gap: 1rem;
+    color: #fff;
+   align-items: center;
+   width: 50%;
+   justify-content: center;
+   padding: 5px;
+  
+}
+.budget__table{
+    color: #fff;
+    padding: 1rem 0;
+    width: 90%;
+}
+.budget__table__header{
+    width: 100px;
+    overflow-y: auto; /* Aparecerá una barra de desplazamiento vertical si es necesario */
+    max-height: 400px;
+    height: 50px;
+    background-color: var(--dark-blue);
+}
+.budget__table__row{
+    
+   
+    text-align: center;
+    background-color: var(--dark-blue);
+    border: 3px solid #fff;
+}
+.budget__table__cell{
+    width: 100px;
+    height: 50px;
+}
+.budget__table__editIcon{
+    color: var(--celeste-agua);
+    margin-right: 10px;
+    background: none;
+    outline: none;
+    border: none;
+    cursor: pointer;
+}
+.budget__table_deleteIcon{
+    color: var(--celeste-agua);
+    margin-right: 10px;
+    background: none;
+    outline: none;
+    border: none;
+    cursor: pointer;
+}

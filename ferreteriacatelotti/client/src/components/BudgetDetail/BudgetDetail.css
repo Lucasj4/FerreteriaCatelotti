@@ -1,0 +1,127 @@
+.budgetdetail__container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    margin: 0 auto;
+}
+.budgetdetail__tablecontainer{
+    width: 1000px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--background2);
+    text-align: center;
+}
+.budgetdetail__table{
+    width: 70%;
+    color: #fff;
+    padding: 1rem 0;
+}
+.budgetdetail__table__header{
+    width: 100px;
+    overflow-y: auto; /* Aparecerá una barra de desplazamiento vertical si es necesario */
+    max-height: 400px;
+    height: 50px;
+    background-color: var(--background2);
+    border: 1px solid var(--dark-blue);
+    
+}
+.budgetdetail__table__row{
+    width: 100px;
+    overflow-y: auto; /* Aparecerá una barra de desplazamiento vertical si es necesario */
+    max-height: 400px;
+    height: 50px;
+    background-color: var(--dark-blue);
+    
+}
+.budgetdetail__table__editIcon{
+    color: var(--celeste-agua);
+    margin-right: 10px;
+    background: none;
+    outline: none;
+    border: none;
+    cursor: pointer;
+}
+.budgetdetail__table_deleteIcon{
+    color: var(--celeste-agua);
+    margin-right: 10px;
+    background: none;
+    outline: none;
+    border: none;
+    cursor: pointer;
+}
+
+.budgetdetail__option{
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--dark-blue);
+}
+.budgetdetail__option__item{
+    display: flex;
+    padding: 1rem;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+.budgetdetail__option__item__title{
+    font-size: 2rem;
+    color: #fff;
+}
+.budgetdetail__option__item__input{
+    padding: 0.5rem;
+    border: 1px solid var(--color-primary);
+    border-radius: 4px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: var(--color-primary);
+    outline: none;
+}
+.budgetdetail__option__item__button{
+    padding:  10px;
+    border-radius: 10px;
+    margin: 10px 0;
+    background-color: var( --color-primary);
+    border: 1px solid var(--color-primary);
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-left: 15px;
+}
+.budgetdetail__containeramount{
+    background-color: var(--dark-blue);
+    text-align: right;
+    width: 100%;
+    border-bottom: 1px solid var(--dark-blue);
+    padding: 1rem 0;
+}
+.budgetdetail__amount{
+    font-size: 1.5rem;
+    color: #fff;
+    margin-right: 15rem;
+    
+}
+
+.budgetdetail__buttoncontainer{
+    width: 90%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: var(--background2);
+}
+
+.budgetdetail__button{
+    padding:  10px;
+    border-radius: 10px;
+    margin: 10px 0;
+    background-color: var( --color-primary);
+    border: 1px solid var(--color-primary);
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+}

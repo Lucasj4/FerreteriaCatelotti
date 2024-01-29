@@ -1,0 +1,79 @@
+.orderdetail__container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.orderdetail__table-container{
+    width: 700px;
+    background-color: var(--background2);
+   
+}
+.table{
+    margin: 0 auto;
+}
+.table__cell{
+    width: 200px;
+    height: 50px;
+}
+.date-selector{
+    background-color: var(--dark-blue);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 70px;
+    color: #fff;
+}
+.date-selector button{
+    background-color: var(--secondary);
+    outline: none;
+    border: 1px solid var(--secondary);
+    border-radius: 30px;
+    padding: 5px 10px;
+    color: #fff;
+}
+.date-selector__item{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.date-selector__item__date{
+    background-color: var(--color-primary);
+    padding: 10px;
+    border-radius: 5px;
+    outline: none;
+    border: 1px solid var(--color-primary);
+    color: #fff;
+    font-size: 1rem;
+}
+.custom-select{
+    width: 200px;
+    background: var(--background2);
+    color: #101418;
+}
+
+.orderdetail__buttons{
+    background: var(--dark-blue);
+    padding: 10px 5px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    
+}
+.orderdetail__buttons button{
+    padding: 10px 10px;
+    background: var(--color-primary);
+    border: 1px solid var(--color-primary); 
+    outline: none;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.orderdetail__buttons button:hover{
+    
+    background: var(--dark-blue);
+    border: 1px solid var(--dark-blue); 
+   
+}

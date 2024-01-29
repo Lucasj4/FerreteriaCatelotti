@@ -1,0 +1,30 @@
+#root {
+  --color-primary: #3399ff;
+  --secondary: #007fff;
+  --grey: #6b7a90;
+  --dark-blue: #003a75;
+  --background: #101418;
+  --celeste-agua: #00dfc4;
+  --background2: #1d2b3a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  width: 100%;
+ /* Añade un color de fondo para verificar */
+}
+
+/* Otros estilos pueden ir aquí */
+
+
+
