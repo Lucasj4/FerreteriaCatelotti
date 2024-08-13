@@ -1,3 +1,5 @@
 .custom-multi-select{
-    width: 300px;
+    width: 200px;
+    color: var(--background);
+    
 }

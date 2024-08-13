@@ -1,0 +1,37 @@
+.table{
+    color: #fff;
+    padding: 1rem 0;
+    width: 60%;
+  
+  }
+  .table__header{
+    width: 100px;
+    overflow-y: auto; /* Aparecerá una barra de desplazamiento vertical si es necesario */
+    max-height: 400px;
+    height: 50px;
+    background-color: var(--dark-blue);
+  }
+  .table__row{
+    text-align: center;
+    background-color: var(--dark-blue);
+    border: 3px solid #fff;
+  }
+  .table__cell{
+    width: 100px;
+    height: 50px;
+  }
+  .table__editIcon{
+    color: var(--celeste-agua);
+    margin-right: 10px;
+    background: none;
+    outline: none;
+    border: none;
+    cursor: pointer;
+  }
+  .table__deleteIcon{
+    color: var(--celeste-agua);
+    background: none;
+    outline: none;
+    border: none;
+    cursor: pointer;
+  }

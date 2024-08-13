@@ -1,0 +1,6 @@
+.supplier__form__container {
+    background: var(--background2);
+    width:500px;
+    border-radius: 10px;
+    padding: 1rem;
+  }

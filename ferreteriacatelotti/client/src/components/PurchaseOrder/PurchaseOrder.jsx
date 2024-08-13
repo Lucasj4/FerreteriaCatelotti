@@ -1,25 +1,21 @@
 import React from "react";
 import "./PurchaseOrder.css";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MultiSelectProveedores from "../MultipleSelect/MultipleSelect";
-import { DateRangePicker } from "react-date-range";
+import Table from "../TableCustom/TableCustom";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
-import DateSelector from "../DateSelector/DateSelector";
+import { useAppContext } from "../context/OrderContext";
 
 const PurchaseOrder = () => {
-  const [filas, setFilas] = useState([
-    { fecha: "Fecha 1", proveedor: "Martinez", estado: "Estado 1" },
-    { fecha: "Fecha 3", proveedor: "Gonzalez", estado: "Estado 2" },
-    { fecha: "Fecha 2", proveedor: "Gonzalez", estado: "Estado 2" },
-    { fecha: "Fecha 2", proveedor: "Gonzalez", estado: "Estado 2" },
-   
-    // Agrega más filas según tus datos
-  ]);
+  const [filas, setFilas] = useState([]);
+  const { fecha, proveedor, saveData, estado, detalleIds, clearDetalleIds } =
+    useAppContext();
+  const [purchaseOrderId, setPurchaseOrderId] = useState("");
+  const [showOnlySelected, setShowOnlySelected] = useState(false);
+  const [showOnlyRecibidos, setShowOnlyRecibidos] = useState(false);
 
   const [proveedores, setProveedores] = useState([
     { value: "gonzalez", label: "Gonzalez" },
@@ -27,6 +23,12 @@ const PurchaseOrder = () => {
     { value: "pedro", label: "Pedro" },
   ]);
 
+  const tableHeaders = [
+    { value: "fecha", label: "Fecha" },
+    { value: "estado", label: "Estado" },
+    { value: "importe", label: "Importe" },
+    {value: "proveedor", label: "Proveedor"}
+  ];
   const [selectedProveedores, setSelectedProveedores] = useState(null);
 
   const [selectedState, setSelectedState] = useState(null);
@@ -39,10 +41,159 @@ const PurchaseOrder = () => {
     },
   ]);
 
+  const handleShowOnlySelectedChange = () => {
+
+    setShowOnlySelected(!showOnlySelected);
+    setShowOnlyRecibidos(false);
+ 
+  };
+
+  const handleShowOnlyRecibidosChange = () => {
+    
+    setShowOnlyRecibidos(!showOnlyRecibidos);
+    setShowOnlySelected(false);
+    
+  };
+
+
+  const handleSearchOrders = async () => {
+    try {
+      let estadoFilter = "";
+      if (showOnlySelected) {
+        estadoFilter = "Pendiente";
+      } else if (showOnlyRecibidos) {
+        estadoFilter = "Recibido";
+      }
+  
+      const fromDate = dateRange[0].startDate.toISOString().split("T")[0];
+      const toDate = dateRange[0].endDate.toISOString().split("T")[0];
+  
+      const response = await fetch(
+        `http://localhost:8080/pedido?estado=${estadoFilter}&fromDate=${fromDate}&toDate=${toDate}`
+      );
+  
+      if (!response.ok) {
+        throw new Error(
+          `Error en la solicitud: ${response.status} - ${response.statusText}`
+        );
+      }
+  
+      const orders = await response.json();
+  
+      const formattedOrders = orders.map((order) => {
+        const fecha = new Date(order.fecha);
+        const dia = fecha.getDate().toString().padStart(2, "0");
+        const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
+        const año = fecha.getFullYear();
+        const fechaFormateada = `${dia}/${mes}/${año}`;
+
+        order.proveedor = "Gonzalez"
+        return {
+          ...order,
+          fecha: fechaFormateada,
+        };
+      });
+  
+      setFilas(formattedOrders);
+    } catch (error) {
+      console.error("Error al buscar pedidos:", error.message);
+    }
+  };
   
 
+  const getOrders = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/pedido"); // Hacer la solicitud GET al endpoint
+      if (!response.ok) {
+        throw new Error(
+          `Error en la solicitud: ${response.status} - ${response.statusText}`
+        );
+      }
 
-  const handleEliminarFila = (indice) => {
+      const orders = await response.json();
+      console.log(orders)
+    
+      console.log(orders)
+      
+      const formattedOrders = orders.map(order => {
+
+        const fecha = new Date(order.fecha);
+
+        const dia = fecha.getDate().toString().padStart(2, "0");
+        const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
+        const año = fecha.getFullYear();
+
+        const fechaFormateada = `${dia}/${mes}/${año}`;
+        order.proveedor = "Gonzalez"
+        return {
+          ...order,
+          fecha: fechaFormateada
+        };
+      });
+
+      setPurchaseOrderId(purchaseOrderId);
+      setFilas(formattedOrders);
+    } catch (error) {
+      console.error("Error al obtener datos:", error.message);
+    }
+  };
+
+
+
+  useEffect(() => {
+    getOrders();
+  }, []);
+
+  const saveDataOrder = async () => {
+    try {
+      // Asegúrate de que estado sea una cadena antes de la solicitud
+      const estadoString = Array.isArray(estado) ? estado[0].value : estado;
+
+      const response = await fetch("http://localhost:8080/pedido", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fecha,
+          proveedor,
+          estado: estadoString,
+          importe: 15000, // Aquí asegúrate de que estado sea una cadena
+        }),
+      });
+     
+      if (!response.ok) {
+        throw new Error("Error al enviar los datos al servidor");
+      }
+      const responseData = await response.json();
+      const purchaseOrderId = responseData._id;
+
+      const responseDetailOrder = await fetch(
+        "http://localhost:8080/detallepedido",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            purchaseOrderId,
+            detalleIds,
+          }),
+        }
+      );
+
+      clearDetalleIds();
+
+      if (!responseDetailOrder.ok) {
+        throw new Error("Error al enviar los datos al servidor");
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+
+  const handleDeleteRow = (indice) => {
     const nuevasFilas = [...filas];
     nuevasFilas.splice(indice, 1);
     setFilas(nuevasFilas);
@@ -60,78 +211,108 @@ const PurchaseOrder = () => {
   return (
     <>
       <div className="purchaseOrder__container">
-        <div className="table-container">
-          <div className="purchaseOrder__filter">
-            <DateSelector/>
-            <div className="purchaseOrder__supplier">
-              <p>Proveedor</p>
-              <MultiSelectProveedores
-                options={proveedores}
-                selectedProveedores={selectedProveedores}
-                onChange={(selectedOptions) =>
-                  setSelectedProveedores(selectedOptions)
-                }
-              />
+        <div className="purchaseOrder__filter">
+          <div className="dateselector">
+            <p className="dateselector__title">Fecha</p>
+            <div className="dateselector__container">
+              <div className="dateselector__item">
+                <p>Desde</p>
+                <input
+                  type="date"
+                  id="startDate"
+                  className="dateselector__date"
+                  value={dateRange[0].startDate.toISOString().split("T")[0]}
+                  onChange={(e) => {
+                    const newStartDate = new Date(e.target.value);
+                    setDateRange([
+                      {
+                        startDate: newStartDate,
+                        endDate: dateRange[0].endDate,
+                        key: "selection",
+                      },
+                    ]);
+                  }}
+                />
+              </div>
+              <div className="dateselector__item">
+                <p>Hasta</p>
+                <input
+                  type="date"
+                  id="endDate"
+                  className="dateselector__date"
+                  value={dateRange[0].endDate.toISOString().split("T")[0]}
+                  onChange={(e) => {
+                    const newEndDate = new Date(e.target.value);
+                    setDateRange([
+                      {
+                        startDate: dateRange[0].startDate,
+                        endDate: newEndDate,
+                        key: "selection",
+                      },
+                    ]);
+                  }}
+                />
+              </div>
             </div>
           </div>
+          <div className="purchaseOrder__supplier">
+            <p>Proveedor</p>
+            <MultiSelectProveedores
+              options={proveedores}
+              selectedProveedores={selectedProveedores}
+              onChange={(selectedOptions) =>
+                setSelectedProveedores(selectedOptions)
+              }
+            />
+          </div>
+        </div>
 
-          <div className="order__state">
-            <div className="order__state__item">
-              <Checkbox
-                checked={selectedState === "Pendiente"}
-                onChange={() => setSelectedState("Pendiente")}
-              />
-              <p>Pendiente</p>
-            </div>
-            <div className="order__state__item">
-              <Checkbox
-                checked={selectedState === "Recibidos"}
-                onChange={() => setSelectedState("Recibidos")}
-              />
-              <p>Recibidos</p>
-            </div>
+        <div className="order__state">
+          <div className="order__state__item">
+            <Checkbox
+              checked={showOnlySelected}
+              onChange={handleShowOnlySelectedChange}
+            />
+            <p>Pendiente</p>
           </div>
-          <table className="table">
-            <thead>
-              <tr>
-                <th className="table__header">Fecha </th>
-                <th className="table__header">Proveedor</th>
-                <th className="table__header">Estado</th>
-                <th className="table__header">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filas.map((fila, indice) => (
-                <tr key={indice} className="table__row">
-                  <td className="table__cell">{fila.fecha}</td>
-                  <td className="table__cell">{fila.proveedor}</td>
-                  <td className="table__cell">{fila.estado}</td>
-                  <td className="table__cell">
-                    <button
-                     
-                      className="table__action table__action--edit"
-                  
-                    >
-                      <DeleteIcon onClick={handleEliminarFila} />
-                    </button>
-                    <Link to="/detallepedido">
-                  
-                        <EditIcon  className="table__action table__action--delete" />
-                   
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          
-          <div className="actions">
-            <button className="actions__button">Buscar</button>
-            <Link to="/detallepedido">
-              <button className="actions__button">Nuevo</button>
-            </Link>
-            <button className="actions__button">Salir</button>
+          <div className="order__state__item">
+            <Checkbox
+              checked={showOnlyRecibidos}
+              onChange={handleShowOnlyRecibidosChange}
+            />
+            <p>Recibidos</p>
           </div>
+        </div>
+
+        <div className="purchaseOrder__tablecontainer">
+          <Table
+            tableClassName="purchaseOrder__table"
+            trClassName="purchaseOrder__table__row"
+            thClassName="purchaseOrder__table__header"
+            theadClassName="purchaseOrder__table__thead"
+            tbodyClassName="purchaseOrder__table__body"
+            tdClassName="purchaseOrder__table__cell"
+            deleteIconClassName="purchaseOrder__table__deleteIcon"
+            editIconClassName="purchaseOrder__table__editIcon"
+            headers={tableHeaders}
+            data={filas}
+            handleDeleteCell={handleDeleteRow}
+            linkPrefix="/detallepedido/editarpedido/"
+          />
+        </div>
+
+        <div className="actions">
+          <button className="actions__button" onClick={handleSearchOrders}>
+            Buscar
+          </button>
+          <Link to={`/detallepedido/${purchaseOrderId}`}>
+            <button className="actions__button">Nuevo</button>
+          </Link>
+          <button className="actions__button">Imprimir</button>
+          <button className="actions__button">Salir</button>
+          <button className="actions__button" onClick={saveDataOrder}>
+            Guardar
+          </button>
         </div>
       </div>
 

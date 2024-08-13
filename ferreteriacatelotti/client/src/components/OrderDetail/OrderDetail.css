@@ -5,17 +5,50 @@
     justify-content: center;
     align-items: center;
 }
-.orderdetail__table-container{
-    width: 700px;
+.orderdetail__tablecontainer{
+    width: 1000px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     background-color: var(--background2);
    
 }
-.table{
+
+.orderdetail__table{
     margin: 0 auto;
+    width: inherit;
+    padding: 1rem 0;
+    color: #fff;
+    width: 80%;
 }
-.table__cell{
+.orderdetail__table__header{
+    width: 100px;
+    overflow-y: auto; 
+    max-height: 400px;
+    height: 50px;
+    background-color: var(--dark-blue);
+    color: #fff;
+}
+.orderdetail__table__cell{
     width: 200px;
     height: 50px;
+}
+
+.orderdetail__table__row{
+    text-align: center;
+    background-color: var(--dark-blue);
+    border: 3px solid #fff;
+    color: #fff;
+}
+
+.orderdetail__table__deleteIcon, .orderdetail__table__editIcon{
+       color: var(--celeste-agua);
+    margin-right: 10px;
+    background: none;
+    outline: none;
+    border: none;
+    cursor: pointer;
 }
 .date-selector{
     background-color: var(--dark-blue);
@@ -24,6 +57,7 @@
     justify-content: space-around;
     height: 70px;
     color: #fff;
+    width: 1000px;
 }
 .date-selector button{
     background-color: var(--secondary);
@@ -73,7 +107,21 @@
 
 .orderdetail__buttons button:hover{
     
-    background: var(--dark-blue);
+    background: var(--background2);
     border: 1px solid var(--dark-blue); 
    
+}
+
+
+.orderdetail__total{
+    
+    background: var(--background2);
+    text-align: right;
+    
+
+}
+
+.orderdetail__total p{
+    width: 90%;
+    color: #fff;
 }

@@ -1,0 +1,61 @@
+.clientcomponent__container{
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+    align-items: center;
+}
+.clientcomponent__table__container{
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background2);
+    width: 60%;
+    justify-content: center;
+    align-items: center;
+}
+.clientcomponent__search-container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem;
+
+}
+.clientecomponent__search-input{
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    outline: none;
+    width: 200px;
+    box-sizing: border-box;
+}
+.clientecomponent__search-button{
+    padding: 10px 20px;
+    font-size: 16px;
+    border: 1px solid var(--dark-blue);
+    border-left: none;
+    background-color: var(--dark-blue);
+    color: white;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    outline: none;
+}
+
+.clientecomponent__actions{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10rem;
+    background-color: var(--dark-blue);
+}
+.clientecomponent__actions__button{
+    padding:  10px;
+    border-radius: 10px;
+    margin: 10px 0;
+    background-color: var( --color-primary);
+    border: 1px solid var(--color-primary);
+    color: #fff;
+    font-size: 1rem;
+    cursor: pointer;
+}

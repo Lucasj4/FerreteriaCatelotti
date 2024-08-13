@@ -97,9 +97,26 @@
 }
 .budget__table_deleteIcon{
     color: var(--celeste-agua);
-    margin-right: 10px;
     background: none;
     outline: none;
     border: none;
+    cursor: pointer;
+}
+
+.budget__actions{
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    background-color: var(--dark-blue);
+}
+
+.budget__actions__button{
+    padding:  10px;
+    border-radius: 10px;
+    margin: 10px 0;
+    background-color: var( --color-primary);
+    border: 1px solid var(--color-primary);
+    color: #fff;
+    font-size: 1rem;
     cursor: pointer;
 }

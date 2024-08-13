@@ -5,11 +5,18 @@ import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import Checkbox from "@mui/material/Checkbox";
 
 const BudgetComponent = () => {
-  const tableHeaders = ["Cliente", "Fecha", "Importe"];
+  const tableHeaders = [
+    { value: "Cliente", label: "Cliente" },
+    { value: "Fecha", label: "Fecha" },
+    {value: "Estado", label: "Estado"},
+    { value: "Importe", label: "Importe" },
+  ];
+
   const data = [
     {
-      Cliente: "Juan",
+      Cliente: "Juan", 
       Fecha: "22/10/2023",
+      Estado: "Pendiente",
       Importe: "1000",
     },
   ];
@@ -67,7 +74,7 @@ const BudgetComponent = () => {
           </div>
           <TableCustom
             headers={tableHeaders}
-            data={tableData}
+            data={data}
             tableClassName="budget__table"
             theadClassName="custom-thead"
             tbodyClassName="custom-tbody"
@@ -80,6 +87,14 @@ const BudgetComponent = () => {
             editIconClassName="budget__table__editIcon"
             DeleteIconClassName="budget__table_deleteIcon"
           />
+
+          <div className="budget__actions">
+            
+            <button className="budget__actions__button">Nuevo</button>
+            <button className="budget__actions__button">Facturar</button>
+            <button className="budget__actions__button">Guardar</button>
+            <button className="budget__actions__button">Salir</button>
+          </div>
         </div>
       </div>
     </>

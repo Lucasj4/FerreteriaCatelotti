@@ -2,7 +2,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
+    flex-direction: column;
+    width: 60%;
     height: 100vh;
     margin: 0 auto;
 }
@@ -90,8 +91,8 @@
   
 }
 
-.table-container{
-    width: 1000px;
+.purchaseOrder__tablecontainer{
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -117,30 +118,31 @@
     border-radius: 10px;
 }
 
-.table{
+.purchaseOrder__table{
     color: #fff;
     padding: 1rem 0;
-    width: 90%;
+    width: 60%;
+
 }
-.table__header{
+.purchaseOrder__table__header{
     width: 100px;
     overflow-y: auto; /* Aparecerá una barra de desplazamiento vertical si es necesario */
     max-height: 400px;
     height: 50px;
     background-color: var(--dark-blue);
 }
-.table__row{
+.purchaseOrder__table__row{
     
    
     text-align: center;
     background-color: var(--dark-blue);
     border: 3px solid #fff;
 }
-.table__cell{
+.purchaseOrder__table__cell{
     width: 100px;
     height: 50px;
 }
-.table__action--edit{
+.purchaseOrder__table__editIcon{
     color: var(--celeste-agua);
     margin-right: 10px;
     background: none;
@@ -148,7 +150,7 @@
     border: none;
     cursor: pointer;
 }
-.table__action--delete{
+.purchaseOrder__table__deleteIcon{
     color: var(--celeste-agua);
     background: none;
     outline: none;
@@ -173,4 +175,59 @@
     font-size: 1rem;
     cursor: pointer;
 
+}
+
+.dateselector{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    color: #fff;
+    width: 50%;
+    flex-direction: column;
+}
+
+.dateselector__title{
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+
+}
+.dateselector__container{
+    display: flex;
+    gap: 1rem;
+}
+.dateselector__item{
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.dateselector__date{
+    padding: 0.5rem;
+    border: 1px solid var(--dark-blue);
+    border-radius: 4px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: var(--dark-blue);
+    outline: none;
+}
+
+.date-selector button{
+    background-color: var(--secondary);
+    outline: none;
+    border: 1px solid var(--secondary);
+    border-radius: 30px;
+    padding: 5px 10px;
+    color: #fff;
+}
+
+.dateselector__item__date{
+    background-color: var(--color-primary);
+    padding: 10px;
+    border-radius: 5px;
+    outline: none;
+    border: 1px solid var(--color-primary);
+    color: #fff;
+    font-size: 1rem;
+    display: flex;
 }

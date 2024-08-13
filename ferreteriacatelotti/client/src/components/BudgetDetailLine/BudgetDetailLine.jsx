@@ -10,17 +10,17 @@ const BudgetDetailLine = () => {
         <div className="budgetdetailline__formcontainer">
           <h2 className="budgetdetailline__form__title"> Nueva linea </h2>
           <form action="" className="budgetdetailline__form">
-            <div className="budgetdetailline__form__item">
+            <div className="form__item">
               <label
                 htmlFor="producto"
-                className="budgetdetailline__form__label"
+                className="form__label"
               >
                 Producto
               </label>
               <div className="budgetdetailline__form__item-product">
                 <input
                   type="text"
-                  className="budgetdetailline__form__input"
+                  className="form__input"
                   id="producto"
                 />
                 <button className="budgetdetailline__form__item__button">
@@ -29,20 +29,20 @@ const BudgetDetailLine = () => {
               </div>
             </div>
             <FormItem
-              formItemClassName="budgetdetailline__form__item"
+              formItemClassName="form__item"
               id="cantidad"
-              inputClassname="budgetdetailline__form__input"
+              inputClassname="form__input"
               typeInput="text"
               label="Cantidad"
-              labelClassname="budgetdetailline__form__label"
+              labelClassname="form__label"
             />
             <FormItem
-              formItemClassName="budgetdetailline__form__item"
+              formItemClassName="form__item"
               id="precioUnitario"
-              inputClassname="budgetdetailline__form__input"
+              inputClassname="form__input"
               typeInput="text"
               label="Precio Unitario"
-              labelClassname="budgetdetailline__form__label"
+              labelClassname="form__label"
             />
             <div className="budgetdetailline__form__item-subtotal">
               <p>Subtotal:</p>

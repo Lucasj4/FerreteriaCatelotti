@@ -1,7 +1,9 @@
-import React, {useState} from "react";
-import './DateSelector.css'
+import React, { useState, useEffect } from "react";
+import "./DateSelector.css";
 
-const DateSelector = () => {
+
+
+const DateSelector = ({ fetchDataByDate, setFilas }) => {
   const [dateRange, setDateRange] = useState([
     {
       startDate: new Date(),
@@ -9,6 +11,18 @@ const DateSelector = () => {
       key: "selection",
     },
   ]);
+  
+  useEffect(() => {
+    // Llama a fetchDataByDate cuando las fechas cambien
+    fetchData();
+  }, [dateRange]);
+
+  const fetchData = async () => {
+    const fromDate = dateRange[0].startDate.toISOString().split("T")[0];
+    const toDate = dateRange[0].endDate.toISOString().split("T")[0];
+    await fetchDataByDate(fromDate, toDate);
+  };
+
   return (
     <div className="dateselector">
       <p className="dateselector__title">Fecha</p>

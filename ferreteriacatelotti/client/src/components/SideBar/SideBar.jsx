@@ -4,8 +4,9 @@ import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import DescriptionIcon from '@mui/icons-material/Description';
-
-
+import PeopleIcon from '@mui/icons-material/People';
+import LocalMallIcon from '@mui/icons-material/LocalMall';
+import AccessibilityIcon from '@mui/icons-material/Accessibility';
 import "./Sidebar.css";
 const Sidebar = ({ children }) => {
   const [isOpen, setisOpen] = useState(false);
@@ -20,14 +21,24 @@ const Sidebar = ({ children }) => {
       icon: <ReceiptIcon />,
     },
     {
-      path: "/detallepedido",
-      name: "Detalle Pedido",
-      icon: <DescriptionIcon/>,
-    },
-    {
       path: "/presupuesto",
       name: "Presupuesto",
       icon: <DescriptionIcon/>,
+    },
+    {
+      path: "/clientes",
+      name: "Clientes",
+      icon: <AccessibilityIcon/>,
+    },
+    {
+      path: "/productos",
+      name: "Productos",
+      icon: <LocalMallIcon/>,
+    },
+    {
+      path: "/usuarios",
+      name: "Usuarios",
+      icon: <PeopleIcon/>,
     }
 
   ];
@@ -45,7 +56,7 @@ const Sidebar = ({ children }) => {
     <div className="container">
       <div className={sidebarClasses}>
         <div className={topSecticonClass}>
-          <h2 className={h2Classes}>Pedido de compra</h2>
+          <h2 className={h2Classes}>Ferreteria Catelotti</h2>
           <div className="bars">
             <FaBars onClick={toggle} />
           </div>

@@ -1,0 +1,12 @@
+export const Errors = {
+    ROUTE_ERROR: 1,
+    INVALID_TYPE: 2,
+    DB_ERROR: 3,
+    AUTHENTICATION_ERROR: 4,
+    VALIDATION_ERROR: 5,
+    CONNECTION_ERROR: 6,
+    FILE_ERROR: 7,
+    PERMISSION_ERROR: 8,
+    MISSING_DATA_ERROR: 9
+};
+

@@ -7,7 +7,8 @@ const FormItem = ({
   typeInput,
   labelClassname,
   inputClassname,
-  onChange
+  onChange,
+  value
 }) => {
   return (
     <>
@@ -18,6 +19,7 @@ const FormItem = ({
           id={id}
           className={inputClassname}
           onChange={onChange}
+          value={value}
 
         />
       </div>

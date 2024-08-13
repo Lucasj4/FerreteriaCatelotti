@@ -1,0 +1,110 @@
+.product__form__container {
+  background: var(--background2);
+  width: 800px;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.product__form__item {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+}
+
+.form__item__category {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+}
+
+.product__item__select {
+  padding: 1rem 0;
+  display: flex;
+  width: 90%;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+.product__item__select label {
+  font-size: 1rem;
+  color: #00dfc4;
+  
+}
+
+.product__item__select select {
+  color: #fff;
+  padding: 10px 5px;
+  margin-top: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  outline: none;
+  font-size: 1rem;
+  width: 100%;
+  background: var(--background2);
+}
+
+.product__form {
+  display: flex;
+}
+
+.select-container {
+  position: relative;
+  margin-top: 5px;
+}
+
+.select-display {
+  padding: 10px;
+  background: var(--background2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  color: #fff;
+  font-size: 1rem;
+  width: 100%;
+  outline: none;
+}
+
+.select-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 100px;
+  overflow-y: auto;
+  background: var(--background2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  z-index: 1000;
+}
+
+.select-dropdown div {
+  padding: 10px;
+  cursor: pointer;
+  color: #fff;
+}
+
+.select-dropdown div:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.search-input {
+  width: calc(100% - 20px);
+  padding: 5px;
+  color: #fff;
+  background: var(--background2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  margin: 10px 0;
+}
+
+
+/* Cambiar el fondo del popup */
+.my-popup-class {
+  background-color:#1d2b3a !important;
+  color: #fff;
+}
+
+/* Personaliza el fondo del overlay */
+.swal2-overlay.my-overlay-class {
+  background-color: rgba(0, 0, 0, 0.5) !important; /* Cambia el color del overlay */
+}
+
+.my-confirm-button-class{
+  background-color: #003a75;
+}

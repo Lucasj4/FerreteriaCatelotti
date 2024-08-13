@@ -6,18 +6,18 @@ import { useAppContext } from "../context/OrderContext";
 
 const NewPurchaseOrder = () => {
   const option = ["mt", "litro"];
-  const { fecha, proveedor, saveData } = useAppContext();
-  const [producto, setProducto] = useState("");
-  const [cantidad, setCantidad] = useState("");
-  const [precioUnitario, setPrecioUnitario] = useState("");
+  const { addDetalleId,  clearDetalleIds } = useAppContext();
+  const [item, setItem] = useState("");
+  const [quantity, setQuantity] = useState("");
+  const [unitCost, setUnitCost] = useState("");
   const [unidad, setUnidad] = useState(option[0]);
 
-  const handleCantidad = (e)=>{
-    setCantidad(e.target.value);
+  const handleQuantity = (e)=>{
+    setQuantity(e.target.value);
   }
 
-  const handlePrecioUnitario = e =>{
-    setPrecioUnitario(e.target.value);
+  const handleUnitCost = e =>{
+    setUnitCost(e.target.value);
   }
 
   const handleUnidad = e =>{
@@ -25,34 +25,36 @@ const NewPurchaseOrder = () => {
   }
   const handleGuardar = async () => {
     try {
-      const response = await fetch('http://localhost:8080/detallepedido/nuevalinea', {
+      const response = await fetch('http://localhost:8080/detallepedido', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          fecha,
-          proveedor,
-          producto,
-          cantidad,
-          precioUnitario,
-          unidad,
+        body: JSON.stringify({ 
+          item,
+          quantity,
+          unitCost,
+         
         }),
       });
-
+      console.log(item)
+      console.log(response);
       if (!response.ok) {
         throw new Error('Error al enviar los datos al servidor');
       }
 
       // Puedes hacer algo con la respuesta si es necesario
       const responseData = await response.json();
-      console.log(responseData);
+      console.log("detalle", responseData.detail);
+      console.log("Id del detalle", responseData.detail._id);
+      // addDetalleId(responseData._id);
 
       // Limpia los datos del formulario o realiza otras acciones después de guardar
-      setProducto("");
-      setCantidad("");
-      setPrecioUnitario("");
+      setItem("");
+      setQuantity("");
+      setUnitCost("");
       setUnidad(option[0]);
+    
     } catch (error) {
       console.error('Error:', error.message);
     }
@@ -62,12 +64,12 @@ const NewPurchaseOrder = () => {
       <div className="newPurchaseOrder__container">
         <div className="newPurchaseOrder__formcontainer">
           <h2 className="newPurchaseOrder__form__title">
-            Nuevo Pedido de Compra
+            Nuevo Linea
           </h2>
           <form action="" className="newPurchaseOrder__form">
             <div className="newPurchaseOrder__form__item">
               <label
-                htmlFor="producto"
+                htmlFor="item"
                 className="newPurchaseOrder__form__label"
               >
                 Producto
@@ -76,8 +78,8 @@ const NewPurchaseOrder = () => {
                 <input
                   type="text"
                   className="newPurchaseOrder__form__input"
-                  id="producto"
-                  onChange={(e) => setProducto(e.target.value)}
+                  id="item"
+                  onChange={(e) => setItem(e.target.value)}
                 />
                 <button className="newPurchaseOrder__form__item__button">
                   Producto
@@ -92,16 +94,16 @@ const NewPurchaseOrder = () => {
               typeInput="text"
               label="Cantindad"
               labelClassname="newPurchaseOrder__form__label"
-              onChange={handleCantidad}
+              onChange={handleQuantity}
             />
             <FormItem
               formItemClassName="newPurchaseOrder__form__item"
               id="precioUnitario"
               inputClassname="newPurchaseOrder__form__input"
               typeInput="text"
-              label="Precio Unitario"
+              label="Costo Unitario"
               labelClassname="newPurchaseOrder__form__label"
-              onChange={handlePrecioUnitario}
+              onChange={handleUnitCost}
             />
             <div className="newPurchaseOrder__form__item">
               <label htmlFor="unidad" className="newPurchaseOrder__form__label">
