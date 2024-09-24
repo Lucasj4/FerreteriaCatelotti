@@ -28,4 +28,13 @@ export class SupplierService{
             throw error;
         }
     }
+
+    async getSuppliers(){
+        try {
+            const suppliers = await SupplierModel.find();
+            return suppliers;
+        } catch (error) {
+            throw error;
+        }
+    }
 }

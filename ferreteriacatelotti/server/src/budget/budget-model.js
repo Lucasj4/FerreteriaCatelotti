@@ -11,15 +11,15 @@ const budgetSchema = new mongoose.Schema({
       ref: 'clients',
       required: true
     },
-    date: {
+    budgetDate: {
       type: Date,
       required: true
     },
-    amount: {
+    budgetAmount: {
       type: Number,
       required: true
     },
-    status: {
+    budgetStatus: {
       type: String,
       required: true
     }

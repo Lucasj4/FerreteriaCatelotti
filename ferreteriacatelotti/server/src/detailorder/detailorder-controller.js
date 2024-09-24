@@ -5,13 +5,14 @@ const detailOrderService = new DetailOrderService();
 export class DetailOrderController {
 
     async createDetailOrder(req, res) {
-        const { item, unitCost, quantity } = req.body;
+        const { detailOrderProduct, detailOrderUnitCost, detailOrderQuantity, productID } = req.body;
 
         try {
             const newDetailOrder = {
-                item,
-                unitCost,
-                quantity
+                detailOrderProduct,
+                detailOrderQuantity,
+                detailOrderUnitCost,
+                productID
             }
             const createdDetailOrder = await detailOrderService.createDetailOrder(newDetailOrder);
 
@@ -35,7 +36,7 @@ export class DetailOrderController {
     async getDetailOrders(req, res) {
         try {
             const detailOrders = await detailOrderService.getDetailsOrdes();
-            res.status(200).json(detailOrders);
+            res.status(200).json( {data: detailOrders});
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: "Error al obtener los detalles de los pedidos" });

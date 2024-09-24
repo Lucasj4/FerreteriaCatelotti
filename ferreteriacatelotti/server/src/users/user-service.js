@@ -13,12 +13,14 @@ export class UserService{
 
     async findUserByEmail(email){
         try {
-            const user = await UserModel.findOne({email});
+            const user = await UserModel.findOne({userEmail: email});
             return user;
         } catch (error) {
             throw error;
         }
     }
+
+    
 
     
 }

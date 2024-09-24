@@ -6,3 +6,5 @@ export const clientRouter = express.Router();
 
 clientRouter.post('/', validateClient, clientController.addCliente);
 clientRouter.get('/', clientController.getClients);
+clientRouter.put('/:cid',validateClient, clientController.updateClient);
+clientRouter.get('/:cid', clientController.getClientById);

@@ -29,12 +29,21 @@ export class SupplierController {
             res.status(200).json({ message: 'Supplier added successfully', supplier: newSupplier });
         } catch (error) {
             throw error;
+        }  
+    }
+
+    async getSuppliers(req,res){
+        try {
+            const suppliers = await supplierService.getSuppliers();
+
+            if(suppliers){
+                return res.status(200).json({message: "Proveedores", suppliers})
+            }else{
+                return res.status(404).json({message: "Proveedores no encontrado"})
+            }
+        } catch (error) {
+            return res.status(500).json({ message: 'Error en el servidor', error });
         }
-    
-
-
-    
-        
     }
    
 

@@ -5,3 +5,4 @@ export const purchaseOrderRouter = express.Router();
 const purchaseOrderController = new PurchaseOrderController();
 
 purchaseOrderRouter.get('/pedido', )
+purchaseOrderRouter.post("/", purchaseOrderController.createPurchaseOrder );

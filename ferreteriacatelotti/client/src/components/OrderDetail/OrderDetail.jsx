@@ -1,20 +1,16 @@
 import React, { useState, useEffect } from "react";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import "./OrderDetail.css";
-import { Link } from "react-router-dom";
-import MultipleSelect from "../MultipleSelect/MultipleSelect";
+import { Link, useNavigate } from "react-router-dom";
+import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import { useAppContext } from "../context/OrderContext";
 import Table from "../TableCustom/TableCustom";
-import axios from "axios";
-const OrderDetail = () => {
-  const { fecha, proveedor, saveData, estado } = useAppContext();
 
-  const options = [
-    { value: "Gonzalez", label: "Gonzalez" },
-    { value: "Martinez", label: "Martinez" },
-    { value: "Pedro", label: "Pedro" },
-  ];
+const OrderDetail = () => {
+  const { fecha, proveedor, saveData, estado, purchaseOrderId, detalleIds } =
+    useAppContext();
+  const [suppliers, setSuppliers] = useState([]);
+  const [selectedSuppliers, setSelectedSuppliers] = useState([]);
+  const navigate = useNavigate();
 
   const options2 = [
     { value: "pendiente", label: "Pendiente" },
@@ -22,49 +18,58 @@ const OrderDetail = () => {
   ];
 
   const tableHeaders = [
-    { value: "item", label: "Producto" },
-    { value: "quantity", label: "Cantidad" },
-    { value: "unitCost", label: "Costo Unitario" },
+    { value: "detailOrderProduct", label: "Producto" },
+    { value: "detailOrderQuantity", label: "Cantidad" },
+    { value: "detailOrderUnitCost", label: "Costo Unitario" },
   ];
 
   const [filas, setFilas] = useState([,]);
 
-  // const getDetailOrders = async () => {
-  //   try {
-  //     const response = await fetch("http://localhost:8080/detallepedido"); // Hacer la solicitud GET al endpoint
-  //     if (!response.ok) {
-  //       throw new Error(
-  //         `Error en la solicitud: ${response.status} - ${response.statusText}`
-  //       );
-  //     }
-
-  //     const orders = await response.json();
-  //     setFilas(orders);
-  //   } catch (error) {
-  //     console.error("Error al obtener datos:", error.message);
-  //   }
-  // };
-  const getDetailOrders = async () => {
-    try {
-      const url = "http://localhost:8080/detallepedido";
-      const response = await axios.get(url);
-      if (!response.ok) {
-        throw new Error(
-          `Error en la solicitud: ${response.status} - ${response.statusText}`
-        );
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/suppliers");
+        const result = await response.json();
+        setSuppliers(result.suppliers);
+      } catch (error) {
+        console.error("Error fetching suppliers: ", error);
       }
-      console.log("Hola desde getdetailorders");
-      const orders = await response.json();
-      setFilas(orders);
-    } catch (error) {
-      console.error("Error al obtener datos:", error.message);
+    };
+
+    fetchSuppliers();
+  }, []);
+
+  useEffect(()=> {
+    const fetchDetailsOrder = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/detailsorder");
+        
+        const data = await response.json();
+        console.log("Data: ", data.data);
+        console.log("Detalles idS: ", detalleIds);
+        
+        setFilas(data.data)
+      } catch (error) {
+        console.error("Error fetching suppliers: ", error);
+      }
     }
-  };
+
+    fetchDetailsOrder();
+  }, [])
 
   useEffect(() => {
-    console.log("Ordenes desde useEffect", filas[0]);
-    getDetailOrders();
-  }, []);
+    console.log("Detalles IDs actualizados: ", detalleIds);
+    // Aquí podrías actualizar la tabla o realizar otras acciones si es necesario
+  }, [detalleIds]);
+
+  const handleSupplierChange = (selectedOptions) => {
+    setSelectedSuppliers(selectedOptions);
+
+    const selectedProveedorValue =
+      selectedOptions.length > 0 ? selectedOptions[0].value : "";
+
+    saveData(fecha, selectedProveedorValue, estado);
+  };
 
   const handleDeleteCell = (indice) => {
     const nuevasFilas = [...filas];
@@ -72,11 +77,102 @@ const OrderDetail = () => {
     setFilas(nuevasFilas);
   };
 
-  const handleSave = () => {
-    const proveedorValue = proveedor.length > 0 ? proveedor[0].value : "";
-    console.log(fecha, proveedorValue, estado[0].value);
-    saveData(fecha, proveedorValue, estado);
+  const handleEstadoChange = (e) => {
+    const nuevoEstado = e.target.value;
+    console.log("Nuevo estado seleccionado: ", nuevoEstado); // Verifica el valor del estado
+    saveData(fecha, proveedor, nuevoEstado); // Actualiza el estado
   };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+
+    const proveedorValue =
+        selectedSuppliers.length > 0 ? selectedSuppliers[0].value : "";
+
+    // Guarda los datos en el contexto
+    saveData(fecha, proveedorValue, estado);
+
+    console.log("Fecha", fecha);
+    console.log("Proveedor: ", proveedorValue);
+    console.log("Estado: ", estado);
+    console.log("PurchaseOrderId: ", purchaseOrderId);
+
+    // Si no existe el purchaseOrderId, crear uno nuevo
+    if (!purchaseOrderId) {
+        const newPurchaseOrder = {
+            purchaseOrderDate: fecha,
+            purchaseOrderStatus: estado,
+            supplierID: proveedorValue,
+        };
+
+        try {
+            const response = await fetch(
+                "http://localhost:8080/api/purchaseorders",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(newPurchaseOrder),
+                }
+            );
+
+            const data = await response.json();
+            console.log("data: ", data);
+
+            if (data.purchaseOrder && data.purchaseOrder._id) {
+                // Guarda los datos con el purchaseOrderId recién creado
+                saveData(fecha, proveedorValue, estado, data.purchaseOrder._id);
+                console.log("PurchaseOrder creado con ID: ", data.purchaseOrder._id);
+
+                // Ahora actualiza todos los detailOrders con el nuevo purchaseOrderId
+                const detailOrderUpdates = detalleIds.map((id) =>
+                    fetch(`http://localhost:8080/api/detailsorder/${id}`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ purchaseOrderId: data.purchaseOrder._id }),
+                    })
+                );
+
+                try {
+                    await Promise.all(detailOrderUpdates);
+                    console.log("Todos los detailOrders actualizados con el nuevo purchaseOrderId");
+                } catch (error) {
+                    console.error("Error actualizando detailOrders:", error.message);
+                }
+            } else {
+                console.error(
+                    "Error: No se devolvió un purchaseOrderId del servidor"
+                );
+            }
+        } catch (error) {
+            console.error("Error:", error.message);
+        }
+    } else {
+        // Si ya existe el purchaseOrderId, solo actualiza los detailOrders
+        const detailOrderUpdates = detalleIds.map((id) =>
+            fetch(`http://localhost:8080/api/detailsorder/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ purchaseOrderId }),
+            })
+        );
+
+        try {
+            await Promise.all(detailOrderUpdates);
+            console.log("Todos los detailOrders actualizados con el purchaseOrderId existente");
+        } catch (error) {
+            console.error("Error actualizando detailOrders:", error.message);
+        }
+    }
+
+    // Aquí puedes agregar la lógica para redirigir a otra página o hacer otra acción
+};
+
 
   return (
     <>
@@ -88,22 +184,36 @@ const OrderDetail = () => {
               <input
                 type="date"
                 className="date-selector__item__date"
-                onChange={(e) => saveData(e.target.value, proveedor, estado)}
+                value={fecha}
+                onChange={(e) =>
+                  saveData(
+                    e.target.value,
+                    proveedor,
+                    estado,
+                    purchaseOrderId || ""
+                  )
+                }
               />
             </div>
             <div className="date-selector__item">
               <p>Proveedor</p>
-              <MultipleSelect
-                options={options}
-                onChange={(value) => saveData(fecha, value, estado)}
+              <MultiSelectOption
+                options={suppliers}
+                selectedProveedores={selectedSuppliers}
+                onChange={handleSupplierChange}
+                placeholder="Seleccionar Proveedor"
               />
             </div>
             <div className="date-selector__item">
               <p>Estado</p>
-              <MultipleSelect
-                options={options2}
-                onChange={(value) => saveData(fecha, proveedor, value)}
-              />
+              <select
+                value={estado || "Pendiente"} // Asegúrate de que nunca sea undefined
+                onChange={handleEstadoChange}
+                className="purchaseOrder__status"
+              >
+                <option value="Pendiente">Pendiente</option>
+                <option value="Recibido">Recibido</option>
+              </select>
             </div>
           </div>
           <div className="orderdetail__tablecontainer">
@@ -127,10 +237,10 @@ const OrderDetail = () => {
           </div>
           <div className="orderdetail__buttons">
             <Link to="/detallepedido/nuevalinea">
-              <button onClick={handleSave}>Nueva Linea</button>
+              <button>Nueva Linea</button>
             </Link>
             <Link to="/pedido">
-              <button>Guardar</button>
+              <button onClick={handleSave}>Guardar</button>
             </Link>
             <Link to="/">
               <button>Salir</button>

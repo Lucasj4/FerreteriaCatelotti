@@ -6,7 +6,6 @@ import Login from "./components/Login/Login";
 import "./App.css";
 import OrderDetail from "./components/OrderDetail/OrderDetail";
 import BudgetComponent from "./components/BudgetComponent/BudgetComponent";
-import NewPurchaseOrder from "./components/NewPurchaseOrder/NewPurchaseOrder";
 import EditPurchaseOrder from "./components/EditPurchaseOrder/EditPurchaseOrder";
 import BudgetDetail from "./components/BudgetDetail/BudgetDetail";
 import BudgetDetailLine from "./components/BudgetDetailLine/BudgetDetailLine";
@@ -21,6 +20,7 @@ import NewProduct from "./components/NewProduct/NewProduct";
 import SupplierManagement from "./components/SupplierManagement/SupplierManagement";
 import NewSupplier from "./components/NewSupplier/NewSupplier";
 import EditProduct from "./components/EditProduct/EditProduct";
+import NewDetailOrderLine from "./components/NewDetailOrder/NewDetailOrderLine";
 
 function App() {
   return (
@@ -35,7 +35,7 @@ function App() {
               <Route path="/presupuesto" element={<BudgetComponent />} />
               <Route
                 path="/detallepedido/nuevalinea"
-                element={<NewPurchaseOrder />}
+                element={<NewDetailOrderLine/>}
               />
               <Route
                 path="/detallepedido/editarpedido/:id"
@@ -47,7 +47,7 @@ function App() {
                 element={<BudgetDetailLine />}
               />
               <Route path="/clientes/agregarcliente" element={<NewClient />} />
-              <Route path="/clientes/editarcliente" element={<EditClient />} />
+              <Route path="/clientes/:cid" element={<EditClient />} />
               <Route path="/clientes" element={<ClientComponent/>} />
               <Route path="/usuarios" element={<UserComponent/>} />
               <Route path="/usuarios/agregarusuario" element={<NewUser />} />

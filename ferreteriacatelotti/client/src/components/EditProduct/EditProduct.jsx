@@ -3,6 +3,7 @@ import FormItem from "../FormItem/FormItem";
 import DropdownSelect from "../DropDownSelect/DropDownSelect";
 import { Link } from "react-router-dom";
 import { useParams } from 'react-router-dom';
+import Swal from "sweetalert2";
 const EditProduct = () => {
     const [productName, setProductName] = useState("");
     const [productStock, setProductStock] = useState("");
@@ -45,7 +46,7 @@ const EditProduct = () => {
       useEffect(() => {
         const fetchProduct = async () => {
           try {
-            console.log("PID:", pid);
+            
             const response = await fetch(`http://localhost:8080/api/products/${pid}`); // URL con el ID del producto
             if (response.ok) {
               const data = await response.json();

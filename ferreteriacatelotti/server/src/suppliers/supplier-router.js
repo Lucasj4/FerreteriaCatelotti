@@ -6,3 +6,4 @@ const supplierController = new SupplierController();
 export const supplierRouter = express.Router();
 
 supplierRouter.post('/', supplierController.addSupplier);
+supplierRouter.get('/', supplierController.getSuppliers);

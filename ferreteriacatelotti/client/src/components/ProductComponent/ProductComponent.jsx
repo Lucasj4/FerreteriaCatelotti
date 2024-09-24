@@ -18,6 +18,17 @@ const ProductComponent = () => {
     { value: "unitID", label: "Unidad" },
   ];
 
+  const getProductsWithLowStock = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/products/lowstock")
+      if(response.status === 200){
+        const products = await response.json();
+        setFilas(products.products)
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
   const getProducts = async () => {
     try {
       const queryParam =
@@ -233,7 +244,7 @@ const ProductComponent = () => {
             <Link to={"/productos/agregarproducto"}>
               <button className="component__actions__button">Nuevo</button>
             </Link>
-            <button className="component__actions__button">
+            <button className="component__actions__button" onClick={getProductsWithLowStock}>
               Quiebre Stock
             </button>
             <button className="component__actions__button">Guardar</button>

@@ -120,8 +120,16 @@
     
 
 }
-
 .orderdetail__total p{
     width: 90%;
     color: #fff;
+}
+
+.purchaseOrder__status{
+    padding: 10px;
+    outline: none;
+    background: var(--color-primary);
+    border: 1px solid var(--color-primary); 
+    color: #fff;
+    border-radius: 5px;
 }

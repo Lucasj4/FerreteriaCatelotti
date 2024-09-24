@@ -20,6 +20,15 @@ export class ClientService {
         }
     }
 
+    async getClientById(id){
+        try {
+            const client = await ClientModel.findOne({_id: id});
+            return client;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async updateClient(clientId, clientData){
         try {
             const updateClient = await ClientModel.findByIdAndUpdate(clientId, clientData);

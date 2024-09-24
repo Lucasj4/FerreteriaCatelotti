@@ -1,22 +1,22 @@
 import mongoose from "mongoose";
 
 const purchaseOrderSchema = new mongoose.Schema({
-    date: {
+    purchaseOrderDate: {
       type: Date,
       required: true
     },
-    amount: {
+    purchaseOrderAmount: {
       type: Number,
-      required: true
+      // required: true
     },
-    status: {
+    purchaseOrderStatus: {
       type: String,
       required: true
     },
-    userID: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'users'
-    },
+    // userID: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: 'users'
+    // },
     supplierID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'suppliers'

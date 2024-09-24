@@ -8,11 +8,12 @@ import DropdownSelect from "../DropDownSelect/DropDownSelect";
 const NewProduct = () => {
   const [productName, setProductName] = useState("");
   const [productStock, setProductStock] = useState("");
-  const [productUnit, setProductUnit] = useState("");
+  const [productUnit, setProductUnit] = useState({ id: "", name: "" });
   const [productPrice, setProductPrice] = useState("");
   const [productCategory, setProductCategory] = useState("");
   const [productCategories, setProductCategories] = useState([]);
   const [productCost, setProductCost] = useState("");
+  const [productsUnitsOptions, setProductsUnitsOptions] = useState([]);
 
   const resetForm = () => {
     setProductName("");
@@ -40,6 +41,31 @@ const NewProduct = () => {
     };
 
     fetchCategories(); // Llama a la función al montar el componente
+  }, []);
+
+  useEffect(() => {
+    const fetchUnits = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/units");
+        if (!response.ok) {
+          throw new Error("Error al obtener las categorías");
+        }
+        const data = await response.json();
+        console.log("Data: ", data);
+
+        const productsUnitsOptions = data.units.map((unit) => ({
+          value: unit._id,
+          label: unit.unitName,
+        }));
+        console.log("PRODUCTS UNITS OPTIONS", productsUnitsOptions);
+
+        setProductsUnitsOptions(productsUnitsOptions);
+      } catch (error) {
+        console.error("Error en la solicitud", error);
+      }
+    };
+
+    fetchUnits();
   }, []);
 
   const handleSubmit = async (event) => {
@@ -137,7 +163,6 @@ const NewProduct = () => {
           // Puedes agregar redireccionamiento o manejo adicional aquí si es necesario
           break;
       }
-      
     } catch (error) {
       console.error("Error en la solicitud", error);
     }
@@ -216,10 +241,15 @@ const NewProduct = () => {
               <div className="product__item__select">
                 <label htmlFor="productUnit">Unidad</label>
                 <DropdownSelect
-                  options={options}
-                  value={productUnit}
-                  onChange={setProductUnit}
-                  placeholder="Selecciona una unidad"
+                  options={productsUnitsOptions}
+                  value={productUnit.name} // Muestra la etiqueta del producto seleccionado
+                  onChange={(option) =>
+                    setProductUnit({
+                      id: option.value,
+                      name: option.label,
+                    })
+                  }
+                  placeholder="Selecciona un producto"
                 />
               </div>
             </div>

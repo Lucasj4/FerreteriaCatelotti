@@ -3,7 +3,7 @@ import "./PurchaseOrder.css";
 import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import MultiSelectProveedores from "../MultipleSelect/MultipleSelect";
+import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import Table from "../TableCustom/TableCustom";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
@@ -11,23 +11,19 @@ import { useAppContext } from "../context/OrderContext";
 
 const PurchaseOrder = () => {
   const [filas, setFilas] = useState([]);
-  const { fecha, proveedor, saveData, estado, detalleIds, clearDetalleIds } =
-    useAppContext();
+  const { fecha, proveedor, saveData, estado, detalleIds, clearDetalleIds } = useAppContext();
   const [purchaseOrderId, setPurchaseOrderId] = useState("");
   const [showOnlySelected, setShowOnlySelected] = useState(false);
   const [showOnlyRecibidos, setShowOnlyRecibidos] = useState(false);
 
-  const [proveedores, setProveedores] = useState([
-    { value: "gonzalez", label: "Gonzalez" },
-    { value: "martinez", label: "Martinez" },
-    { value: "pedro", label: "Pedro" },
-  ]);
+  const [suppliers, setSuppliers] = useState([]);
+  const [selectedSuppliers, setSelectedSuppliers] = useState([]);
 
   const tableHeaders = [
     { value: "fecha", label: "Fecha" },
     { value: "estado", label: "Estado" },
     { value: "importe", label: "Importe" },
-    {value: "proveedor", label: "Proveedor"}
+    { value: "proveedor", label: "Proveedor" },
   ];
   const [selectedProveedores, setSelectedProveedores] = useState(null);
 
@@ -42,19 +38,32 @@ const PurchaseOrder = () => {
   ]);
 
   const handleShowOnlySelectedChange = () => {
-
     setShowOnlySelected(!showOnlySelected);
     setShowOnlyRecibidos(false);
- 
   };
 
   const handleShowOnlyRecibidosChange = () => {
-    
     setShowOnlyRecibidos(!showOnlyRecibidos);
     setShowOnlySelected(false);
-    
   };
 
+  useEffect(() => {
+    const fetchSuppliers = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/suppliers");
+        const result = await response.json();
+        setSuppliers(result.suppliers); 
+      } catch (error) {
+        console.error("Error fetching suppliers: ", error);
+      }
+    };
+
+    fetchSuppliers();
+  }, []);
+
+  const handleSupplierChange = (selectedOptions) => {
+    setSelectedSuppliers(selectedOptions);
+  };
 
   const handleSearchOrders = async () => {
     try {
@@ -64,22 +73,22 @@ const PurchaseOrder = () => {
       } else if (showOnlyRecibidos) {
         estadoFilter = "Recibido";
       }
-  
+
       const fromDate = dateRange[0].startDate.toISOString().split("T")[0];
       const toDate = dateRange[0].endDate.toISOString().split("T")[0];
-  
+
       const response = await fetch(
         `http://localhost:8080/pedido?estado=${estadoFilter}&fromDate=${fromDate}&toDate=${toDate}`
       );
-  
+
       if (!response.ok) {
         throw new Error(
           `Error en la solicitud: ${response.status} - ${response.statusText}`
         );
       }
-  
+
       const orders = await response.json();
-  
+
       const formattedOrders = orders.map((order) => {
         const fecha = new Date(order.fecha);
         const dia = fecha.getDate().toString().padStart(2, "0");
@@ -87,19 +96,18 @@ const PurchaseOrder = () => {
         const año = fecha.getFullYear();
         const fechaFormateada = `${dia}/${mes}/${año}`;
 
-        order.proveedor = "Gonzalez"
+        order.proveedor = "Gonzalez";
         return {
           ...order,
           fecha: fechaFormateada,
         };
       });
-  
+
       setFilas(formattedOrders);
     } catch (error) {
       console.error("Error al buscar pedidos:", error.message);
     }
   };
-  
 
   const getOrders = async () => {
     try {
@@ -111,12 +119,11 @@ const PurchaseOrder = () => {
       }
 
       const orders = await response.json();
-      console.log(orders)
-    
-      console.log(orders)
-      
-      const formattedOrders = orders.map(order => {
+      console.log(orders);
 
+      console.log(orders);
+
+      const formattedOrders = orders.map((order) => {
         const fecha = new Date(order.fecha);
 
         const dia = fecha.getDate().toString().padStart(2, "0");
@@ -124,10 +131,10 @@ const PurchaseOrder = () => {
         const año = fecha.getFullYear();
 
         const fechaFormateada = `${dia}/${mes}/${año}`;
-        order.proveedor = "Gonzalez"
+        order.proveedor = "Gonzalez";
         return {
           ...order,
-          fecha: fechaFormateada
+          fecha: fechaFormateada,
         };
       });
 
@@ -137,8 +144,6 @@ const PurchaseOrder = () => {
       console.error("Error al obtener datos:", error.message);
     }
   };
-
-
 
   useEffect(() => {
     getOrders();
@@ -161,7 +166,7 @@ const PurchaseOrder = () => {
           importe: 15000, // Aquí asegúrate de que estado sea una cadena
         }),
       });
-     
+
       if (!response.ok) {
         throw new Error("Error al enviar los datos al servidor");
       }
@@ -257,12 +262,11 @@ const PurchaseOrder = () => {
           </div>
           <div className="purchaseOrder__supplier">
             <p>Proveedor</p>
-            <MultiSelectProveedores
-              options={proveedores}
-              selectedProveedores={selectedProveedores}
-              onChange={(selectedOptions) =>
-                setSelectedProveedores(selectedOptions)
-              }
+            <MultiSelectOption
+              options={suppliers}
+              selectedProveedores={selectedSuppliers}
+              onChange={handleSupplierChange}
+              placeholder="Select suppliers"
             />
           </div>
         </div>
@@ -310,7 +314,7 @@ const PurchaseOrder = () => {
           </Link>
           <button className="actions__button">Imprimir</button>
           <button className="actions__button">Salir</button>
-          <button className="actions__button" onClick={saveDataOrder}>
+          <button className="actions__button" >
             Guardar
           </button>
         </div>

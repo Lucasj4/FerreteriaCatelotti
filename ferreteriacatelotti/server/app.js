@@ -8,6 +8,10 @@ import { addLogger } from './src/utils/logger.js';
 import { categoryRouter } from './src/categories/catregory-router.js';
 import { clientRouter } from './src/clients/client-router.js';
 import errorHandler from './src/middlewares/errormiddleware.js';
+import { userRouter } from './src/users/user-router.js';
+import { detailOrderRoute } from './src/detailorder/detailorder-route.js';
+import { purchaseOrderRouter } from './src/purchaseorders/purchaseorder-route.js';
+
 const app = express();
 
 app.use(express.json());
@@ -25,6 +29,9 @@ app.use("/api/suppliers", supplierRouter);
 app.use("/api/units", unitRouter);
 app.use("/api/clients", clientRouter);
 app.use("/api/categories", categoryRouter);
+app.use("/api/users", userRouter);
+app.use("/api/purchaseorders", purchaseOrderRouter)
+app.use("/api/detailsorder", detailOrderRoute)
 app.use(errorHandler);
 
 

@@ -103,4 +103,15 @@ export class ProductService{
             throw error;
         }
     }
+
+    async getProductsWithLowStock(maxStock = 10) {
+        try {
+            const products = await ProductModel.find({  productStock: { $lte: maxStock } });
+            return products;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    
 }

@@ -1,10 +1,9 @@
-// DropdownSelect.js
 import React, { useState, useRef, useEffect } from "react";
 import "./DropdownSelect.css";
 
-const DropdownSelect = ({ options, value, onChange, placeholder }) => {
+const DropdownSelect = ({ options = [], value, onChange, placeholder }) => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(value);
+  const [searchTerm, setSearchTerm] = useState(value || "");
   const dropdownRef = useRef(null);
 
   const handleToggleDropdown = () => {
@@ -25,11 +24,11 @@ const DropdownSelect = ({ options, value, onChange, placeholder }) => {
   }, []);
 
   useEffect(() => {
-    setSearchTerm(value);
+    setSearchTerm(value || "");
   }, [value]);
-  
+
   const filteredOptions = options.filter((option) =>
-    option.toLowerCase().includes(searchTerm.toLowerCase())
+    option.label.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -37,7 +36,7 @@ const DropdownSelect = ({ options, value, onChange, placeholder }) => {
       <input
         type="text"
         placeholder={placeholder}
-        value={searchTerm || value}
+        value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="select-display"
         onClick={handleToggleDropdown}
@@ -48,13 +47,13 @@ const DropdownSelect = ({ options, value, onChange, placeholder }) => {
             <div
               key={index}
               onClick={() => {
-                onChange(option);
-                setSearchTerm(option);
+                onChange(option); 
+                setSearchTerm(option.label); 
                 setShowDropdown(false);
               }}
               className="select-option"
             >
-              {option}
+              {option.label}
             </div>
           ))}
         </div>
@@ -64,3 +63,4 @@ const DropdownSelect = ({ options, value, onChange, placeholder }) => {
 };
 
 export default DropdownSelect;
+

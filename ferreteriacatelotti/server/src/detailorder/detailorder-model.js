@@ -1,22 +1,27 @@
 import mongoose from 'mongoose';
 
 const detailOrderSchema = new mongoose.Schema({
- 
-  item: {
+  detailOrderProduct: {
     type: String,
     required: true
   },
-  unitCost: {
+  detailOrderUnitCost: { 
     type: Number,
     required: true
   },
-  quantity: {
+  detailOrderQuantity: {  
     type: Number,
     required: true
   },
-  productID: {
+  productID: {  
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'products'
+    ref: 'products',
+    required:true
+  },
+  purchaseOrderID: {  
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'purchaseOrders',
+    
   }
 });
 

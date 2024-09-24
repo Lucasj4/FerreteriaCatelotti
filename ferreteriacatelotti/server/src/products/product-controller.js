@@ -187,5 +187,40 @@ export class ProductController{
         }
     }
 
+    async getProductsWithLowStock(req, res) {
+        try {
+            console.log("Desde low stock");
+            
+            const maxStock = 10; // You can adjust this value if needed
+            const lowStockProducts = await productService.getProductsWithLowStock(maxStock);
+            console.log("productos con bajo stock: " + lowStockProducts);
+            if (!lowStockProducts.length) {
+                return res.status(404).json({ message: "No se encontraron productos con bajo stock" });
+            }
+           
+            
+            const enhancedProducts = await Promise.all(
+                lowStockProducts.map(async (product) => {
+                    const [unitName, categoryName] = await Promise.all([
+                        unitService.getUnitNameById(product.unitID),
+                        categoryService.getCategoryId(product.categoryID)
+                    ]);
+
+                    const productObj = product.toObject();
+                    return {
+                        ...productObj,
+                        unitID: unitName,
+                        categoryID: categoryName,
+                    };
+                })
+            );
+
+            return res.status(200).json({ products: enhancedProducts });
+        } catch (error) {
+            console.error('Error al obtener productos con bajo stock:', error);
+            return res.status(500).json({ message: 'Error en el servidor', error });
+        }
+    }
+
     
 }
