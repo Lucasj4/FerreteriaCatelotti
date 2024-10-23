@@ -8,10 +8,11 @@ import Table from "../TableCustom/TableCustom";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { useAppContext } from "../context/OrderContext";
-
+import Swal from "sweetalert2";
 const PurchaseOrder = () => {
   const [filas, setFilas] = useState([]);
-  const { fecha, proveedor, saveData, estado, detalleIds, clearDetalleIds } = useAppContext();
+  const { fecha, proveedor, saveData, estado, detalleIds, clearDetalleIds } =
+    useAppContext();
   const [purchaseOrderId, setPurchaseOrderId] = useState("");
   const [showOnlySelected, setShowOnlySelected] = useState(false);
   const [showOnlyRecibidos, setShowOnlyRecibidos] = useState(false);
@@ -20,9 +21,8 @@ const PurchaseOrder = () => {
   const [selectedSuppliers, setSelectedSuppliers] = useState([]);
 
   const tableHeaders = [
-    { value: "fecha", label: "Fecha" },
-    { value: "estado", label: "Estado" },
-    { value: "importe", label: "Importe" },
+    { value: "purchaseOrderDate", label: "Fecha" },
+    { value: "purchaseOrderStatus", label: "Estado" },
     { value: "proveedor", label: "Proveedor" },
   ];
   const [selectedProveedores, setSelectedProveedores] = useState(null);
@@ -52,7 +52,7 @@ const PurchaseOrder = () => {
       try {
         const response = await fetch("http://localhost:8080/api/suppliers");
         const result = await response.json();
-        setSuppliers(result.suppliers); 
+        setSuppliers(result.suppliers);
       } catch (error) {
         console.error("Error fetching suppliers: ", error);
       }
@@ -61,141 +61,116 @@ const PurchaseOrder = () => {
     fetchSuppliers();
   }, []);
 
-  const handleSupplierChange = (selectedOptions) => {
-    setSelectedSuppliers(selectedOptions);
-  };
-
-  const handleSearchOrders = async () => {
-    try {
-      let estadoFilter = "";
-      if (showOnlySelected) {
-        estadoFilter = "Pendiente";
-      } else if (showOnlyRecibidos) {
-        estadoFilter = "Recibido";
-      }
-
-      const fromDate = dateRange[0].startDate.toISOString().split("T")[0];
-      const toDate = dateRange[0].endDate.toISOString().split("T")[0];
-
-      const response = await fetch(
-        `http://localhost:8080/pedido?estado=${estadoFilter}&fromDate=${fromDate}&toDate=${toDate}`
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          `Error en la solicitud: ${response.status} - ${response.statusText}`
-        );
-      }
-
-      const orders = await response.json();
-
-      const formattedOrders = orders.map((order) => {
-        const fecha = new Date(order.fecha);
-        const dia = fecha.getDate().toString().padStart(2, "0");
-        const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
-        const año = fecha.getFullYear();
-        const fechaFormateada = `${dia}/${mes}/${año}`;
-
-        order.proveedor = "Gonzalez";
-        return {
-          ...order,
-          fecha: fechaFormateada,
-        };
-      });
-
-      setFilas(formattedOrders);
-    } catch (error) {
-      console.error("Error al buscar pedidos:", error.message);
-    }
-  };
-
-  const getOrders = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/pedido"); // Hacer la solicitud GET al endpoint
-      if (!response.ok) {
-        throw new Error(
-          `Error en la solicitud: ${response.status} - ${response.statusText}`
-        );
-      }
-
-      const orders = await response.json();
-      console.log(orders);
-
-      console.log(orders);
-
-      const formattedOrders = orders.map((order) => {
-        const fecha = new Date(order.fecha);
-
-        const dia = fecha.getDate().toString().padStart(2, "0");
-        const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
-        const año = fecha.getFullYear();
-
-        const fechaFormateada = `${dia}/${mes}/${año}`;
-        order.proveedor = "Gonzalez";
-        return {
-          ...order,
-          fecha: fechaFormateada,
-        };
-      });
-
-      setPurchaseOrderId(purchaseOrderId);
-      setFilas(formattedOrders);
-    } catch (error) {
-      console.error("Error al obtener datos:", error.message);
-    }
-  };
-
   useEffect(() => {
-    getOrders();
+    const fetchPurchaseOrders = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/purchaseorders");
+        const data = await response.json();
+        const purchaseOrders = data.purchaseOrders;
+        
+        
+        // Mapear cada orden y obtener detalles del proveedor por supplierID
+        const ordersWithSuppliers = await Promise.all(
+          purchaseOrders.map(async (order) => {
+            try {
+              // Hacer fetch de proveedor por supplierID
+              const supplierResponse = await fetch(
+                `http://localhost:8080/api/suppliers/${order.supplierID}`
+              );
+              const supplierData = await supplierResponse.json();
+              
+              // Formatear la orden con el apellido del proveedor
+              return {
+                ...order,
+                proveedor: supplierData.supplier, // Obtener el lastName del proveedor
+              };
+            } catch (supplierError) {
+              console.error("Error obteniendo detalles del proveedor:", supplierError);
+              return { ...order, proveedor: "Proveedor desconocido" }; // Fallback si la búsqueda falla
+            }
+          })
+        );
+        
+        setFilas(ordersWithSuppliers); // Establecer las filas con los nombres de los proveedores
+      } catch (error) {
+        console.error("Error obteniendo pedidos de compra: ", error);
+      }
+    };
+  
+    fetchPurchaseOrders();
   }, []);
 
-  const saveDataOrder = async () => {
-    try {
-      // Asegúrate de que estado sea una cadena antes de la solicitud
-      const estadoString = Array.isArray(estado) ? estado[0].value : estado;
+  const handleSearch = async () => {
+    const selectedSupplierIds = selectedSuppliers.map((supplier) => supplier.id);
+    console.log("Selected Supplier IDs:", selectedSupplierIds);
+    const startDate = dateRange[0].startDate;
+    const endDate = dateRange[0].endDate;
 
-      const response = await fetch("http://localhost:8080/pedido", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fecha,
-          proveedor,
-          estado: estadoString,
-          importe: 15000, // Aquí asegúrate de que estado sea una cadena
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al enviar los datos al servidor");
-      }
-      const responseData = await response.json();
-      const purchaseOrderId = responseData._id;
-
-      const responseDetailOrder = await fetch(
-        "http://localhost:8080/detallepedido",
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            purchaseOrderId,
-            detalleIds,
-          }),
-        }
-      );
-
-      clearDetalleIds();
-
-      if (!responseDetailOrder.ok) {
-        throw new Error("Error al enviar los datos al servidor");
-      }
-    } catch (error) {
-      console.log(error);
-      throw error;
+    // Verificar si la fecha de inicio es mayor o igual que la fecha de fin
+    if (startDate >= endDate) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de fechas',
+            text: 'La fecha de inicio no puede ser igual o mayor que la fecha de fin.',
+            confirmButtonText: 'Entendido',
+        });
+        return; // Terminar la ejecución si hay un error
     }
+
+    // Crear el objeto de parámetros de búsqueda
+    const searchParams = new URLSearchParams();
+    
+    if (selectedSupplierIds.length > 0) {
+        searchParams.append("suppliers", selectedSupplierIds.join(","));
+    }
+    
+    if (startDate && endDate) {
+        searchParams.append("startDate", startDate.toISOString());
+        searchParams.append("endDate", endDate.toISOString());
+    }
+
+    if (showOnlySelected) {
+      searchParams.append("estado", "Pendiente");
+    } else if (showOnlyRecibidos) {
+      searchParams.append("estado", "Recibido");
+    }
+  
+    try {
+        const response = await fetch(
+            `http://localhost:8080/api/purchaseorders/search?${searchParams.toString()}`
+        );
+        const data = await response.json();
+        const purchaseOrders = data.purchaseOrders;
+        
+        const ordersWithSuppliers = await Promise.all(
+          purchaseOrders.map(async (order) => {
+            try {
+              // Hacer fetch de proveedor por supplierID
+              const supplierResponse = await fetch(
+                `http://localhost:8080/api/suppliers/${order.supplierID}`
+              );
+              const supplierData = await supplierResponse.json();
+              console.log("Datos del Proveedor: ", supplierData);
+              
+              // Formatear la orden con el apellido del proveedor
+              return {
+                ...order,
+                proveedor: supplierData.supplier, // Obtener el lastName del proveedor
+              };
+            } catch (supplierError) {
+              console.error("Error obteniendo detalles del proveedor:", supplierError);
+              return { ...order, proveedor: "Proveedor desconocido" }; // Fallback si la búsqueda falla
+            }
+          })
+        );
+        setFilas(ordersWithSuppliers);
+    } catch (error) {
+        console.error("Error al buscar órdenes de compra:", error);
+    }
+};
+
+  const handleSupplierChange = (selectedOptions) => {
+    setSelectedSuppliers(selectedOptions);
   };
 
   const handleDeleteRow = (indice) => {
@@ -205,10 +180,7 @@ const PurchaseOrder = () => {
   };
   const [errorModalVisible, setErrorModalVisible] = useState(false);
 
-  const handleLoginSubmit = (event) => {
-    event.preventDefault();
-    setErrorModalVisible(true);
-  };
+
 
   const handleErrorModalClose = () => {
     setErrorModalVisible(false);
@@ -306,30 +278,17 @@ const PurchaseOrder = () => {
         </div>
 
         <div className="actions">
-          <button className="actions__button" onClick={handleSearchOrders}>
-            Buscar
-          </button>
+          <button className="actions__button" onClick={handleSearch}>Buscar</button>
           <Link to={`/detallepedido/${purchaseOrderId}`}>
             <button className="actions__button">Nuevo</button>
           </Link>
           <button className="actions__button">Imprimir</button>
           <button className="actions__button">Salir</button>
-          <button className="actions__button" >
-            Guardar
-          </button>
+          <button className="actions__button">Guardar</button>
         </div>
       </div>
 
-      {errorModalVisible && (
-        <div className="modal">
-          <div className="modal__content">
-            <p>Permiso Denegado</p>
-            <div className="modal__content__buttons">
-              <button onClick={handleErrorModalClose}>Salir</button>
-            </div>
-          </div>
-        </div>
-      )}
+    
     </>
   );
 };

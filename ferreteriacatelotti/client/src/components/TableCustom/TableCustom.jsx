@@ -4,6 +4,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Link } from "react-router-dom";
 import './TableCustom.css'
+
 const Table = ({
   tableClassName,
   trClassName,
@@ -16,7 +17,7 @@ const Table = ({
   headers,
   data,
   handleDeleteCell,
-
+  editPath, // Nueva propiedad para la ruta de edición
 }) => {
   return (
     <table className={tableClassName}>
@@ -42,7 +43,7 @@ const Table = ({
               <button className={deleteIconClassName}>
                 <DeleteIcon onClick={() => handleDeleteCell(row._id)} />
               </button>
-              <Link to={`${row._id}`}>
+              <Link to={`${editPath}/${row._id}`}> {/* Usa editPath aquí */}
                 <button className={editIconClassName}>
                   <EditIcon />
                 </button>

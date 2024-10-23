@@ -45,6 +45,22 @@ export class SupplierController {
             return res.status(500).json({ message: 'Error en el servidor', error });
         }
     }
+
+    async getSupplierById(req, res) {
+        const { id } = req.params;
+
+        try {
+            const supplier = await supplierService.getById(id);
+
+            if (!supplier) {
+                return res.status(404).json({ message: 'Proveedor no encontrado' });
+            }
+
+            return res.status(200).json({ message: 'Proveedor encontrado', supplier });
+        } catch (error) {
+            return res.status(500).json({ message: 'Error en el servidor', error });
+        }
+    }
    
 
 }

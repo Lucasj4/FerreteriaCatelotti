@@ -7,3 +7,4 @@ export const supplierRouter = express.Router();
 
 supplierRouter.post('/', supplierController.addSupplier);
 supplierRouter.get('/', supplierController.getSuppliers);
+supplierRouter.get('/:id', supplierController.getSupplierById);
