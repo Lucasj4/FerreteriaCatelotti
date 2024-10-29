@@ -1,4 +1,3 @@
-// Table.js
 import React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -17,7 +16,8 @@ const Table = ({
   headers,
   data,
   handleDeleteCell,
-  editPath, // Nueva propiedad para la ruta de edición
+  editPath,
+  // Añadir editPath aquí
 }) => {
   return (
     <table className={tableClassName}>
@@ -43,7 +43,7 @@ const Table = ({
               <button className={deleteIconClassName}>
                 <DeleteIcon onClick={() => handleDeleteCell(row._id)} />
               </button>
-              <Link to={`${editPath}/${row._id}`}> {/* Usa editPath aquí */}
+              <Link to={`/${editPath}/${row._id}`}> {/* Concatenar editPath con el ID */}
                 <button className={editIconClassName}>
                   <EditIcon />
                 </button>

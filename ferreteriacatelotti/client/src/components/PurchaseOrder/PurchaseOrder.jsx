@@ -64,10 +64,12 @@ const PurchaseOrder = () => {
   useEffect(() => {
     const fetchPurchaseOrders = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/purchaseorders");
+        const response = await fetch(
+          "http://localhost:8080/api/purchaseorders"
+        );
         const data = await response.json();
         const purchaseOrders = data.purchaseOrders;
-        
+        console.log(purchaseOrders);
         
         // Mapear cada orden y obtener detalles del proveedor por supplierID
         const ordersWithSuppliers = await Promise.all(
@@ -78,55 +80,60 @@ const PurchaseOrder = () => {
                 `http://localhost:8080/api/suppliers/${order.supplierID}`
               );
               const supplierData = await supplierResponse.json();
-              
+
               // Formatear la orden con el apellido del proveedor
               return {
                 ...order,
                 proveedor: supplierData.supplier, // Obtener el lastName del proveedor
               };
             } catch (supplierError) {
-              console.error("Error obteniendo detalles del proveedor:", supplierError);
+              console.error(
+                "Error obteniendo detalles del proveedor:",
+                supplierError
+              );
               return { ...order, proveedor: "Proveedor desconocido" }; // Fallback si la búsqueda falla
             }
           })
         );
-        
+
         setFilas(ordersWithSuppliers); // Establecer las filas con los nombres de los proveedores
       } catch (error) {
         console.error("Error obteniendo pedidos de compra: ", error);
       }
     };
-  
+
     fetchPurchaseOrders();
   }, []);
 
   const handleSearch = async () => {
-    const selectedSupplierIds = selectedSuppliers.map((supplier) => supplier.id);
+    const selectedSupplierIds = selectedSuppliers.map(
+      (supplier) => supplier.id
+    );
     console.log("Selected Supplier IDs:", selectedSupplierIds);
     const startDate = dateRange[0].startDate;
     const endDate = dateRange[0].endDate;
 
     // Verificar si la fecha de inicio es mayor o igual que la fecha de fin
     if (startDate >= endDate) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error de fechas',
-            text: 'La fecha de inicio no puede ser igual o mayor que la fecha de fin.',
-            confirmButtonText: 'Entendido',
-        });
-        return; // Terminar la ejecución si hay un error
+      Swal.fire({
+        icon: "error",
+        title: "Error de fechas",
+        text: "La fecha de inicio no puede ser igual o mayor que la fecha de fin.",
+        confirmButtonText: "Entendido",
+      });
+      return; // Terminar la ejecución si hay un error
     }
 
     // Crear el objeto de parámetros de búsqueda
     const searchParams = new URLSearchParams();
-    
+
     if (selectedSupplierIds.length > 0) {
-        searchParams.append("suppliers", selectedSupplierIds.join(","));
+      searchParams.append("suppliers", selectedSupplierIds.join(","));
     }
-    
+
     if (startDate && endDate) {
-        searchParams.append("startDate", startDate.toISOString());
-        searchParams.append("endDate", endDate.toISOString());
+      searchParams.append("startDate", startDate.toISOString());
+      searchParams.append("endDate", endDate.toISOString());
     }
 
     if (showOnlySelected) {
@@ -134,40 +141,53 @@ const PurchaseOrder = () => {
     } else if (showOnlyRecibidos) {
       searchParams.append("estado", "Recibido");
     }
-  
+
     try {
-        const response = await fetch(
-            `http://localhost:8080/api/purchaseorders/search?${searchParams.toString()}`
-        );
-        const data = await response.json();
-        const purchaseOrders = data.purchaseOrders;
-        
-        const ordersWithSuppliers = await Promise.all(
-          purchaseOrders.map(async (order) => {
-            try {
-              // Hacer fetch de proveedor por supplierID
-              const supplierResponse = await fetch(
-                `http://localhost:8080/api/suppliers/${order.supplierID}`
-              );
-              const supplierData = await supplierResponse.json();
-              console.log("Datos del Proveedor: ", supplierData);
-              
-              // Formatear la orden con el apellido del proveedor
-              return {
-                ...order,
-                proveedor: supplierData.supplier, // Obtener el lastName del proveedor
-              };
-            } catch (supplierError) {
-              console.error("Error obteniendo detalles del proveedor:", supplierError);
-              return { ...order, proveedor: "Proveedor desconocido" }; // Fallback si la búsqueda falla
-            }
-          })
-        );
-        setFilas(ordersWithSuppliers);
+      const response = await fetch(
+        `http://localhost:8080/api/purchaseorders/search?${searchParams.toString()}`
+      );
+      const data = await response.json();
+      const purchaseOrders = data.purchaseOrders;
+
+      if(response.status===404){
+        Swal.fire({
+          icon: "info",
+          title: "Error de fechas",
+          text: "No se encontro ningun pedido de compra con los parametros establecidos",
+          confirmButtonText: "Entendido",
+        });
+        return;
+      }
+
+      const ordersWithSuppliers = await Promise.all(
+        purchaseOrders.map(async (order) => {
+          try {
+            // Hacer fetch de proveedor por supplierID
+            const supplierResponse = await fetch(
+              `http://localhost:8080/api/suppliers/${order.supplierID}`
+            );
+            const supplierData = await supplierResponse.json();
+            console.log("Datos del Proveedor: ", supplierData);
+
+            // Formatear la orden con el apellido del proveedor
+            return {
+              ...order,
+              proveedor: supplierData.supplier, // Obtener el lastName del proveedor
+            };
+          } catch (supplierError) {
+            console.error(
+              "Error obteniendo detalles del proveedor:",
+              supplierError
+            );
+            return { ...order, proveedor: "Proveedor desconocido" }; // Fallback si la búsqueda falla
+          }
+        })
+      );
+      setFilas(ordersWithSuppliers);
     } catch (error) {
-        console.error("Error al buscar órdenes de compra:", error);
+      console.error("Error al buscar órdenes de compra:", error);
     }
-};
+  };
 
   const handleSupplierChange = (selectedOptions) => {
     setSelectedSuppliers(selectedOptions);
@@ -178,12 +198,95 @@ const PurchaseOrder = () => {
     nuevasFilas.splice(indice, 1);
     setFilas(nuevasFilas);
   };
-  const [errorModalVisible, setErrorModalVisible] = useState(false);
 
+  const handleSave = async (e) => {
+    e.preventDefault();
 
+    const proveedorValue =
+      selectedSuppliers.length > 0 ? selectedSuppliers[0].value : "";
 
-  const handleErrorModalClose = () => {
-    setErrorModalVisible(false);
+    // Guarda los datos en el contexto
+    saveData(fecha, proveedorValue, estado);
+
+    console.log("Fecha", fecha);
+    console.log("Proveedor: ", proveedorValue);
+    console.log("Estado: ", estado);
+    console.log("PurchaseOrderId: ", purchaseOrderId);
+
+    let purchaseOrderIdToUse = purchaseOrderId;
+
+    // Si no existe el purchaseOrderId, crear uno nuevo
+    if (!purchaseOrderId) {
+      const newPurchaseOrder = {
+        purchaseOrderDate: fecha,
+        purchaseOrderStatus: estado,
+        supplierID: proveedorValue,
+      };
+
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/purchaseorders",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newPurchaseOrder),
+          }
+        );
+
+        const data = await response.json();
+        console.log("data: ", data);
+
+        if (data.purchaseOrder && data.purchaseOrder._id) {
+          // Guarda el nuevo purchaseOrderId
+          purchaseOrderIdToUse = data.purchaseOrder._id;
+          console.log("PurchaseOrder creado con ID: ", purchaseOrderIdToUse);
+        } else {
+          console.error(
+            "Error: No se devolvió un purchaseOrderId del servidor"
+          );
+          return;
+        }
+      } catch (error) {
+        console.error("Error:", error.message);
+        return;
+      }
+    } else {
+      console.log("Usando el existing purchaseOrderId: ", purchaseOrderId);
+    }
+
+    // Una vez que tenemos el purchaseOrderIdToUse, actualizamos los detailOrders
+    try {
+      const updateDetailOrdersResponse = await fetch(
+        "http://localhost:8080/api/detailsorder/update-multiple",
+        {
+          method: "PUT", // Usamos PUT para actualizar registros
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            detalleIds, // Array de IDs de detalle
+            purchaseOrderId: purchaseOrderIdToUse, // El ID del purchaseOrder (nuevo o existente)
+          }),
+        }
+      );
+
+      const updateResponseData = await updateDetailOrdersResponse.json();
+
+      if (updateDetailOrdersResponse.ok) {
+        console.log("DetailOrders actualizados con éxito");
+      } else {
+        console.error(
+          "Error actualizando los DetailOrders",
+          updateResponseData
+        );
+      }
+    } catch (error) {
+      console.error("Error al actualizar los DetailOrders:", error.message);
+    }
+
+    // Aquí puedes agregar la lógica para redirigir a otra página o hacer otra acción
   };
   return (
     <>
@@ -273,12 +376,14 @@ const PurchaseOrder = () => {
             headers={tableHeaders}
             data={filas}
             handleDeleteCell={handleDeleteRow}
-            linkPrefix="/detallepedido/editarpedido/"
+            editPath="pedido"
           />
         </div>
 
         <div className="actions">
-          <button className="actions__button" onClick={handleSearch}>Buscar</button>
+          <button className="actions__button" onClick={handleSearch}>
+            Buscar
+          </button>
           <Link to={`/detallepedido/${purchaseOrderId}`}>
             <button className="actions__button">Nuevo</button>
           </Link>
@@ -287,8 +392,6 @@ const PurchaseOrder = () => {
           <button className="actions__button">Guardar</button>
         </div>
       </div>
-
-    
     </>
   );
 };

@@ -5,4 +5,5 @@ const detailOrderController = new DetailOrderController();
 export const detailOrderRoute = express.Router();
 
 detailOrderRoute.post('/', detailOrderController.createDetailOrder);
+detailOrderRoute.post('/editdetailorderline', detailOrderController.createEditDetailOrderLine);
 detailOrderRoute.get('/', detailOrderController.getDetailOrders);

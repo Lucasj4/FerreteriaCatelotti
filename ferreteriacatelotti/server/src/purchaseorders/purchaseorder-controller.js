@@ -38,12 +38,16 @@ export class PurchaseOrderController {
     
             if (purchaseOrders) {
                 // Formatear las fechas a día/mes/año
-                const formattedPurchaseOrders = purchaseOrders.map(order => ({
-                    ...order._doc, // mantener los demás campos
-                    purchaseOrderDate: order.purchaseOrderDate 
-                        ? new Date(order.purchaseOrderDate).toLocaleDateString('es-ES') 
-                        : null // Formato español día/mes/año
-                }));
+                const formattedPurchaseOrders = purchaseOrders.map(order => {
+                    const date = order.purchaseOrderDate 
+                        ? new Date(order.purchaseOrderDate).toLocaleDateString('es-ES', { timeZone: 'UTC' }) 
+                        : null;
+                
+                    return {
+                        ...order._doc,
+                        purchaseOrderDate: date
+                    };
+                });
     
                 return res.status(200).json({ message: "Pedidos de compra", purchaseOrders: formattedPurchaseOrders });
             } else {
@@ -55,18 +59,29 @@ export class PurchaseOrderController {
     }
 
     async getPurchaseOrderWithDetails(req, res) {
-        const { purchaseOrderId } = req.params; // Suponiendo que el ID se pasa como un parámetro de ruta
-
+        const { pid } = req.params;  // Suponiendo que el ID se pasa como un parámetro de ruta
+        console.log("PID: ", pid);
+        
+        req.logger.info("Desde controller getPurchaseOrderWithDetails");
         try {
-            const result = await purchaseOrderService.getPurchaseOrderWithDetails(purchaseOrderId);
-
+            const result = await purchaseOrderService.getPurchaseOrderWithDetails(pid);
+    
+            req.logger.info("Resultado: " + result);
             if (result.error) {
                 return res.status(404).json({ message: result.error });
             }
-
-            // Responde con el pedido de compra y sus detalles
+    
+            // Formatear la fecha del pedido de compra a día/mes/año
+            const formattedPurchaseOrder = {
+                ...result.purchaseOrder._doc, // Mantener los demás campos
+                purchaseOrderDate: result.purchaseOrder.purchaseOrderDate 
+                    ? new Date(result.purchaseOrder.purchaseOrderDate).toLocaleDateString('es-ES', { timeZone: 'UTC' }) 
+                    : null // Formato español día/mes/año
+            };
+    
+            // Responde con el pedido de compra formateado y sus detalles
             res.status(200).json({
-                purchaseOrder: result.purchaseOrder,
+                purchaseOrder: formattedPurchaseOrder,
                 detailOrders: result.detailOrders // Incluye los detalles en la respuesta
             });
         } catch (error) {
@@ -74,6 +89,7 @@ export class PurchaseOrderController {
             res.status(500).json({ error: "Error al obtener el pedido de compra con detalles" });
         }
     }
+    
 
     async getPurchaseOrdersBySupplierAndDate(req, res) {
         try {
@@ -91,7 +107,7 @@ export class PurchaseOrderController {
                 const formattedPurchaseOrders = purchaseOrders.map(order => ({
                     ...order._doc, // mantener los demás campos
                     purchaseOrderDate: order.purchaseOrderDate 
-                        ? new Date(order.purchaseOrderDate).toLocaleDateString('es-ES') 
+                        ? new Date(order.purchaseOrderDate).toLocaleDateString('es-ES', { timeZone: 'UTC' }) 
                         : null // Formato español día/mes/año
                 }));
     
@@ -101,6 +117,42 @@ export class PurchaseOrderController {
             }
         } catch (error) {
             res.status(500).json({ message: "Error interno del servidor", error });
+        }
+    }
+
+    async updatePurchaseOrder(req, res) {
+        const { id } = req.params;
+        const { purchaseOrderDate, purchaseOrderAmount, purchaseOrderStatus, supplierID } = req.body;
+    
+        try {
+
+            console.log("Fecha: ", purchaseOrderDate);
+            
+           
+    
+            const updateData = {
+                purchaseOrderDate,
+                purchaseOrderAmount,
+                purchaseOrderStatus,
+                supplierID
+            };
+            
+            console.log("updateData: ", updateData);
+            
+            const updatedOrder = await purchaseOrderService.updatePurchaseOrder(id, updateData);
+    
+            if (updatedOrder) {
+               
+                res.status(200).json({
+                    message: "Pedido de compra actualizado con éxito",
+                    updatedOrder
+                });
+            } else {
+                res.status(404).json({ message: "Pedido de compra no encontrado" });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Error interno del servidor' });
         }
     }
 }

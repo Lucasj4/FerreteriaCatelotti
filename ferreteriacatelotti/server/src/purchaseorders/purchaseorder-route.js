@@ -7,3 +7,5 @@ const purchaseOrderController = new PurchaseOrderController();
 purchaseOrderRouter.get('/', purchaseOrderController.getPurchaseOrders )
 purchaseOrderRouter.get('/search', purchaseOrderController.getPurchaseOrdersBySupplierAndDate);
 purchaseOrderRouter.post("/", purchaseOrderController.createPurchaseOrder );
+purchaseOrderRouter.get('/purchaseorderswithdetails/:pid', purchaseOrderController.getPurchaseOrderWithDetails )
+purchaseOrderRouter.put('/:id', purchaseOrderController.updatePurchaseOrder);

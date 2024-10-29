@@ -11,6 +11,16 @@ export class DetailOrderService{
         }
     }
 
+    async createEditDetailOrderLine(detailOrder){
+        try {
+            const newDetailOrder = new DetailOrderModel(detailOrder);
+            return await newDetailOrder.save();
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
     async getDetailsOrdes(){
         try {
             return await DetailOrderModel.find()
@@ -18,4 +28,8 @@ export class DetailOrderService{
             console.log(error);
         }
     }
+
+
+
+    
 }

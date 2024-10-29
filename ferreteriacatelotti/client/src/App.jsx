@@ -21,6 +21,7 @@ import SupplierManagement from "./components/SupplierManagement/SupplierManageme
 import NewSupplier from "./components/NewSupplier/NewSupplier";
 import EditProduct from "./components/EditProduct/EditProduct";
 import NewDetailOrderLine from "./components/NewDetailOrder/NewDetailOrderLine";
+import NewEditDetailOrder from './components/NewEditDetailOrderLine/NewEditDetailOrderLine'
 
 function App() {
   return (
@@ -30,32 +31,31 @@ function App() {
           <SideBar>
             <Routes>
               <Route path="/pedido" element={<PurchaseOrder />} />
+              <Route path="/pedido/:pid" element={<EditPurchaseOrder />} />
+              <Route path="/pedido/:pid/detallepedido/nuevalinea" element={<NewEditDetailOrder/>} />
               <Route path="/iniciosesion" element={<Login />} />
               <Route path="/detallepedido" element={<OrderDetail />} />
               <Route path="/presupuesto" element={<BudgetComponent />} />
-              <Route
-                path="/detallepedido/nuevalinea"
-                element={<NewDetailOrderLine/>}
-              />
-              <Route
-                path="/detallepedido/editarpedido/:id"
-                element={<EditPurchaseOrder />}
-              />
+              <Route path="/detallepedido/nuevalinea" element={<NewDetailOrderLine />}/>
+              <Route path="/detallepedido/editarpedido/:id" element={<EditPurchaseOrder />}/>
               <Route path="/detallepresupuesto" element={<BudgetDetail />} />
-              <Route
-                path="/detallepresupuesto/nuevalinea"
-                element={<BudgetDetailLine />}
-              />
+              <Route path="/detallepresupuesto/nuevalinea" element={<BudgetDetailLine />} />
               <Route path="/clientes/agregarcliente" element={<NewClient />} />
               <Route path="/clientes/:cid" element={<EditClient />} />
-              <Route path="/clientes" element={<ClientComponent/>} />
-              <Route path="/usuarios" element={<UserComponent/>} />
+              <Route path="/clientes" element={<ClientComponent />} />
+              <Route path="/usuarios" element={<UserComponent />} />
               <Route path="/usuarios/agregarusuario" element={<NewUser />} />
               <Route path="/productos" element={<ProductComponent />} />
               <Route path="/productos/:pid" element={<EditProduct />} />
-              <Route path="/productos/agregarproducto" element={<NewProduct/>} />
+              <Route
+                path="/productos/agregarproducto"
+                element={<NewProduct />}
+              />
               <Route path="/proveedores" element={<SupplierManagement />} />
-              <Route path="/proveedores/agregarproveedor" element={<NewSupplier/>} />
+              <Route
+                path="/proveedores/agregarproveedor"
+                element={<NewSupplier />}
+              />
             </Routes>
           </SideBar>
         </OrderProvider>

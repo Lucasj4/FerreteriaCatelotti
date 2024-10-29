@@ -61,4 +61,14 @@ export class PurchaseOrderService {
 
         return await PurchaseOrderModel.find(query).exec(); // Obtener las órdenes de compra que cumplen los criterios
     }
+
+    async updatePurchaseOrder(orderId, updateData) {
+        try {
+            const updatedOrder = await PurchaseOrderModel.findByIdAndUpdate(orderId, updateData, { new: true }); // new: true devuelve el documento actualizado
+            return updatedOrder;
+        } catch (error) {
+            console.error(error);
+            throw error; // Lanza el error para que lo maneje el controlador
+        }
+    }
 }

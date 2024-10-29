@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from 'react';
 const OrderContext = createContext();
 
 const OrderProvider = ({ children }) => {
-  const [fecha, setFecha] = useState("");
+  const [fecha, setFecha] = useState("");// Estado local para fecha
   const [proveedor, setProveedor] = useState("");
   const [estado, setEstado] = useState("Pendiente"); // Valor inicial para evitar que sea undefined
   const [purchaseOrderId, setPurchaseOrderId] = useState("");
