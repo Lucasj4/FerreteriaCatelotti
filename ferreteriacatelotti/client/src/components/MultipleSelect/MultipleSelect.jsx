@@ -1,30 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
-import './MultipleSelect.css';
+import React, { useState, useEffect } from "react";
+import Select from "react-select";
+import "./MultipleSelect.css";
 
-const MultiSelectOption = ({ options, selectedProveedores, onChange, placeholder }) => {
+const MultiSelectOption = ({ options, selectedOptions, onChange, placeholder, labelKey = "lastName" }) => {
   const [formattedOptions, setFormattedOptions] = useState([]);
 
   useEffect(() => {
     if (options && options.length > 0) {
-      // Map the options to react-select's expected format
-      const mappedOptions = options.map(supplier => ({
-        value: supplier._id,
-        label: supplier.lastName,
+      const mappedOptions = options.map((item) => ({
+        value: item._id,
+        label: item[labelKey], // Usar el campo especificado por labelKey
       }));
       setFormattedOptions(mappedOptions);
     }
-  }, [options]);
-
-
-
-
+  }, [options, labelKey]);
 
   return (
     <Select
       isMulti
       options={formattedOptions}
-      value={selectedProveedores}
+      value={selectedOptions}
       onChange={onChange}
       placeholder={placeholder}
       className="custom-multi-select"

@@ -246,6 +246,7 @@ const EditPurchaseOrder = () => {
               data={filas}
               handleDeleteCell={handleDeleteCell}
               linkPrefix="/detallepedido/editarpedido/"
+              getEditPath={(id) => `/pedido/${pid}/detalle/${id}`} 
             />
           </div>
           <div className="orderdetail__total">

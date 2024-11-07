@@ -16,8 +16,7 @@ const Table = ({
   headers,
   data,
   handleDeleteCell,
-  editPath,
-  // Añadir editPath aquí
+  getEditPath, // Cambia editPath a una función que reciba el ID
 }) => {
   return (
     <table className={tableClassName}>
@@ -41,9 +40,9 @@ const Table = ({
             ))}
             <td className={tdClassName}>
               <button className={deleteIconClassName}>
-                <DeleteIcon onClick={() => handleDeleteCell(row._id)} />
+                <DeleteIcon onClick={() => handleDeleteCell(row._id, index)} />
               </button>
-              <Link to={`/${editPath}/${row._id}`}> {/* Concatenar editPath con el ID */}
+              <Link to={getEditPath(row._id)}>
                 <button className={editIconClassName}>
                   <EditIcon />
                 </button>

@@ -33,7 +33,7 @@ export class DetailOrderController {
 
     }
 
-    async createEditDetailOrderLine(req,res){
+    async createEditDetailOrderLine(req, res) {
         const { detailOrderProduct, detailOrderUnitCost, detailOrderQuantity, productID, purchaseOrderID } = req.body;
 
         try {
@@ -65,12 +65,66 @@ export class DetailOrderController {
     async getDetailOrders(req, res) {
         try {
             const detailOrders = await detailOrderService.getDetailsOrdes();
-            res.status(200).json( {data: detailOrders});
+            res.status(200).json({ data: detailOrders });
         } catch (error) {
             console.error(error);
             res.status(500).json({ error: "Error al obtener los detalles de los pedidos" });
         }
     }
 
-    
+    async getDetailOrderById(req, res) {
+        try {
+            const { rowid } = req.params;
+            const detailOrder = await detailOrderService.getDetailOrderById(rowid);
+
+            if (detailOrder) {
+                res.status(200).json({ detailOrder });
+            } else {
+                res.status(404).json({ message: "Detalle no encontrado" });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: "Error al obtener los detalles de los pedidos" });
+        }
+    }
+
+    async updateDetailOrderLine(req, res) {
+        try {
+            const { rowid } = req.params;
+            const { detailOrderProduct, detailOrderUnitCost, detailOrderQuantity, productID, purchaseOrderID } = req.body;
+
+            console.log("Row id: ", rowid);
+            
+            const existingDetailOrder = await detailOrderService.getDetailOrderById(rowid);
+
+            if (!existingDetailOrder) {
+                throw new Error("Detalle no encontrado");
+            }
+
+            const updateData = {
+                detailOrderProduct,
+                detailOrderUnitCost,
+                detailOrderQuantity,
+                productID,
+                purchaseOrderID
+            }
+
+            const updateDetailOrder = await detailOrderService.updateDetailOrderLine(rowid, updateData);
+
+            if (updateDetailOrder) {
+                res.status(200).json({
+                    message: "Linea de detalle actualizada con éxito",
+                    updatedOrder: updateDetailOrder
+                });
+            } else {
+                res.status(404).json({ message: "Linea de detalle actualizada con exito" });
+
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Error interno del servidor' });
+        }
+
+
+    }
 }

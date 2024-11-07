@@ -11,6 +11,7 @@ import errorHandler from './src/middlewares/errormiddleware.js';
 import { userRouter } from './src/users/user-router.js';
 import { detailOrderRoute } from './src/detailorder/detailorder-route.js';
 import { purchaseOrderRouter } from './src/purchaseorders/purchaseorder-route.js';
+import { budgetRouter } from './src/budget/budget-router.js';
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/users", userRouter);
 app.use("/api/purchaseorders", purchaseOrderRouter)
 app.use("/api/detailsorder", detailOrderRoute)
+app.use('/api/budgets', budgetRouter)
 app.use(errorHandler);
 
 

@@ -1,36 +1,124 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./BudgetComponent.css";
-import TableCustom from "../TableCustom/TableCustom";
 import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import Checkbox from "@mui/material/Checkbox";
-
+import Table from "../TableCustom/TableCustom";
 const BudgetComponent = () => {
-  const tableHeaders = [
-    { value: "Cliente", label: "Cliente" },
-    { value: "Fecha", label: "Fecha" },
-    {value: "Estado", label: "Estado"},
-    { value: "Importe", label: "Importe" },
-  ];
-
-  const data = [
-    {
-      Cliente: "Juan", 
-      Fecha: "22/10/2023",
-      Estado: "Pendiente",
-      Importe: "1000",
-    },
-  ];
-  const [proveedores, setProveedores] = useState([
-    { value: "Clientes", label: "Clientes" },
-  ]);
+  const [filas, setFilas] = useState([]);
+  const [clients, setClients] = useState([]);
+  const [selectedClients, setSelectedClients] = useState([]);
   const [selectedProveedores, setSelectedProveedores] = useState(null);
+  const [budgets, setBudgets] = useState([]);
+  const [showOnlySelected, setShowOnlySelected] = useState(false);
+  const [showOnlyPendiente, setShowOnlyPendiente] = useState(false);
 
-  const [tableData, setTableData] = useState(data);
+  const tableHeaders = [
+    { value: "clientID", label: "Cliente" },
+    { value: "budgetDate", label: "Fecha" },
+    { value: "budgetStatus", label: "Estado" },
+    { value: "budgetAmount", label: "Importe" },
+  ];
 
-  const handleEliminarFila = (indice) => {
-    const nuevasFilas = [...tableData];
-    nuevasFilas.splice(indice, 1);
-    setTableData(nuevasFilas);
+  useEffect(() => {
+    const fetchBudgets = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/budgets");
+
+        if (response) {
+          const budgets = await response.json();
+          console.log(budgets.budgets);
+
+          setFilas(budgets.budgets);
+        }
+      } catch (error) {
+        throw error;
+      }
+    };
+
+    fetchBudgets();
+  }, []);
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/clients");
+
+        if (response) {
+          const data = await response.json();
+          console.log("Clientes: ", data.clients);
+          setClients(data.clients);
+        }
+      } catch (error) {
+        throw error;
+      }
+    };
+    fetchClients();
+  }, []);
+  const handleShowOnlySelectedChange = () => {
+    setShowOnlySelected(!showOnlySelected);
+    setShowOnlyPendiente(false);
+  };
+
+  const handleShowOnlyPendienteChange = () => {
+    setShowOnlyPendiente(!showOnlyPendiente);
+    setShowOnlySelected(false);
+  };
+
+  const handleClientChange = (selectedOptions) => {
+    setSelectedClients(selectedOptions);
+  };
+
+  const handleSearch = async () => {
+    // Filtra los presupuestos según cliente y estado
+    const clientId = selectedClients.length > 0 ? selectedClients.map(client => client.value) : null; // Si no hay clientes seleccionados, se deja null
+    const budgetStatus = showOnlyPendiente ? 'Pendiente' : showOnlySelected ? 'Facturado' : null;
+  
+    const queryParams = new URLSearchParams();
+  
+    if (clientId) queryParams.append("clientId", clientId);
+    if (budgetStatus) queryParams.append("budgetStatus", budgetStatus);
+    
+    console.log("clientID marcardo: ", clientId);
+    console.log("status marcardo: ", budgetStatus) 
+    
+    try {
+      const response = await fetch(`http://localhost:8080/api/budgets/search?${queryParams.toString()}`);
+      
+      if (response) {
+        const result = await response.json();
+
+        console.log(result);
+        
+        setFilas(result.budgets); // Actualiza el estado de las filas con los presupuestos encontrados
+      } else {
+        console.error("Error al obtener los presupuestos filtrados");
+      }
+    } catch (error) {
+      console.error("Error en la búsqueda de presupuestos", error);
+    }
+  };
+  const handleDeleteCell = async (idBudget, index) => {
+    try {
+      // Elimina el presupuesto de la base de datos
+      const response = await fetch(
+        `http://localhost:8080/api/budgets/${idBudget}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response) {
+        // Si la eliminación fue exitosa, eliminamos la fila visualmente
+        const nuevasFilas = [...filas];
+        nuevasFilas.splice(index, 1);
+        setFilas(nuevasFilas);
+        console.log("Presupuesto eliminado correctamente");
+      } else {
+        console.error("Error al eliminar el presupuesto en la base de datos");
+      }
+    } catch (error) {
+      console.error("Error en la petición de eliminación", error);
+    }
   };
 
   const [selectedState, setSelectedState] = useState(null);
@@ -42,54 +130,52 @@ const BudgetComponent = () => {
           <div className="presupuesto__option">
             <div className="presupuesto__option__item">
               <MultiSelectOption
-                options={proveedores}
-                selectedProveedores={selectedProveedores}
-                onChange={(selectedOptions) =>
-                  setSelectedProveedores(selectedOptions)
-                }
+                options={clients}
+                selectedProveedores={selectedClients} // Este prop podría renombrarse a selectedClients para mayor claridad
+                onChange={handleClientChange}
                 placeholder="Clientes"
+                labelKey="clientLastName" 
               />
             </div>
             <div className="pedido__option__item">
               <input type="text" className="presupuesto__input" />
-              <button>Buscar</button>
+              <button onClick={handleSearch}>Buscar</button>
             </div>
           </div>
 
           <div className="presupuesto__state">
             <div className="presupuesto__state__item">
               <Checkbox
-                checked={selectedState === "Pendiente"}
-                onChange={() => setSelectedState("Pendiente")}
+                checked={showOnlyPendiente}
+                onChange={handleShowOnlyPendienteChange}
               />
               <p>Pendiente</p>
             </div>
             <div className="presupuesto__state__item">
               <Checkbox
-                checked={selectedState === "Recibidos"}
-                onChange={() => setSelectedState("Recibidos")}
+                checked={showOnlySelected}
+                onChange={handleShowOnlySelectedChange}
               />
-              <p>Finalizados</p>
+              <p>Facturado</p>
             </div>
           </div>
-          <TableCustom
+          <Table
             headers={tableHeaders}
-            data={data}
+            data={filas}
             tableClassName="budget__table"
-            theadClassName="custom-thead"
-            tbodyClassName="custom-tbody"
-            thClassName="budget__table__header"
-            trClassName="budget__table__row"
-            tdClassName="budget__table__cell"
-            link="/nuevalinea"
+            trClassName="table__row"
+            thClassName="table__header"
+            theadClassName="table__thead"
+            tbodyClassName="table__body"
+            tdClassName="table__cell"
             actionEditClassName="budget__table__action--edit"
-            handleEliminarFila={handleEliminarFila}
-            editIconClassName="budget__table__editIcon"
-            DeleteIconClassName="budget__table_deleteIcon"
+            handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
+            deleteIconClassName="table__deleteIcon"
+            editIconClassName="table__editIcon"
+            getEditPath={(id) => `/presupuesto/${id}`}
           />
 
           <div className="budget__actions">
-            
             <button className="budget__actions__button">Nuevo</button>
             <button className="budget__actions__button">Facturar</button>
             <button className="budget__actions__button">Guardar</button>

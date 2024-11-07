@@ -208,11 +208,6 @@ const PurchaseOrder = () => {
     // Guarda los datos en el contexto
     saveData(fecha, proveedorValue, estado);
 
-    console.log("Fecha", fecha);
-    console.log("Proveedor: ", proveedorValue);
-    console.log("Estado: ", estado);
-    console.log("PurchaseOrderId: ", purchaseOrderId);
-
     let purchaseOrderIdToUse = purchaseOrderId;
 
     // Si no existe el purchaseOrderId, crear uno nuevo
@@ -342,6 +337,7 @@ const PurchaseOrder = () => {
               selectedProveedores={selectedSuppliers}
               onChange={handleSupplierChange}
               placeholder="Select suppliers"
+              labelKey="lastName" 
             />
           </div>
         </div>
@@ -376,7 +372,7 @@ const PurchaseOrder = () => {
             headers={tableHeaders}
             data={filas}
             handleDeleteCell={handleDeleteRow}
-            editPath="pedido"
+            getEditPath={(id) =>`/pedido/${id}`}
           />
         </div>
 

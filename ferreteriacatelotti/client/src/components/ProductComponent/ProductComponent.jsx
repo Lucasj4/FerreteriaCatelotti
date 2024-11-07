@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import TableCustom from "../TableCustom/TableCustom";
+import Table from "../TableCustom/TableCustom";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import "./ProductComponent.css";
@@ -227,7 +227,7 @@ const ProductComponent = () => {
               Buscar
             </button>
           </div>
-          <TableCustom
+          <Table
             tableClassName="table"
             trClassName="table__row"
             thClassName="table__header"
@@ -239,6 +239,7 @@ const ProductComponent = () => {
             handleDeleteCell={handleDeleteProduct}
             headers={tableHeaders}
             data={filas}
+            getEditPath={(id) =>`/productos/${id}`}
           />
           <div className="component__actions">
             <Link to={"/productos/agregarproducto"}>

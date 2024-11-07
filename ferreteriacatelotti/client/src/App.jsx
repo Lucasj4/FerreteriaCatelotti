@@ -21,7 +21,7 @@ import SupplierManagement from "./components/SupplierManagement/SupplierManageme
 import NewSupplier from "./components/NewSupplier/NewSupplier";
 import EditProduct from "./components/EditProduct/EditProduct";
 import NewDetailOrderLine from "./components/NewDetailOrder/NewDetailOrderLine";
-import NewEditDetailOrder from './components/NewEditDetailOrderLine/NewEditDetailOrderLine'
+import EditDetailOrderLine from "./components/EditDetailOrderLine/EditDetailOrderLine";
 
 function App() {
   return (
@@ -32,7 +32,8 @@ function App() {
             <Routes>
               <Route path="/pedido" element={<PurchaseOrder />} />
               <Route path="/pedido/:pid" element={<EditPurchaseOrder />} />
-              <Route path="/pedido/:pid/detallepedido/nuevalinea" element={<NewEditDetailOrder/>} />
+              <Route path="/pedido/:pid/detallepedido/nuevalinea" element={<NewDetailOrderLine/>} />
+              <Route path="/pedido/:pid/detalle/:rowid" element={<EditDetailOrderLine/>} />
               <Route path="/iniciosesion" element={<Login />} />
               <Route path="/detallepedido" element={<OrderDetail />} />
               <Route path="/presupuesto" element={<BudgetComponent />} />

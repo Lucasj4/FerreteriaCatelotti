@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import CustomError from '../errors/custom-error.js';
 import { Errors } from '../errors/enum-error.js';
+import { budgetValidator } from '../budget/budget-validator.js';
 
 export const ValidatePurchaseOrder = (req, res, next) => {
     const schema = Joi.object({
@@ -23,4 +24,21 @@ export const ValidatePurchaseOrder = (req, res, next) => {
             "string.pattern.base": "El estado de la orden de compra debe contener solo letras y espacios, sin números"
         })
     })
+
+    
+    const { error } = schema.validate(req.body, { abortEarly: false });
+
+    if (error) {
+        const errorMessages = error.details.map(detail => detail.message).join(", ");
+        const cause = `Validation errors on fields: ${error.details.map(detail => detail.path.join(".")).join(", ")}`;
+        return next(CustomError.createError({
+            name: "ValidationError",
+            cause: cause,
+            message: errorMessages,
+            code: Errors.VALIDATION_ERROR
+        }));
+    }
+    next();
 }
+
+export default budgetValidator;

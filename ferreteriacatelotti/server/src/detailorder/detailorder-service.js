@@ -29,6 +29,27 @@ export class DetailOrderService{
         }
     }
 
+    async getDetailOrderById(id){
+        try {
+            const detailOrder = await DetailOrderModel.findById(id);
+            return detailOrder;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
+    async updateDetailOrderLine(detailOrderId, updateDetailOrder){
+        try {
+            const updateDetailOrderLine = await DetailOrderModel.findByIdAndUpdate(detailOrderId, updateDetailOrder, { new: true } );
+            return updateDetailOrderLine;
+        } catch (error) {
+            console.error(error);
+            throw error; 
+        }
+    }
+
+
 
 
     

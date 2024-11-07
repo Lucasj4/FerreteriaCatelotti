@@ -35,14 +35,9 @@ export const validateProduct = (req, res, next) => {
     const { error } = schema.validate(req.body, { abortEarly: false });
 
     if (error) {
-        const errorMessages = error.details.map(detail => detail.message).join(", ");
-        const cause = `Validation errors on fields: ${error.details.map(detail => detail.path.join(".")).join(", ")}`;
-        return next(CustomError.createError({
-            name: "ValidationError",
-            cause: cause,
-            message: errorMessages,
-            code: Errors.VALIDATION_ERROR
-        }));
+        const errorMessages = error.details.map(detail => detail.message);
+        return res.status(400).json({ errorMessages }); // Enviar array de mensajes de error
     }
     next();
+    
 };

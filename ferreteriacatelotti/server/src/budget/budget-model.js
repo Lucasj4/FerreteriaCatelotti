@@ -2,12 +2,12 @@ import mongoose  from 'mongoose';
 
 const budgetSchema = new mongoose.Schema({
     userID: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'users',
-      required: true
+      // required: true
     },
     clientID: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'clients',
       required: true
     },
@@ -25,7 +25,7 @@ const budgetSchema = new mongoose.Schema({
     }
   });
 
-const BudgetModel = mongoose.Model('budgets', budgetSchema);
+const BudgetModel = mongoose.model('budgets', budgetSchema);
 
 export default BudgetModel;
 
