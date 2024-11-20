@@ -6,7 +6,7 @@ const budgetSchema = new mongoose.Schema({
       ref: 'users',
       // required: true
     },
-    clientID: {
+    clientId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'clients',
       required: true

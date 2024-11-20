@@ -87,9 +87,6 @@ const NewDetailOrderLine = () => {
 
       // Puedes hacer algo con la respuesta si es necesario
       const responseData = await response.json();
-      console.log("detalle", responseData.detail);
-      console.log("Id del detalle", responseData.detail._id);
-      console.log("ID del detalle a agregar: ", responseData.detail._id);
       addDetalleId(responseData.detail._id);
 
       resetForm();

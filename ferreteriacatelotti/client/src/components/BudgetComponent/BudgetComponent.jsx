@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import "./BudgetComponent.css";
 import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import Checkbox from "@mui/material/Checkbox";
+import { Link, useParams } from "react-router-dom";
 import Table from "../TableCustom/TableCustom";
+import Swal from "sweetalert2";
+
 const BudgetComponent = () => {
   const [filas, setFilas] = useState([]);
   const [clients, setClients] = useState([]);
@@ -26,6 +29,7 @@ const BudgetComponent = () => {
 
         if (response) {
           const budgets = await response.json();
+
           console.log(budgets.budgets);
 
           setFilas(budgets.budgets);
@@ -70,25 +74,34 @@ const BudgetComponent = () => {
 
   const handleSearch = async () => {
     // Filtra los presupuestos según cliente y estado
-    const clientId = selectedClients.length > 0 ? selectedClients.map(client => client.value) : null; // Si no hay clientes seleccionados, se deja null
-    const budgetStatus = showOnlyPendiente ? 'Pendiente' : showOnlySelected ? 'Facturado' : null;
-  
+    const clientId =
+      selectedClients.length > 0
+        ? selectedClients.map((client) => client.value)
+        : null; // Si no hay clientes seleccionados, se deja null
+    const budgetStatus = showOnlyPendiente
+      ? "Pendiente"
+      : showOnlySelected
+      ? "Facturado"
+      : null;
+
     const queryParams = new URLSearchParams();
-  
+
     if (clientId) queryParams.append("clientId", clientId);
     if (budgetStatus) queryParams.append("budgetStatus", budgetStatus);
-    
+
     console.log("clientID marcardo: ", clientId);
-    console.log("status marcardo: ", budgetStatus) 
-    
+    console.log("status marcardo: ", budgetStatus);
+
     try {
-      const response = await fetch(`http://localhost:8080/api/budgets/search?${queryParams.toString()}`);
-      
+      const response = await fetch(
+        `http://localhost:8080/api/budgets/search?${queryParams.toString()}`
+      );
+
       if (response) {
         const result = await response.json();
 
         console.log(result);
-        
+
         setFilas(result.budgets); // Actualiza el estado de las filas con los presupuestos encontrados
       } else {
         console.error("Error al obtener los presupuestos filtrados");
@@ -98,26 +111,44 @@ const BudgetComponent = () => {
     }
   };
   const handleDeleteCell = async (idBudget, index) => {
-    try {
-      // Elimina el presupuesto de la base de datos
-      const response = await fetch(
-        `http://localhost:8080/api/budgets/${idBudget}`,
-        {
-          method: "DELETE",
-        }
-      );
+    const result = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Una vez eliminado, no podrás recuperar este presupuesto.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "No, cancelar",
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
+        overlay: "my-overlay-class",
+      },
+    });
 
-      if (response) {
-        // Si la eliminación fue exitosa, eliminamos la fila visualmente
-        const nuevasFilas = [...filas];
-        nuevasFilas.splice(index, 1);
-        setFilas(nuevasFilas);
-        console.log("Presupuesto eliminado correctamente");
-      } else {
-        console.error("Error al eliminar el presupuesto en la base de datos");
+    if (result.isConfirmed) {
+      try {
+        // Elimina el presupuesto de la base de datos
+        const response = await fetch(
+          `http://localhost:8080/api/budgets/${idBudget}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        if (response) {
+          // Si la eliminación fue exitosa, eliminamos la fila visualmente
+          const nuevasFilas = [...filas];
+          nuevasFilas.splice(index, 1);
+          setFilas(nuevasFilas);
+          console.log("Presupuesto eliminado correctamente");
+        } else {
+          console.error("Error al eliminar el presupuesto en la base de datos");
+        }
+      } catch (error) {
+        console.error("Error en la petición de eliminación", error);
       }
-    } catch (error) {
-      console.error("Error en la petición de eliminación", error);
     }
   };
 
@@ -134,7 +165,7 @@ const BudgetComponent = () => {
                 selectedProveedores={selectedClients} // Este prop podría renombrarse a selectedClients para mayor claridad
                 onChange={handleClientChange}
                 placeholder="Clientes"
-                labelKey="clientLastName" 
+                labelKey="clientLastName"
               />
             </div>
             <div className="pedido__option__item">
@@ -176,7 +207,9 @@ const BudgetComponent = () => {
           />
 
           <div className="budget__actions">
-            <button className="budget__actions__button">Nuevo</button>
+            <Link to = '/presupuesto/agregarpresupuesto'>
+              <button className="budget__actions__button">Nuevo</button>
+            </Link>
             <button className="budget__actions__button">Facturar</button>
             <button className="budget__actions__button">Guardar</button>
             <button className="budget__actions__button">Salir</button>

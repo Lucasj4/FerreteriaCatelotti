@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from "react";
-import "./BudgetDetail.css";
+import React, { useState, useEffect, useContext } from "react";
+import "../BudgetDetail/BudgetDetail.css";
 import Table from "../TableCustom/TableCustom";
 import { Link, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import MultiSelectOption from "../MultipleSelect/MultipleSelect";
-
-const BudgetDetail = () => {
+import BudgetContext from "../context/BudgetContext";
+const NewBudget = () => {
   const [selectedOption, setSelectedOption] = useState([]);
   const [row, setRow] = useState([]);
   const [clients, setClients] = useState([]);
   const [budgetStatus, setBudgetStatus] = useState("Pendiente");
   const [amount, setAmount] = useState(0);
   const [budgetDate, setBudgetDate] = useState("");
-  const { pid } = useParams();
+  const { budgetId, setBudgetId, detailIds, clearDetailIds } = useContext(BudgetContext);
 
   const tableHeaders = [
     { value: "budgetDetailItem", label: "Producto" },
@@ -21,37 +21,37 @@ const BudgetDetail = () => {
   ];
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchBudgetDetails = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:8080/api/budgets/budgetwithdetails/${pid}`
-        );
+        const response = await fetch("http://localhost:8080/api/budgetsdetails/details-by-ids", {
+          method: "Post",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ detailIds }), 
+        })
 
-        if (response.ok) {
-          const data = await response.json();
+        const data = await response.json();
 
-          const budgetdetails = data.budgetDetailOrders;
+        const total = data.budgetDetails.reduce((acc, order) => {
+          return (
+            acc + order.budgetDetailQuantity * order.budgetDetailUnitCost
+          );
+        }, 0);
 
-          const total = budgetdetails.reduce((acc, order) => {
-            return (
-              acc + order.budgetDetailQuantity * order.budgetDetailUnitCost
-            );
-          }, 0);
+        setAmount(total)
 
-          setAmount(total);
-          setRow(data.budgetDetailOrders || []);
-        } else if (response.status === 404) {
-          console.error("Presupuesto no encontrado");
-        } else {
-          console.error("Error en la respuesta:", response.status);
+        if(response.status === 200){
+          setRow(data.budgetDetails)
         }
-      } catch (error) {
-        console.error("Error al obtener los datos:", error);
-      }
-    };
 
-    fetchData();
-  }, [pid]);
+      } catch (error) {
+        console.error("Error fetching clients: ", error);
+      }
+    }
+
+    fetchBudgetDetails();
+  }, [])
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -59,7 +59,6 @@ const BudgetDetail = () => {
         const response = await fetch("http://localhost:8080/api/clients");
 
         const data = await response.json();
-        console.log("Data clientes budget detail: ", data);
         
         setClients(data.clients);
       } catch (error) {
@@ -68,6 +67,8 @@ const BudgetDetail = () => {
     };
 
     fetchClients();
+    console.log("Ids de detalles", detailIds);
+    
   }, []);
 
   const handleOptions = (selectedOptions) => {
@@ -78,17 +79,15 @@ const BudgetDetail = () => {
     const newStatus = e.target.value;
     setBudgetStatus(newStatus);
     console.log("estado: ", newStatus);
-    
   };
 
   const handleDeleteBudgetDetail = async (budgetDetailId, index) => {
-
     const result = await Swal.fire({
       title: "¿Estás seguro?",
       text: "Una vez eliminado, no podrás recuperar este detalle.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
+      confirmButtonText: "Sí",
       cancelButtonText: "No, cancelar",
       customClass: {
         title: "my-title-class",
@@ -99,17 +98,20 @@ const BudgetDetail = () => {
       },
     });
 
-    if(result.isConfirmed){
+    if (result.isConfirmed) {
       try {
-        const response = await fetch(`http://localhost:8080/api/budgetsdetails/${budgetDetailId}`, {
-          method: "DELETE"
-        });
+        const response = await fetch(
+          `http://localhost:8080/api/budgetsdetails/${budgetDetailId}`,
+          {
+            method: "DELETE",
+          }
+        );
 
-        if(response){
+        if (response) {
           const nuevasFilas = [...tableData];
           nuevasFilas.splice(indice, 1);
           setTableData(nuevasFilas);
-        }else{
+        } else {
           console.error("Error al eliminar el detalle en la base de datos");
         }
       } catch (error) {
@@ -121,15 +123,16 @@ const BudgetDetail = () => {
   const handleDateChange = (e) => {
     const selectedDate = e.target.value; // Toma el valor directamente del input sin modificarlo
     setBudgetDate(selectedDate);
-    
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const clientId = selectedOption[0]?.value || selectedOption[0]?._id; 
-  
-    if(!budgetDate){
+    const clientId = selectedOption[0]?.value || selectedOption[0]?._id;
+
+    console.log("clientId: ", clientId);
+
+    if (!budgetDate) {
       Swal.fire({
         title: "Debes seleccionar una fecha",
         icon: "warning",
@@ -140,9 +143,10 @@ const BudgetDetail = () => {
           confirmButton: "my-confirm-button-class",
           overlay: "my-overlay-class",
         },
-    })}
+      });
+    }
 
-    if(!clientId){
+    if (!clientId) {
       Swal.fire({
         title: "Debes seleccionar un cliente",
         icon: "warning",
@@ -153,17 +157,84 @@ const BudgetDetail = () => {
           confirmButton: "my-confirm-button-class",
           overlay: "my-overlay-class",
         },
-    })
+      });
     }
-    const updateBudget = {
+    const newBudget = {
       budgetAmount: amount,
       budgetDate: new Date(budgetDate),
       budgetStatus,
       clientId,
+      detailIds
     };
 
-    console.log("UPDATE: ", updateBudget);
-    
+    console.log("UPDATE: ", newBudget);
+
+    if (detailIds.length === 0) {
+      const result = await Swal.fire({
+        title: "¿Estás seguro?",
+        text: "¿Deseas agregar un presupuesto sin detales?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "No, cancelar",
+        customClass: {
+          title: "my-title-class",
+          popup: "my-popup-class",
+          confirmButton: "my-confirm-button-class",
+          cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
+          overlay: "my-overlay-class",
+        },
+      });
+
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch("http://localhost:8080/api/budgets", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newBudget),
+          });
+
+          const result = await response.json();
+
+          if (response.status === 201) {
+
+            Swal.fire({
+              title: "Producto creado con exito",
+              icon: "success",
+              confirmButtonText: "Aceptar",
+              customClass: {
+                title: "my-title-class",
+                popup: "my-popup-class",
+                confirmButton: "my-confirm-button-class",
+                overlay: "my-overlay-class",
+              },
+            });
+          } else if (response.status === 400) {
+            const errorMessages =
+              result.errorMessages && result.errorMessages.length > 0
+                ? result.errorMessages[0] // Une los mensajes con saltos de línea
+                : "Error desconocido";
+
+            Swal.fire({
+              title: "Error al crear producto",
+              text: errorMessages,
+              icon: "error",
+              confirmButtonText: "Aceptar",
+              customClass: {
+                title: "my-title-class",
+                popup: "my-popup-class",
+                confirmButton: "my-confirm-button-class",
+                overlay: "my-overlay-class",
+              },
+            });
+          }
+        } catch (error) {
+          console.error("Error en la solicitud", error);
+        }
+      }
+    }
   };
   return (
     <>
@@ -212,17 +283,19 @@ const BudgetDetail = () => {
             tbodyClassName="table__body"
             tdClassName="table__cell"
             actionEditClassName="budget__table__action--edit"
-            handleDeleteCell={(id, index) => handleDeleteBudgetDetail(id, index)}
+            handleDeleteCell={(id, index) =>
+              handleDeleteBudgetDetail(id, index)
+            }
             deleteIconClassName="table__deleteIcon"
             editIconClassName="table__editIcon"
-            getEditPath={(id) => `/presupuesto/${pid}/detalle/${id}`}
+            getEditPath={(id) => `/presupuesto/detalle/${id}`}
           />
           <div className="budgetdetail__containeramount">
             <p className="budgetdetail__amount">Total: ${amount}</p>
           </div>
 
           <div className="budgetdetail__buttoncontainer">
-            <Link to={`/presupuesto/${pid}/detalle/nuevalinea`}>
+            <Link to={`/presupuesto/agregardetalle`}>
               <button className="budgetdetail__button">Nueva línea</button>
             </Link>
             <button className="budgetdetail__button" onClick={handleSubmit}>
@@ -238,4 +311,4 @@ const BudgetDetail = () => {
   );
 };
 
-export default BudgetDetail;
+export default NewBudget;

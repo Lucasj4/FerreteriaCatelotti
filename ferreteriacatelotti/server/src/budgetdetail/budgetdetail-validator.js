@@ -4,7 +4,7 @@ import { Errors } from '../errors/enum-error.js';
 
 export const ValidateBudgetDetail = (req, res, next) => {
     const schema = Joi.object({
-        budgetDetailSubtotal:  Joi.number().positive().required().custom((value, helpers) => {
+        budgetDetailUnitCost:  Joi.number().positive().required().custom((value, helpers) => {
             // Expresión regular para permitir solo hasta 2 decimales
             if (!/^\d+(\.\d{1,2})?$/.test(value)) {
                 return helpers.error('number.precision'); // Lanza un error si hay más de 2 decimales
@@ -27,20 +27,20 @@ export const ValidateBudgetDetail = (req, res, next) => {
             "string.base": "El nombre del producto debe contener solo letras",
             "string.pattern.base": "El nombre del producto debe contener solo letras y espacios, sin números"
         }),
+        productID: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required().messages({
+            "string.pattern.base": "El ID del detalle de presupuesto debe ser un ObjectId de MongoDB válido",
+            "any.required": "El ID del detalle de presupuesto es obligatorio",
+            "string.base": "El ID del detalle de presupuesto debe ser una cadena de caracteres"
+        })
       
     })
 
     const { error } = schema.validate(req.body, { abortEarly: false });
 
+    
     if (error) {
-        const errorMessages = error.details.map(detail => detail.message).join(", ");
-        const cause = `Validation errors on fields: ${error.details.map(detail => detail.path.join(".")).join(", ")}`;
-        return next(CustomError.createError({
-            name: "ValidationError",
-            cause: cause,
-            message: errorMessages,
-            code: Errors.VALIDATION_ERROR
-        }));
+        const errorMessages = error.details.map(detail => detail.message);
+        return res.status(400).json({ errorMessages }); // Enviar array de mensajes de error
     }
     next();
 }

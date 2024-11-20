@@ -9,6 +9,7 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { useAppContext } from "../context/OrderContext";
 import Swal from "sweetalert2";
+
 const PurchaseOrder = () => {
   const [filas, setFilas] = useState([]);
   const { fecha, proveedor, saveData, estado, detalleIds, clearDetalleIds } =
@@ -69,7 +70,7 @@ const PurchaseOrder = () => {
         );
         const data = await response.json();
         const purchaseOrders = data.purchaseOrders;
-        console.log(purchaseOrders);
+      
         
         // Mapear cada orden y obtener detalles del proveedor por supplierID
         const ordersWithSuppliers = await Promise.all(

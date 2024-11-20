@@ -1,5 +1,6 @@
 import BudgetModel from "./budget-model.js";
-
+import BudgetDetailModel from '../budgetdetail/budgetdetail-model.js'
+import mongoose from "mongoose";
 export class BudgetService {
 
     async createBudget(data) {
@@ -15,7 +16,7 @@ export class BudgetService {
 
     async getBudgets() {
         try {
-            const budgets = await BudgetModel.find().populate('clientID', 'clientLastName');
+            const budgets = await BudgetModel.find().populate('clientId', 'clientLastName');
             return budgets;
         } catch (error) {
             console.log(error);
@@ -57,6 +58,47 @@ export class BudgetService {
             throw new Error("Error al buscar los presupuestos");
         }
     }
+
+    async getBudgetWithDetail(budgetId) {
+        console.log("id presupuesto desde service: ", budgetId);
+        
+        try {
+          if (!mongoose.Types.ObjectId.isValid(budgetId)) {
+            return { error: "ID inválido" };
+          }
+      
+          const budget = await BudgetModel.findById(budgetId);
+          if (!budget) {
+            return { error: "Presupuesto no encontrado" };
+          }
+      
+          const budgetDetails = await BudgetDetailModel.find({ budgetID: budgetId }).exec();
+          return { budget, budgetDetails };
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
+      }
+
+      async updateBudget(updateBudget, budgetId){
+        try {
+            const budget = await BudgetModel.findByIdAndUpdate(budgetId, updateBudget);
+            return budget;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+      }
+      
+      async deleteBudget(id){
+        try {
+            const deleteBudget = await BudgetModel.findByIdAndDelete(id);
+            return deleteBudget;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+      }
 
 
 

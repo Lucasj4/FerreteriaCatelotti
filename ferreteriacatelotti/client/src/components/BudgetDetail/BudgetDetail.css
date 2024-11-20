@@ -125,3 +125,17 @@
     font-size: 1rem;
     cursor: pointer;
 }
+
+.budgetdetail__status{
+    padding: 10px;
+    outline: none;
+    background: var(--color-primary);
+    border: 1px solid var(--color-primary); 
+    color: #fff;
+    border-radius: 5px;
+}
+
+.budgetdetail__option__status{
+    font-size: 2rem;
+    color: #fff;
+}

@@ -12,6 +12,7 @@ import { userRouter } from './src/users/user-router.js';
 import { detailOrderRoute } from './src/detailorder/detailorder-route.js';
 import { purchaseOrderRouter } from './src/purchaseorders/purchaseorder-route.js';
 import { budgetRouter } from './src/budget/budget-router.js';
+import { budgetDetailRouter } from './src/budgetdetail/budgetdetail-route.js';
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use("/api/users", userRouter);
 app.use("/api/purchaseorders", purchaseOrderRouter)
 app.use("/api/detailsorder", detailOrderRoute)
 app.use('/api/budgets', budgetRouter)
+app.use('/api/budgetsdetails', budgetDetailRouter)
 app.use(errorHandler);
 
 

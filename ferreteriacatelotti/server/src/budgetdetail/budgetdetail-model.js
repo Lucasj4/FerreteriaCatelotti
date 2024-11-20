@@ -3,24 +3,24 @@ import mongoose from "mongoose";
 const budgetDetailSchema = new mongoose.Schema({
 
     productID: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'products',
         required: true
     },
     budgetID: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'budgets',
-        required: true
+        
     },
-    subtotal: {
+    budgetDetailUnitCost: {
         type: Number,
         required: true
     },
-    quantity: {
+    budgetDetailQuantity: {
         type: Number,
         required: true
     },
-    item: {
+    budgetDetailItem: {
         type: String,
         required: true
     }

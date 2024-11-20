@@ -45,8 +45,7 @@ const OrderDetail = () => {
         const response = await fetch("http://localhost:8080/api/detailsorder");
         
         const data = await response.json();
-        console.log("Data: ", data.data);
-        console.log("Detalles idS: ", detalleIds);
+   
         
         setFilas(data.data)
       } catch (error) {
