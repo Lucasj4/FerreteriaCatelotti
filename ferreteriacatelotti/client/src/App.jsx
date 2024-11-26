@@ -37,9 +37,9 @@ function App() {
                 {/* Rutas de presupuesto */}
                 <Route path="/presupuesto" element={<BudgetComponent />} />
                 <Route path="/presupuesto/agregarpresupuesto" element={<NewBudget />}/>
-                <Route path="/presupuesto/agregardetalle" element={<BudgetDetailLine isNewBudget={false}/>}/>
+                <Route path="/presupuesto/agregardetalle" element={<BudgetDetailLine isNewBudget={true}/>}/>
                 <Route path="/presupuesto/:pid" element={<BudgetDetail />} />
-                <Route path="/presupuesto/:pid/detalle/nuevalinea" element={<BudgetDetailLine isNewBudget={true} />}/>
+                <Route path="/presupuesto/:pid/detalle/nuevalinea" element={<BudgetDetailLine isNewBudget={false} />}/>
                 <Route path="/presupuesto/:pid/detalle/:rowid" element={<EditBudgetDetailLine />}/>
 
                 {/* Rutas de pedido */}

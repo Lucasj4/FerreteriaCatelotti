@@ -27,7 +27,7 @@ export default class BudgetDetaiLController{
   }
 
   async getBudgetDetailById(req, res){
-    req.logger.info("Desde getBudgetDetailById ")
+    
     const {rowid} = req.params;
     try {
       const budgetDetail = await budgetDetailService.getBudgetDetailById(rowid);
@@ -67,7 +67,7 @@ export default class BudgetDetaiLController{
   async updateBudgetDetail(req, res){
     const updateBudget = req.body
     const {rowid} = req.params
-    console.log("update actualizado budget: ", updateBudget);
+   
     
     try {
       const existingBudget = await budgetDetailService.getBudgetDetailById(rowid);
@@ -89,9 +89,11 @@ export default class BudgetDetaiLController{
   }
 
   async deleteBudgetDetail(req, res){
-    const {budgetDetailId} = req.body;
+    const {rowid} = req.params;
+
+    req.logger.info("id para elimibar budgetDetailLine: " + rowid)
     try {
-      const deleteBudgetDetail = await budgetDetailService.deleteBudgetDetail(budgetDetailId);
+      const deleteBudgetDetail = await budgetDetailService.deleteBudgetDetail(rowid);
 
       if (deleteBudgetDetail) {
         res.status(200).json({ message: "Presupuesto eliminado con éxito" });

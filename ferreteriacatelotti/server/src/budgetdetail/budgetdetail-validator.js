@@ -33,7 +33,7 @@ export const ValidateBudgetDetail = (req, res, next) => {
             "string.base": "El ID del detalle de presupuesto debe ser una cadena de caracteres"
         })
       
-    })
+    }).unknown();
 
     const { error } = schema.validate(req.body, { abortEarly: false });
 

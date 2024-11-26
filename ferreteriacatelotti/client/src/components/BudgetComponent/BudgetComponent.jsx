@@ -5,6 +5,7 @@ import Checkbox from "@mui/material/Checkbox";
 import { Link, useParams } from "react-router-dom";
 import Table from "../TableCustom/TableCustom";
 import Swal from "sweetalert2";
+import { Logger } from "sass";
 
 const BudgetComponent = () => {
   const [filas, setFilas] = useState([]);
@@ -16,7 +17,7 @@ const BudgetComponent = () => {
   const [showOnlyPendiente, setShowOnlyPendiente] = useState(false);
 
   const tableHeaders = [
-    { value: "clientID", label: "Cliente" },
+    { value: "clientId", label: "Cliente" },
     { value: "budgetDate", label: "Fecha" },
     { value: "budgetStatus", label: "Estado" },
     { value: "budgetAmount", label: "Importe" },
@@ -30,8 +31,8 @@ const BudgetComponent = () => {
         if (response) {
           const budgets = await response.json();
 
-          console.log(budgets.budgets);
-
+          console.log("Budgets: ", budgets);
+          
           setFilas(budgets.budgets);
         }
       } catch (error) {
@@ -49,7 +50,7 @@ const BudgetComponent = () => {
 
         if (response) {
           const data = await response.json();
-          console.log("Clientes: ", data.clients);
+
           setClients(data.clients);
         }
       } catch (error) {
@@ -89,18 +90,15 @@ const BudgetComponent = () => {
     if (clientId) queryParams.append("clientId", clientId);
     if (budgetStatus) queryParams.append("budgetStatus", budgetStatus);
 
-    console.log("clientID marcardo: ", clientId);
-    console.log("status marcardo: ", budgetStatus);
-
     try {
       const response = await fetch(
         `http://localhost:8080/api/budgets/search?${queryParams.toString()}`
       );
 
-      if (response) {
+      if (response.status === 200) {
         const result = await response.json();
 
-        console.log(result);
+        console.log("resultado",  result);
 
         setFilas(result.budgets); // Actualiza el estado de las filas con los presupuestos encontrados
       } else {
@@ -137,7 +135,7 @@ const BudgetComponent = () => {
           }
         );
 
-        if (response) {
+        if (response.status === 200) {
           // Si la eliminación fue exitosa, eliminamos la fila visualmente
           const nuevasFilas = [...filas];
           nuevasFilas.splice(index, 1);
@@ -207,7 +205,7 @@ const BudgetComponent = () => {
           />
 
           <div className="budget__actions">
-            <Link to = '/presupuesto/agregarpresupuesto'>
+            <Link to="/presupuesto/agregarpresupuesto">
               <button className="budget__actions__button">Nuevo</button>
             </Link>
             <button className="budget__actions__button">Facturar</button>

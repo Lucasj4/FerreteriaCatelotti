@@ -28,8 +28,11 @@ const BudgetDetailLine = () => {
 
         const productOptions = data.products.map((product) => ({
           value: product._id, // Usamos el ID del producto como valor
-          label: product.productName, // El nombre del producto como etiqueta visible
+          label: product.productName,
+          unitPrice: product.productPrice, // El nombre del producto como etiqueta visible
         }));
+
+       
 
         setProductsOption(productOptions);
       } catch (error) {
@@ -45,22 +48,43 @@ const BudgetDetailLine = () => {
       try {
         const response = await fetch(`http://localhost:8080/api/budgetsdetails/${rowid}`);
         const data = await response.json();
-  
-        setBudgetDetailItem({
-          id: data.budgetDetail.productID,
-          name: data.budgetDetail.budgetDetailItem
-        });
+        
+        console.log("data: ", data.budgetDetail);
+        
+        
+        const product = productsOptions.find(product => product.value === data.budgetDetail.productID);
+        
+        
+        if (product) {
+          setBudgetDetailItem({
+            id: data.budgetDetail.productID,
+            name: product.label 
+          });
+        }
+        
         setBudgetDetailQuantity(data.budgetDetail.budgetDetailQuantity);
         setBudgetDetailUnitCost(data.budgetDetail.budgetDetailUnitCost);
       } catch (error) {
         console.error("Error en la solicitud:", error.message);
       }
     };
+
+    // Llama a la función fetchBudgetDetail solo si `productsOptions` está disponible
+    if (productsOptions.length > 0) {
+      fetchBudgetDetail();
+    }
+  }, [rowid, productsOptions]); // Dependiendo de `productsOptions` también
+
   
-    // Llama a la función fetchBudgetDetail
-    fetchBudgetDetail();
-  }, [rowid]);
-  
+  const handleProductChange = (product) => {
+    if (product) {
+      setBudgetDetailItem({ id: product.value, name: product.label });
+      setBudgetDetailUnitCost(product.unitPrice || ""); // Actualiza el precio unitario
+    } else {
+      setBudgetDetailItem({ id: "", name: "" });
+      setBudgetDetailUnitCost("");
+    }
+  };
 
   const resetForm = () => {
     setBudgetDetailItem("");
@@ -180,14 +204,10 @@ const BudgetDetailLine = () => {
               <label htmlFor="productUnit">Productos</label>
               <DropdownSelect
                 options={productsOptions}
-                value={budgetDetailItem.name} // Muestra la etiqueta del producto seleccionado
-                onChange={(option) =>
-                  setBudgetDetailItem({
-                    id: option.value,
-                    name: option.label,
-                  })
-                }
+                value={productsOptions.find((product) => product.value === budgetDetailItem.id)}
+                onChange={handleProductChange}
                 placeholder="Selecciona un producto"
+                isClearable // Permite borrar la selección
               />
             </div>
             <FormItem

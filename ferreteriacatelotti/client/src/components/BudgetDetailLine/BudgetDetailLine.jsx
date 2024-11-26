@@ -1,11 +1,12 @@
-import { useState, useEffect, useContext} from "react";
+import { useState, useEffect, useContext } from "react";
 import "./BudgetDetailLine.css";
 import FormItem from "../FormItem/FormItem";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import DropdownSelect from "../DropDownSelect/DropDownSelect";
 import BudgetContext from "../context/BudgetContext";
 import Swal from "sweetalert2";
-const BudgetDetailLine = ({isNewBudget}) => {
+
+const BudgetDetailLine = ({ isNewBudget }) => {
   const [budgetDetailItem, setBudgetDetailItem] = useState({
     id: "",
     name: "",
@@ -14,8 +15,9 @@ const BudgetDetailLine = ({isNewBudget}) => {
   const [budgetDetailUnitCost, setBudgetDetailUnitCost] = useState("");
   const [productsOptions, setProductsOption] = useState([]);
   const { pid } = useParams();
+  const [selectedProduct, setSelectedProduct] = useState(null);
   console.log("¿Es un presupuesto nuevo?", isNewBudget);
-  const {addDetailId} = useContext(BudgetContext)
+  const { addDetailId, budgetId } = useContext(BudgetContext);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -30,7 +32,8 @@ const BudgetDetailLine = ({isNewBudget}) => {
 
         const productOptions = data.products.map((product) => ({
           value: product._id, // Usamos el ID del producto como valor
-          label: product.productName, // El nombre del producto como etiqueta visible
+          label: product.productName,
+          unitPrice: product.productPrice, // El nombre del producto como etiqueta visible
         }));
 
         setProductsOption(productOptions);
@@ -38,9 +41,21 @@ const BudgetDetailLine = ({isNewBudget}) => {
         console.error("Error en la solicitud:", error.message);
       }
     };
-
     fetchProducts();
   }, []);
+
+  const handleProductChange = (product) => {
+    if (product) {
+      setSelectedProduct(product.label);
+      setBudgetDetailUnitCost(product.unitPrice || ""); // Actualiza el precio unitario
+      setBudgetDetailItem({ id: product.value, name: product.label });
+    } else {
+      // Si no hay producto seleccionado (borrado)
+      setSelectedProduct(null);
+      setBudgetDetailUnitCost("");
+      setBudgetDetailItem({ id: "", name: "" });
+    }
+  };
 
   const resetForm = () => {
     setBudgetDetailItem("");
@@ -56,7 +71,7 @@ const BudgetDetailLine = ({isNewBudget}) => {
       budgetDetailQuantity,
       budgetDetailUnitCost,
       productID: budgetDetailItem.id,
-      budgetID: pid,
+      budgetID: isNewBudget ? budgetId : pid,
     };
 
     console.log("Budget detail: ", budgetDetailLine);
@@ -70,7 +85,6 @@ const BudgetDetailLine = ({isNewBudget}) => {
         body: JSON.stringify(budgetDetailLine),
       });
 
-      
       const result = await response.json();
 
       if (response.status === 201) {
@@ -87,7 +101,7 @@ const BudgetDetailLine = ({isNewBudget}) => {
         }).then(() => {
           resetForm();
         });
-        addDetailId(result.budgetDetail._id)
+        addDetailId(result.budgetDetail._id);
       } else if (response.status === 400) {
         const errorMessages =
           result.errorMessages && result.errorMessages.length > 0
@@ -141,14 +155,10 @@ const BudgetDetailLine = ({isNewBudget}) => {
               <label htmlFor="productUnit">Productos</label>
               <DropdownSelect
                 options={productsOptions}
-                value={budgetDetailItem.name} // Muestra la etiqueta del producto seleccionado
-                onChange={(option) =>
-                  setBudgetDetailItem({
-                    id: option.value,
-                    name: option.label,
-                  })
-                }
+                value={budgetDetailItem}
+                onChange={handleProductChange}
                 placeholder="Selecciona un producto"
+                isClearable // Permite borrar la selección
               />
             </div>
             <FormItem
@@ -179,7 +189,11 @@ const BudgetDetailLine = ({isNewBudget}) => {
             >
               Guardar
             </button>
-            <Link to={isNewBudget ? `/presupuesto/${pid}` : `/presupuesto/agregarpresupuesto`}>
+            <Link
+              to={
+                isNewBudget ? `/presupuesto/${budgetId}` : `/presupuesto/${pid}`
+              }
+            >
               <button className="budgetdetailline__button">Salir</button>
             </Link>
           </div>

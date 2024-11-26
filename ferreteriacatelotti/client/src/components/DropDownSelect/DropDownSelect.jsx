@@ -3,7 +3,7 @@ import "./DropdownSelect.css";
 
 const DropdownSelect = ({ options = [], value, onChange, placeholder }) => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(value || "");
+  const [searchTerm, setSearchTerm] = useState(value ? value.label : "");
   const dropdownRef = useRef(null);
 
   const handleToggleDropdown = () => {
@@ -24,12 +24,32 @@ const DropdownSelect = ({ options = [], value, onChange, placeholder }) => {
   }, []);
 
   useEffect(() => {
-    setSearchTerm(value || "");
+    setSearchTerm(value ? value.label : ""); // Sincroniza searchTerm con el valor seleccionado
   }, [value]);
 
-  const filteredOptions = options.filter((option) =>
-    option.label.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredOptions = options.filter((option) => {
+    const label = option.label || ""; // Asegúrate de que label sea un string
+    const term = searchTerm ? String(searchTerm).toLowerCase() : ""; // Convierte searchTerm a string
+    return label.toLowerCase().includes(term);
+  });
+
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+    setSearchTerm(inputValue);
+    
+    // Si el input está vacío, mostrar el dropdown
+    if (inputValue === "") {
+      setShowDropdown(true);
+    } else {
+      setShowDropdown(filteredOptions.length > 0); // Solo mostrar si hay opciones filtradas
+    }
+  };
+
+  const handleOptionClick = (option) => {
+    onChange(option); // Pasa el objeto completo
+    setSearchTerm(option.label); // Solo actualiza el label en searchTerm
+    setShowDropdown(false); // Cierra el dropdown inmediatamente
+  };
 
   return (
     <div className="select-container" ref={dropdownRef}>
@@ -37,7 +57,7 @@ const DropdownSelect = ({ options = [], value, onChange, placeholder }) => {
         type="text"
         placeholder={placeholder}
         value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        onChange={handleInputChange} // Actualiza searchTerm mientras escribes
         className="select-display"
         onClick={handleToggleDropdown}
       />
@@ -46,11 +66,7 @@ const DropdownSelect = ({ options = [], value, onChange, placeholder }) => {
           {filteredOptions.map((option, index) => (
             <div
               key={index}
-              onClick={() => {
-                onChange(option); 
-                setSearchTerm(option.label); 
-                setShowDropdown(false);
-              }}
+              onClick={() => handleOptionClick(option)} // Llama a la función con un solo clic
               className="select-option"
             >
               {option.label}
@@ -63,4 +79,3 @@ const DropdownSelect = ({ options = [], value, onChange, placeholder }) => {
 };
 
 export default DropdownSelect;
-

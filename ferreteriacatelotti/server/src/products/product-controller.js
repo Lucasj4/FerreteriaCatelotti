@@ -48,9 +48,9 @@ export class ProductController{
 
     async updateProduct(req, res){
         const { updateProduct} = req.body;
-        const {productId} = req.params.pid
+        const {productId} = req.body
         
-        console.log("prodcut id: ", productId);
+        console.log("prodcut id desde controller updateProduct: ", productId);
 
         if (!mongoose.Types.ObjectId.isValid(productId)) {
             return res.status(400).json({ success: false, message: "ID de producto no válido" });
@@ -70,6 +70,54 @@ export class ProductController{
         } catch (error) {
             req.logger.error("Error al actualizar el producto:", error);
             res.status(500).json({ message: 'Error interno del servidor' });
+        }
+    }
+
+    async updateProductStock(req, res) {
+        const { pid} = req.params;
+        const { quantityToDecrease } = req.body; // Quantity to subtract from the stock
+        req.logger.info("Desde updaeproductStock");
+        req.logger.info("Product ID:" + pid);
+        req.logger.info("Quantity to decrease:" + quantityToDecrease);
+    
+        if (!mongoose.Types.ObjectId.isValid(pid)) {
+            return res.status(400).json({ success: false, message: "Invalid product ID" });
+        }
+    
+        try {
+            const product = await productService.getProductById(pid);
+    
+            if (!product) {
+                return res.status(404).json({ success: false, message: "Product not found" });
+            }
+    
+            const currentStock = product.productStock; // Current stock of the product
+    
+            // Check if there is enough stock
+            if (currentStock >= quantityToDecrease) {
+                const updatedStock = currentStock - quantityToDecrease;
+    
+                // Update the product stock
+                const updatedProduct = await productService.updateProduct(pid, { productStock: updatedStock });
+    
+                if (updatedProduct) {
+                    return res.status(200).json({
+                        success: true,
+                        message: 'Stock updated successfully',
+                        updatedProduct: updatedProduct,
+                    });
+                } else {
+                    return res.status(500).json({ success: false, message: "Error updating product stock" });
+                }
+            } else {
+                return res.status(400).json({
+                    success: false,
+                    message: `Not enough stock for product ${pid}. Current stock is ${currentStock}`,
+                });
+            }
+        } catch (error) {
+            console.error("Error updating product stock:", error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
         }
     }
 

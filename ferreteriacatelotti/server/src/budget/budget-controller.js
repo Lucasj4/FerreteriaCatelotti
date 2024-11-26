@@ -18,11 +18,11 @@ export class BudgetController {
 
             const budget = await budgetService.createBudget(newBudget);
 
-            if(detailIds.lenght > 0){
+            if (detailIds.length > 0) {
                 await BudgetDetaiLModel.updateMany(
                     { _id: { $in: detailIds } }, // Filtrar los detalles a actualizar
                     { $set: { budgetID: budget._id } } // Agregar el ID del presupuesto
-                  );
+                );
             }
 
             return res.status(201).json({ message: "Presupuesto creado", budget });
@@ -39,15 +39,19 @@ export class BudgetController {
             if (budgets) {
 
                 const formattedBudgets = budgets.map(budget => {
+                   
+                    
                     const date = budget.budgetDate
                         ? new Date(budget.budgetDate).toLocaleDateString('es-ES', { timeZone: 'UTC' })
                         : null;
                     return {
                         ...budget._doc,
                         budgetDate: date,
-                        clientID: budget.clientID ? budget.clientID.clientLastName : null
+                        clientId: budget.clientId ? budget.clientId.clientLastName : null
                     };
                 });
+                
+                
                 return res.status(200).json({ message: "Presupuestos", budgets: formattedBudgets })
             } else {
                 return res.status(404).json({ message: "Presupuestos no encontrados" })
@@ -67,8 +71,25 @@ export class BudgetController {
             // Llama al servicio con los filtros recibidos
             const budgets = await budgetService.searchBudgets(clientId, budgetStatus);
 
+            console.log("budgets filtrados: ", budgets);
+            
+            
+            const formattedBudgets = budgets.map(budget => {
+                   
+                    
+                const date = budget.budgetDate
+                    ? new Date(budget.budgetDate).toLocaleDateString('es-ES', { timeZone: 'UTC' })
+                    : null;
+                return {
+                    ...budget._doc,
+                    budgetDate: date,
+                    clientId: budget.clientId ? budget.clientId.clientLastName : null
+                };
+            });
 
-            res.status(200).json({ budgets });
+            console.log("formateed: ", formattedBudgets);
+            
+            res.status(200).json({ budgets: formattedBudgets });
         } catch (error) {
             console.error("Error al buscar presupuestos", error);
             res.status(500).json({ error: "Error en el servidor" });
@@ -110,9 +131,21 @@ export class BudgetController {
     }
 
     async updateBudget(req, res) {
-        const { updateBudget } = req.body;
+        const { budgetAmount, budgetDate, budgetStatus, clientId } = req.body;
         const { pid } = req.params;
 
+        req.logger.info("Id budget: " + pid);
+        
+
+        const updateBudget = {
+            budgetAmount,
+            budgetDate,
+            budgetStatus,
+            clientId
+        }
+
+        req.logger.info("update budget: " + updateBudget);
+        
         try {
             if (!updateBudget || !pid) {
                 return res.status(400).json({ message: "Datos insuficientes para actualizar el presupuesto." });
@@ -133,13 +166,51 @@ export class BudgetController {
 
     }
 
-    async deleteBudget(req, res) {
+    async updateBudgetStatus(req, res) {
+        const { budgetStatus} = req.body;
         const { pid } = req.params;
-    
+
+        req.logger.info("Id budget: " + pid);
+        
+
+        const updateStatus = {
+            budgetStatus
+        }
+
+        req.logger.info("update budget: " + updateStatus);
+        
         try {
+            if (!budgetStatus || !pid) {
+                return res.status(400).json({ message: "Datos insuficientes para actualizar el presupuesto." });
+            }
+
+            const budget = await budgetService.updateBudget({budgetStatus: budgetStatus}, pid);
+
+            if (budget) {
+                res.status(200).json({ message: "Presupeusto actualizado con exito", budget })
+            } else {
+                res.status(404).json({ message: "Presupuesto no encontrado." });
+            }
+        } catch (error) {
+            console.error("Error actualizando el presupuesto:", error);
+            res.status(500).json({ message: "Error en el servidor al actualizar el presupuesto." });
+        }
+
+
+    }
+
+    async deleteBudget(req, res) {
+        const {idBudget } = req.params;
+        
+        
+
+        try {
+            req.logger.info("Desde controllador deleteBudget")
+            const deletedDetails = await BudgetDetaiLModel.deleteMany({ budgetID: idBudget});
+            console.log(`Detalles eliminados: `, deletedDetails);
             // Intentar eliminar el presupuesto
-            const deletedBudget = await budgetService.deleteBudget(pid);
-    
+            const deletedBudget = await budgetService.deleteBudget(idBudget);
+
             // Verificar si el presupuesto fue encontrado y eliminado
             if (deletedBudget) {
                 res.status(200).json({ message: "Presupuesto eliminado con éxito" });
@@ -149,6 +220,37 @@ export class BudgetController {
         } catch (error) {
             console.error("Error al eliminar el presupuesto:", error);
             res.status(500).json({ message: "Error en el servidor al eliminar el presupuesto" });
+        }
+    }
+
+    async getBudgetById(req, res){
+        const {budgetId} = req.params;
+       
+        try {
+            const budget = await budgetService.getBudgetById(budgetId);
+          
+            
+            
+            if (budget) {
+                // Formatear los campos
+                const formattedBudget = {
+                    ...budget._doc, // Si usas Mongoose, `_doc` contiene los datos del objeto
+                    budgetDate: budget.budgetDate
+                        ? new Date(budget.budgetDate).toLocaleDateString('es-ES', { timeZone: 'UTC' })
+                        : null,
+                    clientId: budget.clientId?.clientLastName || null, // Si `clientId` es un objeto poblado
+                };
+    
+                res.status(200).json({
+                    message: "Presupuesto encontrado con éxito",
+                    budget: formattedBudget,
+                });
+            } else {
+                res.status(404).json({ message: "Presupuesto no encontrado" });
+            }
+        } catch (error) {
+            console.error("Error al encontrar presupuesto:", error);
+            res.status(500).json({ message: "Error en el servidor al encontrar presupuesto con id el presupuesto" });
         }
     }
 }

@@ -12,7 +12,7 @@ export const budgetValidator = (req, res, next) => {
             "string.pattern.base": "El ID del cliente debe ser un ObjectId válido de MongoDB",
             "any.required": "El ID del cliente es obligatorio"
         }),
-        budgetAmount: Joi.number().positive().min(0).required().custom((value, helpers) => {
+        budgetAmount: Joi.number().min(0).required().custom((value, helpers) => {
             // Expresión regular para permitir solo hasta 2 decimales
             if (!/^\d+(\.\d{1,2})?$/.test(value)) {
                 return helpers.error('number.precision'); // Lanza un error si hay más de 2 decimales
@@ -34,7 +34,7 @@ export const budgetValidator = (req, res, next) => {
             "date.base": "La fecha de la orden de compra debe ser una fecha válida",
             "any.required": "La fecha de la orden de compra es obligatoria"
         }) 
-    })
+    }).unknown();
 
     const { error } = schema.validate(req.body, { abortEarly: false });
 
