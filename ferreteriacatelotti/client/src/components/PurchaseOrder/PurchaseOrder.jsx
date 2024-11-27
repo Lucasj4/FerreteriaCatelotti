@@ -70,8 +70,7 @@ const PurchaseOrder = () => {
         );
         const data = await response.json();
         const purchaseOrders = data.purchaseOrders;
-      
-        
+
         // Mapear cada orden y obtener detalles del proveedor por supplierID
         const ordersWithSuppliers = await Promise.all(
           purchaseOrders.map(async (order) => {
@@ -150,10 +149,9 @@ const PurchaseOrder = () => {
       const data = await response.json();
       const purchaseOrders = data.purchaseOrders;
 
-      if(response.status===404){
+      if (response.status === 404) {
         Swal.fire({
           icon: "info",
-          title: "Error de fechas",
           text: "No se encontro ningun pedido de compra con los parametros establecidos",
           confirmButtonText: "Entendido",
         });
@@ -194,10 +192,55 @@ const PurchaseOrder = () => {
     setSelectedSuppliers(selectedOptions);
   };
 
-  const handleDeleteRow = (indice) => {
-    const nuevasFilas = [...filas];
-    nuevasFilas.splice(indice, 1);
-    setFilas(nuevasFilas);
+  const handleDeleteRow = async (purchaseOrderId, indice) => {
+    const result = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Una vez eliminado, no podrás recuperar este presupuesto.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "No, cancelar",
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
+        overlay: "my-overlay-class",
+      },
+    });
+    console.log("Id purhcase order");
+    
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/purchaseorders/${purchaseOrderId}`,
+          {
+            method: "DELETE",
+          }
+        );
+
+        
+        if (response.status === 200) {
+          const nuevasFilas = [...filas];
+          nuevasFilas.splice(indice, 1);
+          setFilas(nuevasFilas);
+          Swal.fire({
+            text: "Pedido de compra eliminado con exito",
+            icon: "success",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
+              overlay: "my-overlay-class",
+            },
+          });
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
   };
 
   const handleSave = async (e) => {
@@ -338,7 +381,7 @@ const PurchaseOrder = () => {
               selectedProveedores={selectedSuppliers}
               onChange={handleSupplierChange}
               placeholder="Select suppliers"
-              labelKey="lastName" 
+              labelKey="lastName"
             />
           </div>
         </div>
@@ -372,8 +415,8 @@ const PurchaseOrder = () => {
             editIconClassName="purchaseOrder__table__editIcon"
             headers={tableHeaders}
             data={filas}
-            handleDeleteCell={handleDeleteRow}
-            getEditPath={(id) =>`/pedido/${id}`}
+            handleDeleteCell={(id, index) => handleDeleteRow(id, index)}
+            getEditPath={(id) => `/pedido/${id}`}
           />
         </div>
 
@@ -381,7 +424,7 @@ const PurchaseOrder = () => {
           <button className="actions__button" onClick={handleSearch}>
             Buscar
           </button>
-          <Link to={`/detallepedido/${purchaseOrderId}`}>
+          <Link to={`/pedido/agregarpedido`}>
             <button className="actions__button">Nuevo</button>
           </Link>
           <button className="actions__button">Imprimir</button>

@@ -1,5 +1,5 @@
 .table{
-    color: #fff;
+    color: #212121;
     padding: 1rem 0;
     width: 60%;
   
@@ -14,14 +14,14 @@
   .table__row{
     text-align: center;
     background-color: var(--dark-blue);
-    border: 3px solid #fff;
+    border: 3px solid #212121;
   }
   .table__cell{
     width: 100px;
     height: 50px;
   }
   .table__editIcon{
-    color: var(--celeste-agua);
+    color: var(--color-primary);
     margin-right: 10px;
     background: none;
     outline: none;
@@ -29,7 +29,7 @@
     cursor: pointer;
   }
   .table__deleteIcon{
-    color: var(--celeste-agua);
+    color: var(--color-primary);
     background: none;
     outline: none;
     border: none;

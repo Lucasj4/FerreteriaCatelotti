@@ -23,20 +23,15 @@ export const ValidatePurchaseOrder = (req, res, next) => {
             "string.base": "El estado de la orden de compra debe contener solo letras",
             "string.pattern.base": "El estado de la orden de compra debe contener solo letras y espacios, sin números"
         })
-    })
+    }).unknown();
 
     
     const { error } = schema.validate(req.body, { abortEarly: false });
 
+   
     if (error) {
-        const errorMessages = error.details.map(detail => detail.message).join(", ");
-        const cause = `Validation errors on fields: ${error.details.map(detail => detail.path.join(".")).join(", ")}`;
-        return next(CustomError.createError({
-            name: "ValidationError",
-            cause: cause,
-            message: errorMessages,
-            code: Errors.VALIDATION_ERROR
-        }));
+        const errorMessages = error.details.map(detail => detail.message);
+        return res.status(400).json({ errorMessages }); // Enviar array de mensajes de error
     }
     next();
 }

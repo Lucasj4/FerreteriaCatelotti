@@ -71,4 +71,17 @@ export class PurchaseOrderService {
             throw error; // Lanza el error para que lo maneje el controlador
         }
     }
+
+    async deletePurchaseOrder(purchaseOrderId){
+        try {
+            const deletePurchaseOrder = await PurchaseOrderModel.findByIdAndDelete(purchaseOrderId);
+
+            const deleteDetailsOrder = await DetailOrderModel.deleteMany({purchaseOrderID: purchaseOrderId});
+
+            return {deletePurchaseOrder, deleteDetailsOrder}
+        } catch (error) {
+            console.error(error);
+            throw error; // Lanza el error para que lo maneje el controlador
+        }
+    }
 }

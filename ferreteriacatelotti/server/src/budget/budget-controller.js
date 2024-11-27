@@ -202,7 +202,7 @@ export class BudgetController {
     async deleteBudget(req, res) {
         const {idBudget } = req.params;
         
-        
+        req.logger.info('Id budget: ' + idB)
 
         try {
             req.logger.info("Desde controllador deleteBudget")

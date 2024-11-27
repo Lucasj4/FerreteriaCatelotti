@@ -28,7 +28,7 @@ const OrderProvider = ({ children }) => {
   };
 
   return (
-    <OrderContext.Provider value={{ fecha, proveedor, estado, saveData, detalleIds, addDetalleId, clearDetalleIds, purchaseOrderId }}>
+    <OrderContext.Provider value={{ fecha, proveedor, estado, saveData, detalleIds, addDetalleId, clearDetalleIds, purchaseOrderId, setPurchaseOrderId }}>
       {children}
     </OrderContext.Provider>
   );

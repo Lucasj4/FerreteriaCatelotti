@@ -44,11 +44,12 @@ function App() {
 
                 {/* Rutas de pedido */}
                 <Route path="/pedido" element={<PurchaseOrder />} />
+                <Route path="/pedido/agregarpedido" element={<OrderDetail />} />
+                <Route path="/pedido/agregardetalle" element={<NewDetailOrderLine/>}/>
                 <Route path="/pedido/:pid" element={<EditPurchaseOrder />} />
                 <Route path="/pedido/:pid/detallepedido/nuevalinea" element={<NewDetailOrderLine />}/>
                 <Route path="/pedido/:pid/detalle/:rowid" element={<EditDetailOrderLine />}/>
-                <Route path="/detallepedido/nuevalinea" element={<NewDetailOrderLine />}/>
-                <Route path="/detallepedido" element={<OrderDetail />} />
+                
 
                 {/* Otras rutas */}
                 <Route path="/iniciosesion" element={<Login />} />

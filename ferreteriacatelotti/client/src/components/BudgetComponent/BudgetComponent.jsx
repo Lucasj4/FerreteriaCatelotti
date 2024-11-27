@@ -140,7 +140,7 @@ const BudgetComponent = () => {
           const nuevasFilas = [...filas];
           nuevasFilas.splice(index, 1);
           setFilas(nuevasFilas);
-          console.log("Presupuesto eliminado correctamente");
+          
         } else {
           console.error("Error al eliminar el presupuesto en la base de datos");
         }

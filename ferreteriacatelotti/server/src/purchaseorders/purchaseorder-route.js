@@ -9,3 +9,4 @@ purchaseOrderRouter.get('/search', purchaseOrderController.getPurchaseOrdersBySu
 purchaseOrderRouter.post("/", purchaseOrderController.createPurchaseOrder );
 purchaseOrderRouter.get('/purchaseorderswithdetails/:pid', purchaseOrderController.getPurchaseOrderWithDetails )
 purchaseOrderRouter.put('/:id', purchaseOrderController.updatePurchaseOrder);
+purchaseOrderRouter.delete('/:id', purchaseOrderController.deletePurchaseOrder);

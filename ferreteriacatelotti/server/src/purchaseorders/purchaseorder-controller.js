@@ -155,4 +155,24 @@ export class PurchaseOrderController {
             res.status(500).json({ error: 'Error interno del servidor' });
         }
     }
+
+    async deletePurchaseOrder(req, res){
+        const {id} = req.params;
+
+        req.logger.info("Id de pedido de compra para eliminar: " + id)
+
+        try {
+            const deletePurchaseOrder = await purchaseOrderService.deletePurchaseOrder(id);
+
+            
+            if(deletePurchaseOrder){
+                res.status(200).json({message: "Orden elimnada con exito", deletePurchaseOrder});
+            }else{
+                res.status(404).json({message: "Pedido de compra no encontrado"});
+            }
+        } catch (error) {
+            console.error("Error al eliminar el presupuesto:", error);
+            res.status(500).json({ message: "Error en el servidor al eliminar el presupuesto" });
+        }
+    }
 }

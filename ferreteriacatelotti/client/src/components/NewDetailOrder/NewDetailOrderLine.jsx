@@ -4,11 +4,15 @@ import FormItem from "../FormItem/FormItem";
 import { Link } from "react-router-dom";
 import { useAppContext } from "../context/OrderContext";
 import DropdownSelect from "../DropDownSelect/DropDownSelect";
+import Swal from "sweetalert2";
 
 const NewDetailOrderLine = () => {
   const option = ["mt", "litro"];
-  const { addDetalleId, clearDetalleIds } = useAppContext();
-  const [detailOrderProduct, setDetailOrderProduct] = useState({ id: "", name: "" });
+  const { addDetalleId, clearDetalleIds, purchaseOrderId } = useAppContext();
+  const [detailOrderProduct, setDetailOrderProduct] = useState({
+    id: "",
+    name: "",
+  });
   const [detailOrderQuantity, setDetailOrderQuantity] = useState("");
   const [detailOrderUnitCost, setDetailOrderUnitCost] = useState("");
   const [productsOptions, setProductsOption] = useState([]);
@@ -28,11 +32,13 @@ const NewDetailOrderLine = () => {
 
   const resetForm = () => {
     setDetailOrderProduct(""),
-    setDetailOrderQuantity(""),
-    setDetailOrderUnitCost("")
-  }
+      setDetailOrderQuantity(""),
+      setDetailOrderUnitCost("");
+  };
 
   useEffect(() => {
+    console.log("PurchaseOrderId", purchaseOrderId);
+    
     const fetchProducts = async () => {
       try {
         const response = await fetch("http://localhost:8080/api/products");
@@ -47,8 +53,7 @@ const NewDetailOrderLine = () => {
           value: product._id, // Usamos el ID del producto como valor
           label: product.productName, // El nombre del producto como etiqueta visible
         }));
-       
-        
+
         setProductsOption(productOptions);
       } catch (error) {
         console.error("Error en la solicitud:", error.message);
@@ -57,20 +62,20 @@ const NewDetailOrderLine = () => {
 
     fetchProducts();
   }, []);
- 
-  const handleSubmit= async (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const orderDetailOrderLine = {
-      detailOrderProduct: detailOrderProduct.name,  // Nombre del producto
+      detailOrderProduct: detailOrderProduct.name, // Nombre del producto
       detailOrderQuantity,
       detailOrderUnitCost,
-      productID: detailOrderProduct.id,  // ID del producto
+      productID: detailOrderProduct.id,
+      purchaseOrderID: purchaseOrderId,
     };
-    
-    
+
     console.log("orderDetailOrderLine: ", orderDetailOrderLine);
-    
+
     try {
       const response = await fetch("http://localhost:8080/api/detailsorder", {
         method: "POST",
@@ -78,17 +83,43 @@ const NewDetailOrderLine = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(orderDetailOrderLine),
-        
       });
-         
+
       if (!response.ok) {
         throw new Error("Error al enviar los datos al servidor");
       }
 
-      // Puedes hacer algo con la respuesta si es necesario
-      const responseData = await response.json();
-      addDetalleId(responseData.detail._id);
+      if (response.status === 201) {
+        await Swal.fire({
+          title: "Presupuesto creado con éxito",
+          icon: "success",
+          confirmButtonText: "Aceptar",
+          customClass: {
+            title: "my-title-class",
+            popup: "my-popup-class",
+            confirmButton: "my-confirm-button-class",
+            overlay: "my-overlay-class",
+          },
+        });
+      } else if (response.status === 400) {
+        const errorMessages =
+          result.errorMessages && result.errorMessages.length > 0
+            ? result.errorMessages[0]
+            : "Error desconocido";
 
+        await Swal.fire({
+          title: "Error al agregar linea de detalle del pedido de compra",
+          text: errorMessages,
+          icon: "error",
+          confirmButtonText: "Aceptar",
+          customClass: {
+            title: "my-title-class",
+            popup: "my-popup-class",
+            confirmButton: "my-confirm-button-class",
+            overlay: "my-overlay-class",
+          },
+        });
+      }
       resetForm();
     } catch (error) {
       console.error("Error:", error.message);
@@ -121,8 +152,13 @@ const NewDetailOrderLine = () => {
               <label htmlFor="productUnit">Productos</label>
               <DropdownSelect
                 options={productsOptions}
-                value={detailOrderProduct.name}  // Muestra la etiqueta del producto seleccionado
-                onChange={(option) => setDetailOrderProduct({ id: option.value, name: option.label })} 
+                value={detailOrderProduct.name} // Muestra la etiqueta del producto seleccionado
+                onChange={(option) =>
+                  setDetailOrderProduct({
+                    id: option.value,
+                    name: option.label,
+                  })
+                }
                 placeholder="Selecciona un producto"
               />
             </div>
@@ -167,7 +203,7 @@ const NewDetailOrderLine = () => {
           </form>
 
           <div className="newPurchaseOrder__form__containerbuttons">
-            <Link to={"/detallepedido"}>
+            <Link to={`/pedido/${purchaseOrderId}`}>
               <button className="newPurchaseOrder__form__button">Salir</button>
             </Link>
             <Link to={"/detallepedido"}>

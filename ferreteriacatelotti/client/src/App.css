@@ -1,11 +1,14 @@
 #root {
-  --color-primary: #3399ff;
+  /* --color-primary: #3399ff; */
+  --color-primary: #f0320a;
   --secondary: #007fff;
   --grey: #6b7a90;
-  --dark-blue: #003a75;
+  /* --dark-blue: #003a75; */
+  --dark-blue: #fff;
   --background: #101418;
   --celeste-agua: #00dfc4;
-  --background2: #1d2b3a;
+  /* --background2: #1d2b3a; */
+  --background2: #212121;
 }
 
 * {
