@@ -19,6 +19,7 @@
     width: 70%;
     color: #fff;
     padding: 1rem 0;
+    background-color: var(--text-color);
 }
 .budgetdetail__table__header{
     width: 100px;
@@ -59,7 +60,7 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    background-color: var(--dark-blue);
+    background-color: var(--grey);
 }
 .budgetdetail__option__item{
     display: flex;
@@ -71,7 +72,7 @@
 }
 .budgetdetail__option__item__title{
     font-size: 2rem;
-    color: #fff;
+    color: var(--background2);
 }
 .budgetdetail__option__item__input{
     padding: 0.5rem;
@@ -108,11 +109,11 @@
 }
 
 .budgetdetail__buttoncontainer{
-    width: 90%;
+    width: 100%;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    background-color: var(--background2);
+    background-color: var(--grey);
 }
 
 .budgetdetail__button{
@@ -137,5 +138,5 @@
 
 .budgetdetail__option__status{
     font-size: 2rem;
-    color: #fff;
+    color: var(--background2);
 }

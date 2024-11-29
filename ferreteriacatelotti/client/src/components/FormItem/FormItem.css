@@ -20,5 +20,5 @@
   
   .form__label {
     font-size: 1rem;
-    color: #00dfc4;
+    color: var(--text-color);
   }

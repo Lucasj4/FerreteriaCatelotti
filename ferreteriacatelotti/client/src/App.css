@@ -2,9 +2,9 @@
   /* --color-primary: #3399ff; */
   --color-primary: #f0320a;
   --secondary: #007fff;
-  --grey: #6b7a90;
+  --grey: #eee;
   /* --dark-blue: #003a75; */
-  --dark-blue: #fff;
+  --text-color: #fff;
   --background: #101418;
   --celeste-agua: #00dfc4;
   /* --background2: #1d2b3a; */
@@ -54,6 +54,7 @@ main {
   align-items: center;
   gap: 1.5rem;
   padding: 1rem;
+  background-color: var(--grey);
 }
 
 .component__search-input {
@@ -124,7 +125,7 @@ main {
   display: flex;
   justify-content: center;
   gap: 10rem;
-  background-color: var(--dark-blue);
+  background-color: var(--grey);
 }
 
 .component__actions__button {
@@ -137,3 +138,6 @@ main {
   font-size: 1rem;
   cursor: pointer;
 }
+
+
+

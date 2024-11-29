@@ -40,19 +40,19 @@ export class CategoryController{
         }
     }
 
-    // async getCategoryByName(req,res){
-    //     try {
-    //         const { name } = req.query;
-    //         if (!name) {
-    //             return res.status(400).json({ message: "El nombre del producto es requerido" });
-    //         }
+    async getCategoryByName(req,res){
+        try {
+            const { categoryname } = req.params;
+            if (categoryname) {
+                return res.status(400).json({ message: "El nombre del producto es requerido" });
+            }
     
-    //         const products = await productService.getProductsByName(name);
-    //         const enhancedProducts = await enhanceProducts(products);
-    //         return res.status(200).json({ message: "Productos", products: enhancedProducts });
-    //     } catch (error) {
-    //         console.error("Error al obtener productos por nombre:", error);
-    //         return res.status(500).json({ message: "Error interno del servidor" });
-    //     }
-    // }
+            const category = await categoryService.getCategoryIdByName(categoryname);
+            // const enhancedProducts = await enhanceProducts(products);
+            return res.status(200).json({ message: "Productos", category});
+        } catch (error) {
+            console.error("Error al obtener productos por nombre:", error);
+            return res.status(500).json({ message: "Error interno del servidor" });
+        }
+    }
 }

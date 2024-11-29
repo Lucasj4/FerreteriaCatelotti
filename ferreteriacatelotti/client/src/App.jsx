@@ -58,9 +58,13 @@ function App() {
                 <Route path="/clientes/:cid" element={<EditClient />} />
                 <Route path="/usuarios" element={<UserComponent />} />
                 <Route path="/usuarios/agregarusuario" element={<NewUser />} />
+
+                {/*Productos */}
                 <Route path="/productos" element={<ProductComponent />} />
                 <Route path="/productos/:pid" element={<EditProduct />} />
                 <Route path="/productos/agregarproducto" element={<NewProduct />}/>
+
+                {/*Proveedores */}
                 <Route path="/proveedores" element={<SupplierManagement />} />
                 <Route path="/proveedores/agregarproveedor" element={<NewSupplier />}/>
               </Routes>

@@ -378,7 +378,7 @@ const PurchaseOrder = () => {
             <p>Proveedor</p>
             <MultiSelectOption
               options={suppliers}
-              selectedProveedores={selectedSuppliers}
+              selectedOptions={selectedSuppliers}
               onChange={handleSupplierChange}
               placeholder="Select suppliers"
               labelKey="lastName"

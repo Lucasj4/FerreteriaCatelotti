@@ -5,6 +5,7 @@ import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import { useAppContext } from "../context/OrderContext";
 import Table from "../TableCustom/TableCustom";
 import Swal from "sweetalert2";
+import { amber } from "@mui/material/colors";
 
 const OrderDetail = () => {
   const { purchaseOrderId, setPurchaseOrderId } = useAppContext();
@@ -126,6 +127,8 @@ const OrderDetail = () => {
 
       const result = await response.json();
 
+      console.log("Id: ", result.purchaseOrder._id);
+      
       if (response.status === 201) {
         setPurchaseOrderId(result.purchaseOrder._id);
         await Swal.fire({
@@ -175,6 +178,9 @@ const OrderDetail = () => {
       });
     }
   };
+
+  
+  
  
 
   return (

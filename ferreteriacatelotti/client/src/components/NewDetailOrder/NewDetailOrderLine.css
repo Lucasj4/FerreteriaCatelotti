@@ -43,16 +43,16 @@
   color: #fff;
   padding: 10px 5px;
   margin-top: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid var(--color-primary);
   outline: none;
   font-size: 1rem;
   width: 100%;
-  background: var(--background2);
+  background: var(--color-primary);
 }
 
 .newPurchaseOrder__form__label {
   font-size: 1rem;
-  color: #00dfc4;
+  color: var(--text-color);
 }
 
 .newPurchaseOrder__form__containerbuttons {

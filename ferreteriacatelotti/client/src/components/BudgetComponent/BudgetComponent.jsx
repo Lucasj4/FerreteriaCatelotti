@@ -192,10 +192,10 @@ const BudgetComponent = () => {
             headers={tableHeaders}
             data={filas}
             tableClassName="budget__table"
-            trClassName="table__row"
-            thClassName="table__header"
-            theadClassName="table__thead"
-            tbodyClassName="table__body"
+            trClassName="budget__table__row"
+            thClassName="budget__table__header"
+            theadClassName="budget__table__thead"
+            tbodyClassName="budget__table__body"
             tdClassName="table__cell"
             actionEditClassName="budget__table__action--edit"
             handleDeleteCell={(id, index) => handleDeleteCell(id, index)}

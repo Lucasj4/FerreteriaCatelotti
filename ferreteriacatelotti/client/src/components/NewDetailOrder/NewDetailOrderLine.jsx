@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./NewDetailOrderLine.css";
 import FormItem from "../FormItem/FormItem";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "../context/OrderContext";
 import DropdownSelect from "../DropDownSelect/DropDownSelect";
 import Swal from "sweetalert2";
@@ -17,6 +17,7 @@ const NewDetailOrderLine = () => {
   const [detailOrderUnitCost, setDetailOrderUnitCost] = useState("");
   const [productsOptions, setProductsOption] = useState([]);
   const [unidad, setUnidad] = useState(option[0]);
+  const {pid} = useParams();
 
   const handleQuantity = (e) => {
     setDetailOrderQuantity(e.target.value);
@@ -37,9 +38,11 @@ const NewDetailOrderLine = () => {
   };
 
   useEffect(() => {
-    console.log("PurchaseOrderId", purchaseOrderId);
+    
     
     const fetchProducts = async () => {
+      
+
       try {
         const response = await fetch("http://localhost:8080/api/products");
 
@@ -52,6 +55,7 @@ const NewDetailOrderLine = () => {
         const productOptions = data.products.map((product) => ({
           value: product._id, // Usamos el ID del producto como valor
           label: product.productName, // El nombre del producto como etiqueta visible
+          unitPrice: product.productPrice,
         }));
 
         setProductsOption(productOptions);
@@ -63,6 +67,19 @@ const NewDetailOrderLine = () => {
     fetchProducts();
   }, []);
 
+  const handleProductChange = (product) => {
+    if (product) {
+      // setSelectedProduct(product.label);
+      setDetailOrderUnitCost(product.unitPrice || ""); // Actualiza el precio unitario
+      setDetailOrderProduct({ id: product.value, name: product.label });
+    } else {
+      // Si no hay producto seleccionado (borrado)
+      // setSelectedProduct(null);
+      setDetailOrderUnitCost("");
+      setDetailOrderProduct({ id: "", name: "" });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -71,7 +88,7 @@ const NewDetailOrderLine = () => {
       detailOrderQuantity,
       detailOrderUnitCost,
       productID: detailOrderProduct.id,
-      purchaseOrderID: purchaseOrderId,
+      purchaseOrderID: purchaseOrderId || pid,
     };
 
     console.log("orderDetailOrderLine: ", orderDetailOrderLine);
@@ -91,7 +108,7 @@ const NewDetailOrderLine = () => {
 
       if (response.status === 201) {
         await Swal.fire({
-          title: "Presupuesto creado con éxito",
+          title: "Detalle de presupuesto agregado con exito",
           icon: "success",
           confirmButtonText: "Aceptar",
           customClass: {
@@ -131,34 +148,12 @@ const NewDetailOrderLine = () => {
         <div className="newPurchaseOrder__formcontainer">
           <h2 className="newPurchaseOrder__form__title">Nuevo Linea</h2>
           <form action="" className="newPurchaseOrder__form">
-            {/* <div className="newPurchaseOrder__form__item">
-              <label htmlFor="item" className="newPurchaseOrder__form__label">
-                Producto
-              </label>
-              <div className="newPurchaseOrder__form__item-product">
-                <input
-                  type="text"
-                  className="newPurchaseOrder__form__input"
-                  id="detailOrderProduct"
-                  value={detailOrderProduct}
-                  onChange={(e) => setetailOrderProduct(e.target.value)}
-                />
-                <button className="newPurchaseOrder__form__item__button">
-                  Producto
-                </button>
-              </div>
-            </div> */}
             <div className="product__item__select">
               <label htmlFor="productUnit">Productos</label>
               <DropdownSelect
                 options={productsOptions}
                 value={detailOrderProduct.name} // Muestra la etiqueta del producto seleccionado
-                onChange={(option) =>
-                  setDetailOrderProduct({
-                    id: option.value,
-                    name: option.label,
-                  })
-                }
+                onChange={handleProductChange}
                 placeholder="Selecciona un producto"
               />
             </div>

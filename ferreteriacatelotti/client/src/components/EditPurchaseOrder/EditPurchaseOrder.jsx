@@ -1,7 +1,7 @@
 import React from "react";
 import "./EditPurchaseOrder.css";
 import Checkbox from "@mui/material/Checkbox";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import Table from "../TableCustom/TableCustom";
@@ -9,18 +9,17 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { useAppContext } from "../context/OrderContext";
 import Swal from "sweetalert2";
+import PurchaseOrder from "../PurchaseOrder/PurchaseOrder";
 
 const EditPurchaseOrder = () => {
-  const [filas, setFilas] = useState([]);
-  const { fecha, proveedor, saveData, estado, detalleIds, clearDetalleIds } =
+  const [rows, setRows] = useState([]);
+  const { fecha, proveedor, saveData, estado, detalleIds, clearDetalleIds, addDetalleId} =
     useAppContext();
   const { pid } = useParams();
-  const [purchaseOrderId, setPurchaseOrderId] = useState("");
+  const [purchaseOrderDate, setPurchaseOrderDate] = useState("");
   const [amount, setAmount] = useState(0);
   const [suppliers, setSuppliers] = useState([]);
   const [selectedSuppliers, setSelectedSuppliers] = useState([]);
-
-  const [localDate, setLocalDate] = useState("");
   const [localStatus, setLocalStatus] = useState("Pendiente");
   const tableHeaders = [
     { value: "detailOrderProduct", label: "Producto" },
@@ -28,12 +27,30 @@ const EditPurchaseOrder = () => {
     { value: "detailOrderUnitCost", label: "Costo Unitario" },
   ];
 
-  const convertDateToISO = (dateString) => {
-    const [day, month, year] = dateString.split('/'); // Divide la fecha
-    return `${year}-${month}-${day}`; // Devuelve en formato YYYY-MM-DD
+
+  const navigate = useNavigate();
+
+  const groupDetailsByProduct = (details) => {
+    return details.reduce((acc, order) => {
+      const existing = acc.find(
+        (item) => item.detailOrderProduct === order.detailOrderProduct
+      );
+      if (existing) {
+        existing.detailOrderQuantity += order.detailOrderQuantity;
+        existing.totalCost =
+          existing.detailOrderQuantity * order.detailOrderUnitCost;
+      } else {
+        acc.push({
+          ...order,
+          totalCost: order.detailOrderQuantity * order.detailOrderUnitCost,
+        });
+      }
+      return acc;
+    }, []);
   };
 
   useEffect(() => {
+   
     const fetchSuppliers = async () => {
       try {
         const response = await fetch("http://localhost:8080/api/suppliers"); // Endpoint de proveedores
@@ -61,28 +78,29 @@ const EditPurchaseOrder = () => {
         const purchaseOrder = data.purchaseOrder;
         const detailOrders = data.detailOrders;
 
-        const total = detailOrders.reduce((acc, order) => {
-          return acc + order.detailOrderQuantity * order.detailOrderUnitCost; // Asumiendo que estas propiedades existen
+        for (const detail of detailOrders) {
+          addDetalleId(detail._id); // Los duplicados son manejados automáticamente por el Set
+        }
+        console.log("Detalle ids final: ", Array.from(detalleIds));
+       
+        
+        
+        
+        const groupedDetails = groupDetailsByProduct(detailOrders);
+
+        const total = groupedDetails.reduce((acc, order) => {
+          return acc + order.totalCost;
         }, 0);
 
-        
-        
         setAmount(total);
 
-        // Aquí puedes hacer lo que necesites con los datos del pedido y sus detalles
-        // Por ejemplo, podrías establecer filas con los detalles de la orden
-        setFilas(detailOrders);
-        // const formattedDate = formatLocalDate(purchaseOrder.purchaseOrderDate);
-        // const localDate = new Date(purchaseOrder.purchaseOrderDate);
-        // localDate.setMinutes(
-        //   localDate.getMinutes() + localDate.getTimezoneOffset()
-        // );
-        console.log("PURCHASE ORDER DATE: ", purchaseOrder.purchaseOrderDate);
-        
-        const formattedDate = convertDateToISO(purchaseOrder.purchaseOrderDate);
-        console.log("Purchase order formatted: ", formattedDate);
-        
-        setLocalDate(formattedDate); // Inicializa con la fecha del pedido
+        setRows(groupedDetails);
+
+        const formattedDate = purchaseOrder.purchaseOrderDate
+          ? purchaseOrder.purchaseOrderDate.split("/").reverse().join("-")
+          : "";
+
+        setPurchaseOrderDate(formattedDate); // Inicializa con la fecha del pedido
         setLocalStatus(purchaseOrder.purchaseOrderStatus || "Pendiente");
 
         // Seleccionar el proveedor como { label, value }
@@ -90,16 +108,23 @@ const EditPurchaseOrder = () => {
           (supplier) => supplier._id === purchaseOrder.supplierID
         );
 
-        console.log("  selectedSupplierOption : ", selectedSupplierOption);
+    
+     
+      setSelectedSuppliers(
+        selectedSupplierOption
+          ? [
+              {
+                label: selectedSupplierOption.lastName, // Campo que se mostrará en el MultiSelect
+                value: selectedSupplierOption._id, // ID del cliente
+              },
+            ]
+          : []
+      );
 
-        if (selectedSupplierOption) {
-          setSelectedSuppliers([
-            {
-              label: `${selectedSupplierOption.lastName}`,
-              value: selectedSupplierOption._id,
-            },
-          ]);
-        }
+    
+      
+
+       
       } catch (error) {
         console.error("Error fetching purchase order with details:", error);
         Swal.fire({
@@ -111,7 +136,7 @@ const EditPurchaseOrder = () => {
     };
 
     fetchPurchaseOrderWithDetails();
-  }, [pid, saveData, suppliers]);
+  }, [pid,  suppliers]);
 
   const handleSupplierChange = (selectedOptions) => {
     setSelectedSuppliers(selectedOptions); // Actualiza el estado con las opciones seleccionadas
@@ -124,7 +149,11 @@ const EditPurchaseOrder = () => {
   };
 
   const handleDateChange = (e) => {
-    setLocalDate(e.target.value); // Convierte el formato a YYYY-MM-DD
+    const selectedDate = e.target.value;
+    console.log(selectedDate);
+
+    setPurchaseOrderDate(selectedDate);
+   
   };
 
   const handleDeleteCell = (indice) => {
@@ -133,38 +162,105 @@ const EditPurchaseOrder = () => {
     setFilas(nuevasFilas);
   };
 
-  // const formatLocalDate = (date) => {
-  //   const d = new Date(date);
-  //   const year = d.getFullYear();
-  //   const month = String(d.getMonth() + 1).padStart(2, "0"); // Ajusta el mes a dos dígitos
-  //   const day = String(d.getDate()).padStart(2, "0"); // Ajusta el día a dos dígitos
-  //   return `${year}-${month}-${day}`;
-  // };
+  const handleDeleteBudgetDetail = async (budgetDetailId, index) => {
+    const result = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Una vez eliminado, no podrás recuperar este detalle.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "No, cancelar",
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
+        overlay: "my-overlay-class",
+      },
+    });
 
-  const handleSave = async (e) => {
-    e.preventDefault();
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/budgetsdetails/${budgetDetailId}`,
+          {
+            method: "DELETE",
+          }
+        );
 
+        if (response) {
+          const nuevasFilas = [...row];
+          nuevasFilas.splice(index, 1);
+          setRows(nuevasFilas);
+        } else {
+          console.error("Error al eliminar el detalle en la base de datos");
+        }
+      } catch (error) {
+        console.error("Error en la petición de eliminación", error);
+      }
+    }
+  };
+
+  const handleExit = async () => {
+    const result = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Si no guardaste los cambios, estos se perderán. ¿Deseas salir?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, salir",
+      cancelButtonText: "Cancelar",
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-confirm-button-class",
+      },
+    });
+
+    if (result.isConfirmed) {
+      navigate("/pedido"); // Redirige a la página de pedidos
+    }
+    return;
+  };
+
+  const validateForm = () => {
+    console.log("Data: ", purchaseOrderDate);
+    console.log("Data: ", localStatus);
+    console.log("Data: ", selectedSuppliers.length);
+    
+    if (
+      !purchaseOrderDate ||
+      !localStatus||
+      !selectedSuppliers.length
+    ) {
+      Swal.fire({
+        title: "Campos incompletos",
+        text: "Por favor, completa todos los campos antes de actualizar el pedido de compra.",
+        icon: "warning",
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const handleUpdateOrder = async () => {
     const proveedorValue =
       selectedSuppliers.length > 0 ? selectedSuppliers[0].value : "";
 
-    // Guarda los datos en el contexto
-    saveData(fecha, proveedorValue, estado);
+    if (!validateForm()) return;
 
-    console.log("Fecha", localDate);
-    console.log("Proveedor: ", proveedorValue);
-    console.log("Estado: ", estado);
-    console.log("PurchaseOrderId: ", pid);
-
-    // Crear el objeto para la actualización
     const updatedPurchaseOrder = {
-      purchaseOrderDate: localDate,
+      purchaseOrderDate: new Date(purchaseOrderDate),
       purchaseOrderStatus: localStatus,
-      purchaseOrderAmount: amount,
       supplierID: proveedorValue,
+      purchaseOrderAmount: amount,
+      detalleIds: Array.from(detalleIds)
     };
 
+    console.log("Purchase order para actualizar: ", updatedPurchaseOrder);
+
     try {
-      // Actualiza la orden de compra existente
       const response = await fetch(
         `http://localhost:8080/api/purchaseorders/${pid}`,
         {
@@ -176,11 +272,10 @@ const EditPurchaseOrder = () => {
         }
       );
 
-      const data = await response.json();
-      console.log("Data: ", data);
+      const result = await response.json();
 
       if (response.status === 200) {
-        Swal.fire({
+        await Swal.fire({
           title: "Pedido de compra actualizado con éxito",
           icon: "success",
           confirmButtonText: "Aceptar",
@@ -191,9 +286,26 @@ const EditPurchaseOrder = () => {
             overlay: "my-overlay-class",
           },
         });
+        navigate("/pedido"); // O redirige a otra ruta si es necesario
+      } else {
+        throw new Error(
+          result.message || "Error al actualizar el pedido de compra"
+        );
       }
     } catch (error) {
-      console.error("Error:", error.message);
+      console.error("Error al actualizar el pedido de compra:", error);
+      await Swal.fire({
+        title: "Error",
+        text: "No se pudo actualizar el pedido de compra. Inténtalo de nuevo.",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+        customClass: {
+          title: "my-title-class",
+          popup: "my-popup-class",
+          confirmButton: "my-confirm-button-class",
+          overlay: "my-overlay-class",
+        },
+      });
     }
   };
 
@@ -207,7 +319,7 @@ const EditPurchaseOrder = () => {
               <input
                 type="date"
                 className="date-selector__item__date"
-                value={localDate}
+                value={purchaseOrderDate}
                 onChange={handleDateChange}
               />
             </div>
@@ -215,7 +327,7 @@ const EditPurchaseOrder = () => {
               <p>Proveedor</p>
               <MultiSelectOption
                 options={suppliers}
-                selectedProveedores={selectedSuppliers}
+                selectedOptions={selectedSuppliers}
                 onChange={handleSupplierChange}
                 placeholder="Seleccionar Proveedor"
               />
@@ -243,10 +355,10 @@ const EditPurchaseOrder = () => {
               deleteIconClassName="orderdetail__table__deleteIcon"
               editIconClassName="orderdetail__table__editIcon"
               headers={tableHeaders}
-              data={filas}
+              data={rows}
               handleDeleteCell={handleDeleteCell}
               linkPrefix="/detallepedido/editarpedido/"
-              getEditPath={(id) => `/pedido/${pid}/detalle/${id}`} 
+              getEditPath={(id) => `/pedido/${pid}/detalle/${id}`}
             />
           </div>
           <div className="orderdetail__total">
@@ -256,12 +368,10 @@ const EditPurchaseOrder = () => {
             <Link to={`/pedido/${pid}/detallepedido/nuevalinea`}>
               <button>Nueva Linea</button>
             </Link>
-        
-              <button onClick={handleSave}>Guardar</button>
-           
-            <Link to="/pedido">
-              <button>Salir</button>
-            </Link>
+
+            <button onClick={handleUpdateOrder}>Guardar</button>
+
+            <button onClick={handleExit}>Salir</button>
           </div>
         </div>
       </div>

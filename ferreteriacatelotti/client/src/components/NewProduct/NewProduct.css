@@ -27,7 +27,7 @@
 
 .product__item__select label {
   font-size: 1rem;
-  color: #00dfc4;
+  color: var(--text-color);
   
 }
 
@@ -81,7 +81,7 @@
 }
 
 .select-dropdown div:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-primary);
 }
 
 .search-input {
@@ -96,7 +96,7 @@
 
 /* Cambiar el fondo del popup */
 .my-popup-class {
-  background-color:#1d2b3a !important;
+  background-color:#212121 !important;
   color: #fff;
 }
 
@@ -106,5 +106,5 @@
 }
 
 .my-confirm-button-class{
-  background-color: #003a75;
+  background-color: #f0320a;
 }

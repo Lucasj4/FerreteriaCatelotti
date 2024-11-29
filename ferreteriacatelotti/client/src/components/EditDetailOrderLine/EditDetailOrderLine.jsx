@@ -35,32 +35,11 @@ const EditDetailOrderLine = () => {
       setDetailOrderQuantity(""),
       setDetailOrderUnitCost("");
   };
-
   useEffect(() => {
-    const fetchDetailOrder = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/api/detailsorder/${rowid}`
-        );
-
-        const data = await response.json();
-
-        setDetailOrderProduct({
-          id: data.detailOrder.productID,
-          name: data.detailOrder.detailOrderProduct,
-        });
-        setDetailOrderQuantity(data.detailOrder.detailOrderQuantity);
-        setDetailOrderUnitCost(data.detailOrder.detailOrderUnitCost);
-      } catch (error) {
-        console.error("Error fetching detail order:", error);
-      }
-    };
-
-    fetchDetailOrder();
-  }, [rowid]);
-
-  useEffect(() => {
+    console.log("pid: ", pid);
     const fetchProducts = async () => {
+      
+      
       try {
         const response = await fetch(`http://localhost:8080/api/products`);
 
@@ -73,8 +52,12 @@ const EditDetailOrderLine = () => {
         const productOptions = data.products.map((product) => ({
           value: product._id, // Usamos el ID del producto como valor
           label: product.productName, // El nombre del producto como etiqueta visible
+          unitPrice: product.productPrice,
         }));
+        
 
+        console.log("Product Options: ", productOptions);
+        
         setProductsOption(productOptions);
       } catch (error) {
         console.error("Error en la solicitud:", error.message);
@@ -83,6 +66,57 @@ const EditDetailOrderLine = () => {
 
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    const fetchDetailOrder = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/detailsorder/${rowid}`
+        );
+  
+        const data = await response.json();
+        console.log("Detail order:", data);
+  
+        // Solo buscar el producto si las opciones están cargadas
+        const product = productsOptions.find(
+          (product) => product.value === data.detailOrder.productID
+
+        );
+        
+        console.log("Producto: ", product);
+        
+        setDetailOrderProduct({
+          id: data.detailOrder.productID, // Utilizar el ID del producto
+          name: product ? product.label : "", // Obtener el nombre si está disponible
+        });
+
+       
+  
+        setDetailOrderQuantity(data.detailOrder.detailOrderQuantity);
+        setDetailOrderUnitCost(data.detailOrder.detailOrderUnitCost);
+      } catch (error) {
+        console.error("Error fetching detail order:", error);
+      }
+    };
+  
+    if (productsOptions.length > 0) {
+      fetchDetailOrder();
+    }
+  }, [rowid, productsOptions]); // Solo se ejecuta cuando las opciones están listas
+
+  const handleProductChange = (product) => {
+    if (product) {
+      // setSelectedProduct(product.label);
+      
+      setDetailOrderUnitCost(product.unitPrice || ""); // Actualiza el precio unitario
+      setDetailOrderProduct({ id: product.value, name: product.label });
+    } else {
+      // Si no hay producto seleccionado (borrado)
+      // setSelectedProduct(null);
+      setDetailOrderUnitCost("");
+      setDetailOrderProduct({ id: "", name: "" });
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -183,13 +217,8 @@ const EditDetailOrderLine = () => {
               <label htmlFor="productUnit">Productos</label>
               <DropdownSelect
                 options={productsOptions}
-                value={detailOrderProduct.name} // Muestra la etiqueta del producto seleccionado
-                onChange={(option) =>
-                  setDetailOrderProduct({
-                    id: option.value,
-                    name: option.label,
-                  })
-                }
+                value={productsOptions.find((product) => product.value === detailOrderProduct.id)} // Muestra la etiqueta del producto seleccionado
+                onChange={handleProductChange}
                 placeholder="Selecciona un producto"
               />
             </div>

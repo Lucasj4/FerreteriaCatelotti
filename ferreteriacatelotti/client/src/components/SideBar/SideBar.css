@@ -3,7 +3,11 @@
 }
 
 .sidebar{
-    background: #1d2b3a;
+    /* background: #1d2b3a;
+    color: #F99417;
+    height: 100vh;
+    transition: all 0.3s; */
+    background: #212121;
     color: #F99417;
     height: 100vh;
     transition: all 0.3s;
@@ -67,13 +71,14 @@
   }
   
 .link:hover {
-    background: #4A90E2;
+    /* background: #4A90E2; */
+    background: var(--color-primary);
     color: #fff;
     transition: all 0.5s;
 }
 
 .active{
-    background: lightblue;
+    background: var(--color-primary);
     color: #000;
 }
 .icon{

@@ -6,5 +6,6 @@ const categoryController = new CategoryController();
 export const categoryRouter = express.Router();
 
 categoryRouter.post('/', categoryController.addCategory);
-categoryRouter.get('/getcategoryid', categoryController.getCategoryId);
+categoryRouter.get("/:categoryname" , categoryController.getCategoryByName)
+categoryRouter.get('/:categoryid', categoryController.getCategoryId);
 categoryRouter.get('/', categoryController.getCategories);

@@ -19,7 +19,7 @@
     margin: 0 auto;
     width: inherit;
     padding: 1rem 0;
-    color: #fff;
+    color: var(--background2);
     width: 80%;
 }
 .orderdetail__table__header{
@@ -27,8 +27,8 @@
     overflow-y: auto; 
     max-height: 400px;
     height: 50px;
-    background-color: var(--dark-blue);
-    color: #fff;
+    background-color: var(--color-primary);
+    color: var(--text-color);
 }
 .orderdetail__table__cell{
     width: 200px;
@@ -37,13 +37,13 @@
 
 .orderdetail__table__row{
     text-align: center;
-    background-color: var(--dark-blue);
+    background-color: var(--text-color);
     border: 3px solid #fff;
-    color: #fff;
+    color: var(--background2);
 }
 
 .orderdetail__table__deleteIcon, .orderdetail__table__editIcon{
-       color: var(--celeste-agua);
+       color: var(--color-primary);
     margin-right: 10px;
     background: none;
     outline: none;
@@ -51,7 +51,7 @@
     cursor: pointer;
 }
 .date-selector{
-    background-color: var(--dark-blue);
+    background-color: var(--grey);
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -71,6 +71,10 @@
     display: flex;
     align-items: center;
     gap: 15px;
+    
+}
+.date-selector__item p{
+    color: var(--background2);
 }
 .date-selector__item__date{
     background-color: var(--color-primary);
@@ -88,7 +92,7 @@
 }
 
 .orderdetail__buttons{
-    background: var(--dark-blue);
+    background: var(--grey);
     padding: 10px 5px;
     width: 100%;
     display: flex;
@@ -133,3 +137,8 @@
     color: #fff;
     border-radius: 5px;
 }
+
+.orderdetail__table__thead{
+    background-color: var(--color-primary);
+}
+

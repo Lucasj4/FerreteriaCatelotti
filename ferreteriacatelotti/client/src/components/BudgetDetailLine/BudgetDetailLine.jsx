@@ -46,12 +46,12 @@ const BudgetDetailLine = ({ isNewBudget }) => {
 
   const handleProductChange = (product) => {
     if (product) {
-      setSelectedProduct(product.label);
+      // setSelectedProduct(product.label);
       setBudgetDetailUnitCost(product.unitPrice || ""); // Actualiza el precio unitario
       setBudgetDetailItem({ id: product.value, name: product.label });
     } else {
       // Si no hay producto seleccionado (borrado)
-      setSelectedProduct(null);
+      // setSelectedProduct(null);
       setBudgetDetailUnitCost("");
       setBudgetDetailItem({ id: "", name: "" });
     }

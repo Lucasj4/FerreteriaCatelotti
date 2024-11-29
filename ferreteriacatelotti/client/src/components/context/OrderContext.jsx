@@ -7,7 +7,7 @@ const OrderProvider = ({ children }) => {
   const [proveedor, setProveedor] = useState("");
   const [estado, setEstado] = useState("Pendiente"); // Valor inicial para evitar que sea undefined
   const [purchaseOrderId, setPurchaseOrderId] = useState("");
-  const [detalleIds, setDetalleIds] = useState([]);
+  const [detalleIds, setDetalleIds] = useState(new Set());
 
   const saveData = (nuevaFecha, nuevoProveedor, nuevoEstado, nuevoPurchaseOrderId) => {
     setFecha(nuevaFecha);
@@ -19,8 +19,8 @@ const OrderProvider = ({ children }) => {
     }
   };
 
-  const addDetalleId = (detalleId) => {
-    setDetalleIds((prevIds) => [...prevIds, detalleId]);
+  const addDetalleId = (id) => {
+    setDetalleIds((prevSet) => new Set([...prevSet, id])); // Agrega sin duplicados
   };
 
   const clearDetalleIds = () => {

@@ -15,7 +15,7 @@
 }
 
 .purchaseOrder__filter{
-    background-color: var(--background2);
+    background-color: var(--grey);
     display: flex;
     width: 100%;
     height: auto;
@@ -78,7 +78,7 @@
 .order__state{
     display: flex;
     gap: 1rem;   
-    background-color: var(--dark-blue);
+    background-color: var(--text-color);
     width: 100%;
 }
 .order__state__item{
@@ -90,6 +90,9 @@
    justify-content: center;
    padding: 5px;
   
+}
+.order__state__item p{
+    color: var(--background2);
 }
 
 .purchaseOrder__tablecontainer{
@@ -123,6 +126,7 @@
     color: #fff;
     padding: 1rem 0;
     width: 60%;
+    
 
 }
 .purchaseOrder__table__header{
@@ -130,13 +134,15 @@
     overflow-y: auto; /* Aparecerá una barra de desplazamiento vertical si es necesario */
     max-height: 400px;
     height: 50px;
-    background-color: var(--dark-blue);
+    background-color: var(--color-primary);
+    color: var(--text-color);
+   
 }
 .purchaseOrder__table__row{
     
    
     text-align: center;
-    background-color: var(--dark-blue);
+    background-color: var(--text-color);
     border: 3px solid #fff;
     color: #212121 ;
 }
@@ -183,9 +189,10 @@
     display: flex;
     align-items: center;
     justify-content: space-around;
-    color: #fff;
+    background: var(--background2);
     width: 50%;
     flex-direction: column;
+    color: var(--text-color);
 }
 
 .dateselector__title{
@@ -206,11 +213,11 @@
 
 .dateselector__date{
     padding: 0.5rem;
-    border: 1px solid var(--dark-blue);
+    border: 1px solid var(--color-primary);
     border-radius: 4px;
     font-size: 1rem;
-    color: #fff;
-    background-color: var(--dark-blue);
+    color: var(--text-color);
+    background-color: var(--color-primary);
     outline: none;
 }
 

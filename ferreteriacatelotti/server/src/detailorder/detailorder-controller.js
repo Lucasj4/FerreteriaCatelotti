@@ -5,14 +5,15 @@ const detailOrderService = new DetailOrderService();
 export class DetailOrderController {
 
     async createDetailOrder(req, res) {
-        const { detailOrderProduct, detailOrderUnitCost, detailOrderQuantity, productID } = req.body;
+        const { detailOrderProduct, detailOrderUnitCost, detailOrderQuantity, productID, purchaseOrderID  } = req.body;
 
         try {
             const newDetailOrder = {
                 detailOrderProduct,
                 detailOrderQuantity,
                 detailOrderUnitCost,
-                productID
+                productID,
+                purchaseOrderID
             }
             const createdDetailOrder = await detailOrderService.createDetailOrder(newDetailOrder);
 

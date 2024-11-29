@@ -79,6 +79,9 @@ const NewProduct = () => {
       productCost,
     };
 
+    console.log(productData);
+    
+
     try {
       const response = await fetch(
         "http://localhost:8080/api/products/addproduct",

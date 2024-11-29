@@ -9,11 +9,11 @@
     overflow-y: auto; /* Aparecerá una barra de desplazamiento vertical si es necesario */
     max-height: 400px;
     height: 50px;
-    background-color: var(--dark-blue);
+    background-color: var(--color-primary);
   }
   .table__row{
     text-align: center;
-    background-color: var(--dark-blue);
+    background-color: var(--text-color);
     border: 3px solid #212121;
   }
   .table__cell{

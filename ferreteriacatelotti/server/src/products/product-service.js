@@ -86,6 +86,15 @@ export class ProductService{
         }
     }
 
+    async updateProductStock(idProduct, stock){
+        try {
+            const updateProductStock = await ProductModel.findByIdAndUpdate(idProduct, {productStock: stock},  { new: true } );
+            return updateProductStock
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async deleteProducts(){
         try {
             const deleteProducts = await ProductModel.deleteMany();

@@ -1,171 +1,240 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import FormItem from "../FormItem/FormItem";
 import DropdownSelect from "../DropDownSelect/DropDownSelect";
 import { Link } from "react-router-dom";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 const EditProduct = () => {
-    const [productName, setProductName] = useState("");
-    const [productStock, setProductStock] = useState("");
-    const [productUnit, setProductUnit] = useState("");
-    const [productPrice, setProductPrice] = useState("");
-    const [productCategory, setProductCategory] = useState("");
-    const [productCategories, setProductCategories] = useState([]);
-    const [productCost, setProductCost] = useState("");
-    const { pid } = useParams()
-  
-    const resetForm = () => {
-        setProductName("");
-        setProductStock("");
-        setProductUnit("");
-        setProductPrice("");
-        setProductCategory("");
-        setProductCost("");
-      };
+  const [productName, setProductName] = useState("");
+  const [productStock, setProductStock] = useState("");
+  const [productUnit, setProductUnit] = useState({
+    value: "",
+    label: "",
+  });
+  const [productPrice, setProductPrice] = useState("");
+  const [productCategory, setProductCategory] = useState("");
+  const [productCategories, setProductCategories] = useState([]);
+  const [productCost, setProductCost] = useState("");
+  const [productsUnitsOptions, setProductsUnitsOptions] = useState([]);
+  const { pid } = useParams();
 
-      useEffect(() => {
-        // Función asíncrona para obtener las categorías desde la API
-        const fetchCategories = async () => {
-          try {
-           
-            const response = await fetch("http://localhost:8080/api/categories");
-            if (!response.ok) {
-              throw new Error("Error al obtener las categorías");
-            }
-            const data = await response.json();
-            
-            setProductCategories(data.categories); // Actualiza el estado con las categorías recibidas
-          } catch (error) {
-            console.error("Error en la solicitud", error);
-          }
-        };
-    
-        fetchCategories(); // Llama a la función al montar el componente
-      }, []);
+  const resetForm = () => {
+    setProductName("");
+    setProductStock("");
+    setProductUnit("");
+    setProductPrice("");
+    setProductCategory("");
+    setProductCost("");
+  };
 
-      useEffect(() => {
-        const fetchProduct = async () => {
-          try {
-            
-            const response = await fetch(`http://localhost:8080/api/products/${pid}`); // URL con el ID del producto
-            if (response.ok) {
-              const data = await response.json();
-              setProductName(data.product.productName)
-              setProductCost(data.product.productCost)
-              setProductPrice(data.product.productPrice)
-              setProductStock(data.product. productStock)
-            } else {
-              throw new Error("Error al obtener el producto");
-            }
-          } catch (error) {
-            console.error("Error en la solicitud", error);
-          }
-        };
-    
-        fetchProduct();
-      }, [pid]);
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        
-        const productData = {
-          productName,
-          productStock,
-          productUnit,
-          productPrice,
-          productCategory,
-          productCost,
-        };
-    
-        try {
-          const response = await fetch(
-            `http://localhost:8080/api/products/${idProducto}`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(productData),
-            }
-          );
-    
-          const result = await response.json();
-    
-          switch (response.status) {
-            case 201:
-              Swal.fire({
-                title: "Producto creado con exito",
-                icon: "success",
-                confirmButtonText: "Aceptar",
-                customClass: {
-                  title: "my-title-class",
-                  popup: "my-popup-class",
-                  confirmButton: "my-confirm-button-class",
-                  overlay: "my-overlay-class",
-                },
-              }).then(() => {
-                resetForm();
-              });
-              break;
-    
-            case 400:
-              const errorMessages =
-                result.errorMessages && result.errorMessages.length > 0
-                  ? result.errorMessages[0] // Une los mensajes con saltos de línea
-                  : "Error desconocido";
-    
-              Swal.fire({
-                title: "Error al crear producto",
-                text: errorMessages,
-                icon: "error",
-                confirmButtonText: "Aceptar",
-                customClass: {
-                  title: "my-title-class",
-                  popup: "my-popup-class",
-                  confirmButton: "my-confirm-button-class",
-                  overlay: "my-overlay-class",
-                },
-              });
-              break;
-            case 409:
-              Swal.fire({
-                title: `Error al crear producto: ${productName} ya existe`,
-                icon: "warning",
-                confirmButtonText: "Aceptar",
-                customClass: {
-                  title: "my-title-class",
-                  popup: "my-popup-class",
-                  confirmButton: "my-confirm-button-class",
-                  overlay: "my-overlay-class",
-                },
-              });
-              break;
-    
-            default:
-              Swal.fire({
-                title: "Error inesperado",
-                text: `Código de estado: ${response.status}`,
-                icon: "error",
-                confirmButtonText: "Aceptar",
-                customClass: {
-                  title: "my-title-class",
-                  popup: "my-popup-class",
-                  confirmButton: "my-confirm-button-class",
-                  overlay: "my-overlay-class",
-                },
-              });
-    
-              // Registro en la consola para depuración adicional
-              console.error(`Estado inesperado: ${response.status}`, response);
-    
-              // Puedes agregar redireccionamiento o manejo adicional aquí si es necesario
-              break;
-          }
-          
-        } catch (error) {
-          console.error("Error en la solicitud", error);
+  useEffect(() => {
+    const fetchUnits = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/units");
+        if (!response.ok) {
+          throw new Error("Error al obtener las categorías");
         }
-      };
-      const options = ["Metros"];
+        const data = await response.json();
+        console.log("Data: ", data);
+
+        const productsUnitsOptions = data.units.map((unit) => ({
+          value: unit._id,
+          label: unit.unitName,
+        }));
+
+        setProductsUnitsOptions(productsUnitsOptions);
+      } catch (error) {
+        console.error("Error en la solicitud", error);
+      }
+    };
+
+    fetchUnits();
+  }, []);
+
+  useEffect(() => {
+    // Función asíncrona para obtener las categorías desde la API
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/categories");
+        if (!response.ok) {
+          throw new Error("Error al obtener las categorías");
+        }
+        const data = await response.json();
+
+        setProductCategories(data.categories); // Actualiza el estado con las categorías recibidas
+      } catch (error) {
+        console.error("Error en la solicitud", error);
+      }
+    };
+
+    fetchCategories(); // Llama a la función al montar el componente
+  }, []);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/products/${pid}`
+        ); // URL con el ID del producto
+        if (response.ok) {
+          const data = await response.json();
+
+          console.log(data.product);
+          
+          setProductName(data.product.productName);
+          setProductCost(data.product.productCost);
+          setProductPrice(data.product.productPrice);
+          setProductStock(data.product.productStock);
+         
+          console.log("Categorias de productos: ", productCategories);
+          console.log("Categoria traida desde producto: ", data.product.categoryID);
+          
+          const category = productCategories.find(
+            (category) => category._id === data.product.categoryID
+          );
+          
+          console.log(category);
+          
+          // Si encontramos la categoría, actualizamos el estado con el categoryId
+          if (category) {
+            setProductCategory(category.categoryName);
+          } else {
+            console.error("Categoría no encontrada para el producto");
+          }
+         
+         
+          
+          const unit = productsUnitsOptions.find((unit) => {
+             return unit.value === data.product.unitID;
+          });
+
+      
+          
+          if (unit) {
+            setProductUnit({
+              value: unit.value,
+              label: unit.label,
+            });
+          } else {
+            console.error("Unidad no encontrada para el producto");
+          }
+
+
+          
+        } else {
+          throw new Error("Error al obtener la categoría");
+        }
+      } catch (error) {
+        console.error("Error en la solicitud", error);
+      }
+    };
+
+    fetchProduct();
+  }, [pid, productsUnitsOptions]);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const productData = {
+      productName,
+      productStock,
+      productUnit: productUnit.label,
+      productPrice,
+      productCategory: productCategory,
+      productCost,
+    };
+
+    console.log("Producto: ", productData);
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/products/${pid}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(productData),
+        }
+      );
+
+      const result = await response.json();
+
+      switch (response.status) {
+        case 200:
+          Swal.fire({
+            title: "Producto modificado con exito",
+            icon: "success",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              overlay: "my-overlay-class",
+            },
+          }).then(() => {
+            resetForm();
+          });
+          break;
+
+        case 400:
+          const errorMessages =
+            result.errorMessages && result.errorMessages.length > 0
+              ? result.errorMessages[0] // Une los mensajes con saltos de línea
+              : "Error desconocido";
+
+          Swal.fire({
+            title: "Error al crear producto",
+            text: errorMessages,
+            icon: "error",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              overlay: "my-overlay-class",
+            },
+          });
+          break;
+        case 409:
+          Swal.fire({
+            title: `Error al crear producto: ${productName} ya existe`,
+            icon: "warning",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              overlay: "my-overlay-class",
+            },
+          });
+          break;
+
+        default:
+          Swal.fire({
+            title: "Error inesperado",
+            text: `Código de estado: ${response.status}`,
+            icon: "error",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              overlay: "my-overlay-class",
+            },
+          });
+
+          // Registro en la consola para depuración adicional
+          console.error(`Estado inesperado: ${response.status}`, response);
+
+          // Puedes agregar redireccionamiento o manejo adicional aquí si es necesario
+          break;
+      }
+    } catch (error) {
+      console.error("Error en la solicitud", error);
+    }
+  };
+  const options = ["Metros"];
   return (
     <>
       <div className="component__container">
@@ -234,12 +303,14 @@ const EditProduct = () => {
                 </select>
               </div>
 
+              
+
               <div className="product__item__select">
                 <label htmlFor="productUnit">Unidad</label>
                 <DropdownSelect
-                  options={options}
-                  value={productUnit}
-                  onChange={setProductUnit}
+                  options={productsUnitsOptions}
+                  value={productUnit} 
+                  onChange={(option) => setProductUnit(option)}
                   placeholder="Selecciona una unidad"
                 />
               </div>
