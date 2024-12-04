@@ -16,8 +16,11 @@ const Table = ({
   headers,
   data,
   handleDeleteCell,
-  getEditPath, // Cambia editPath a una función que reciba el ID
+  getEditPath,
 }) => {
+  // Función para enmascarar la contraseña
+  const maskPassword = (password) => '*'.repeat(password.length);
+
   return (
     <table className={tableClassName}>
       <thead className={theadClassName}>
@@ -35,7 +38,9 @@ const Table = ({
           <tr key={row._id} className={trClassName}>
             {headers.map((header, colIndex) => (
               <td key={colIndex} className={tdClassName}>
-                {row[header.value]}
+                {header.value === "userPassword"
+                  ? maskPassword(row[header.value]) // Enmascarar contraseña
+                  : row[header.value]}
               </td>
             ))}
             <td className={tdClassName}>

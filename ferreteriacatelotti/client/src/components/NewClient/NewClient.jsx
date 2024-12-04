@@ -1,6 +1,7 @@
 import React from "react";
 import FormItem from "../FormItem/FormItem";
 import { useState } from "react";
+import { useNavigate} from "react-router-dom";
 import "./NewClient.css";
 import Swal from "sweetalert2"; 
 
@@ -9,13 +10,42 @@ const NewClient = () => {
   const [clientLastName, setClientLastName] = useState("");
   const [clientDni, setClientDni] = useState("");
   const [clientEmail, setClientEmail] = useState("");
-
+  const navigate = useNavigate();
   const resetForm = () => {
     setClientFirstName("");
     setClientLastName("");
     setClientEmail("");
     setClientDni("");
   };
+
+  const handleExit = async (e)=>{ 
+    
+    e.preventDefault();
+    
+    try {
+      const result = await Swal.fire({
+        text: "¿Estas seguro que deseas salir?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, salir",
+        cancelButtonText: "No, cancelar",
+        customClass: {
+          title: "my-title-class",
+          popup: "my-popup-class",
+          confirmButton: "my-confirm-button-class",
+          cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
+          overlay: "my-overlay-class",
+        },
+      })
+  
+      if(result.isConfirmed){
+        navigate("/clientes")
+      }
+    } catch (error) {
+      console.error(error)
+    }
+    
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,8 +106,10 @@ const NewClient = () => {
           });
           break;
         case 409:
+          const error = result.error
+          
           Swal.fire({
-            title: `Error al agregar cliente: ${clientFirstName} ${clientLastName} ya se encuentra registrado como cliente`,
+            title: `${error}`,
             icon: "warning",
             confirmButtonText: "Aceptar",
             customClass: {
@@ -159,7 +191,7 @@ const NewClient = () => {
           </form>
           <div className="form__containerbuttons">
             <button className="form__button" onClick={handleSubmit}>Guardar</button>
-            <button className="form__button">Salir</button>
+            <button className="form__button" onClick={handleExit}>Salir</button>
           </div>
         </div>
         <div></div>

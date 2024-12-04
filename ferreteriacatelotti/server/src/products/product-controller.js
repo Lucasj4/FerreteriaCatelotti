@@ -65,7 +65,7 @@ export class ProductController {
             productCost
         }
 
-        console.log("prodcut id desde controller updateProduct: ",pid);
+        req.logger.info("prodcut id desde controller updateProduct: " + pid);
 
         if (!mongoose.Types.ObjectId.isValid(pid)) {
             return res.status(400).json({ success: false, message: "ID de producto no válido" });
@@ -198,6 +198,7 @@ export class ProductController {
         const { name, category } = req.query;
         try {
             let products = [];
+            
             if (name) {
                 products = await productService.getProductsByName(name);
             } else if (category) {
@@ -224,9 +225,6 @@ export class ProductController {
                 })
             );
 
-
-
-            // Envía los productos encontrados como respuesta
             return res.status(200).json({ products: enhancedProducts });
         } catch (error) {
             console.error('Error al buscar productos:', error);
@@ -238,10 +236,10 @@ export class ProductController {
         const { pid } = req.params;
 
         try {
-            console.log("Pid desde controller: " + pid);
+            req.logger.info("Pid desde controller getProductById: " + pid);
 
             const product = await productService.getProductById(pid);
-            console.log("Product: " + product);
+            req.logger.info("Product: " + product);
 
             return res.status(200).json({ product });
         } catch (error) {

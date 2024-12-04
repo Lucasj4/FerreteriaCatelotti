@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
 import FormItem from "../FormItem/FormItem";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const EditClient = () => {
@@ -10,16 +10,16 @@ const EditClient = () => {
   const [clientDni, setClientDni] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const { cid } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Cliente id desde front: " + cid);
 
     const fetchClient = async () => {
       try {
         const response = await fetch(
           `http://localhost:8080/api/clients/${cid}`
         );
-        console.log("Cliente desde edit: ", response);
+       
         if (response) {
           const data = await response.json();
           console.log("Cliente: ", data.client);
@@ -38,81 +38,132 @@ const EditClient = () => {
     fetchClient();
   }, [cid]);
 
+  const handleExit = async (e)=>{ 
+    
+    e.preventDefault();
+    
+    try {
+      const result = await Swal.fire({
+        text: "¿Estas seguro que deseas salir?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, salir",
+        cancelButtonText: "No, cancelar",
+        customClass: {
+          title: "my-title-class",
+          popup: "my-popup-class",
+          confirmButton: "my-confirm-button-class",
+          cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
+          overlay: "my-overlay-class",
+        },
+      })
+  
+      if(result.isConfirmed){
+        navigate("/clientes")
+      }
+    } catch (error) {
+      console.error(error)
+    }
+    
+  }
+
   const handlesubmit = async (event) => {
     event.preventDefault();
 
-    const clientData = {
-      clientFirstName,
-      clientLastName,
-      clientEmail,
-      clientDni,
-    };
-    console.log(clientData);
-    try {
-      const response = await fetch(`http://localhost:8080/api/clients/${cid}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(clientData),
-      });
-      const result = await response.json();
+    const result = await Swal.fire({
+      text: "¿Estas seguro que modificar los datos del cliente?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí",
+      cancelButtonText: "No, cancelar",
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
+        overlay: "my-overlay-class",
+      },
+    });
 
-      switch (response.status) {
-        case 200:
-          Swal.fire({
-            title: "Cliente modificado con exito",
-            icon: "success",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
+    if (result.isConfirmed) {
+      const clientData = {
+        clientFirstName,
+        clientLastName,
+        clientEmail,
+        clientDni,
+      };
+
+
+      console.log("Cliente modificado" , clientData);
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/clients/${cid}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
             },
-          });
-          break;
-        case 400:
-          const errorMessages =
-            result.errorMessages && result.errorMessages.length > 0
-              ? result.errorMessages[0] 
-              : "Error desconocido";
+            body: JSON.stringify(clientData),
+          }
+        );
+        const result = await response.json();
 
-          Swal.fire({
-            title: "Error al editar cliente",
-            text: errorMessages,
-            icon: "error",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
-          });
-          break;
-        default:
-          Swal.fire({
-            title: "Error inesperado",
-            text: `Código de estado: ${response.status}`,
-            icon: "error",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
-          });
+        switch (response.status) {
+          case 200:
+            Swal.fire({
+              title: "Cliente modificado con exito",
+              icon: "success",
+              confirmButtonText: "Aceptar",
+              customClass: {
+                title: "my-title-class",
+                popup: "my-popup-class",
+                confirmButton: "my-confirm-button-class",
+                overlay: "my-overlay-class",
+              },
+            });
+            break;
+          case 400:
+            const errorMessages =
+              result.errorMessages && result.errorMessages.length > 0
+                ? result.errorMessages[0] // Une los mensajes con saltos de línea
+                : "Error desconocido";
 
-          // Registro en la consola para depuración adicional
-          console.error(`Estado inesperado: ${response.status}`, response);
+            Swal.fire({
+              title: "Error al editar cliente",
+              text: errorMessages,
+              icon: "error",
+              confirmButtonText: "Aceptar",
+              customClass: {
+                title: "my-title-class",
+                popup: "my-popup-class",
+                confirmButton: "my-confirm-button-class",
+                overlay: "my-overlay-class",
+              },
+            });
+            break;
+          default:
+            Swal.fire({
+              title: "Error inesperado",
+              text: `Código de estado: ${response.status}`,
+              icon: "error",
+              confirmButtonText: "Aceptar",
+              customClass: {
+                title: "my-title-class",
+                popup: "my-popup-class",
+                confirmButton: "my-confirm-button-class",
+                overlay: "my-overlay-class",
+              },
+            });
 
-          // Puedes agregar redireccionamiento o manejo adicional aquí si es necesario
-          break;
+            // Registro en la consola para depuración adicional
+            console.error(`Estado inesperado: ${response.status}`, response);
+
+            // Puedes agregar redireccionamiento o manejo adicional aquí si es necesario
+            break;
+        }
+      } catch (error) {
+        console.error("Error en la solicitud", error);
       }
-    } catch (error) {
-      console.error("Error en la solicitud", error);
     }
   };
   return (
@@ -166,7 +217,7 @@ const EditClient = () => {
             <button className="form__button" onClick={handlesubmit}>
               Editar
             </button>
-            <button className="form__button">Salir</button>
+            <button className="form__button" onClick={handleExit}>Salir</button>
           </div>
         </div>
         <div></div>

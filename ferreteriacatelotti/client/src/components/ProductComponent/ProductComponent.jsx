@@ -29,6 +29,7 @@ const ProductComponent = () => {
       throw error;
     }
   }
+  
   const getProducts = async () => {
     try {
       const queryParam =

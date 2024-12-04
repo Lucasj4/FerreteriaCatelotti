@@ -63,5 +63,20 @@ export class UserController{
             res.status(500).json({ error: 'Error interno del servidor' });
         }
     }
+
+    async getUsers(req, res){
+        try {
+            const users = await userService.getUsers();
+
+            if(users){
+                return res.status(200).json({message: "Usuarios", users})
+            }else{
+                return res.status(404).json({message: "Usuarios no encontrados"})
+            }
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error: 'Error interno del servidor' });
+        }
+    }
   
 }

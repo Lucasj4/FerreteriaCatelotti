@@ -1,0 +1,44 @@
+.invoice-container {
+    width: 70%;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .invoice-container h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .invoice-details {
+    margin-bottom: 20px;
+  }
+  
+  .invoice-item {
+    margin: 10px 0;
+  }
+  
+  .invoice-item strong {
+    color: #333;
+  }
+  
+  .invoice-footer {
+    text-align: center;
+  }
+  
+  .print-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .print-button:hover {
+    background-color: #0056b3;
+  }
+  

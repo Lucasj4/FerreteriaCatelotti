@@ -1,0 +1,11 @@
+.clientecomponent__actions{
+    background-color: var(--grey);
+}
+
+.clientcomponent__search-container{
+    background-color: var(--grey);
+}
+
+.clientecomponent__search-button{
+    background-color: var(--color-primary);
+}

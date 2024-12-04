@@ -6,3 +6,4 @@ const userController = new UserController();
 
 userRouter.post("/", userValidator, userController.createUser );
 userRouter.post("/login",  userController.login );
+userRouter.get("/", userController.getUsers);

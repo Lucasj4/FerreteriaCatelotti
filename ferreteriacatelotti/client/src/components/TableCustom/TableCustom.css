@@ -10,6 +10,7 @@
     max-height: 400px;
     height: 50px;
     background-color: var(--color-primary);
+    color: var(--text-color);
   }
   .table__row{
     text-align: center;

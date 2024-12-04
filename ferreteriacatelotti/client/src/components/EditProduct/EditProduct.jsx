@@ -80,36 +80,35 @@ const EditProduct = () => {
           const data = await response.json();
 
           console.log(data.product);
-          
+
           setProductName(data.product.productName);
           setProductCost(data.product.productCost);
           setProductPrice(data.product.productPrice);
           setProductStock(data.product.productStock);
-         
+
           console.log("Categorias de productos: ", productCategories);
-          console.log("Categoria traida desde producto: ", data.product.categoryID);
-          
+          console.log(
+            "Categoria traida desde producto: ",
+            data.product.categoryID
+          );
+
           const category = productCategories.find(
             (category) => category._id === data.product.categoryID
           );
-          
+
           console.log(category);
-          
+
           // Si encontramos la categoría, actualizamos el estado con el categoryId
           if (category) {
             setProductCategory(category.categoryName);
           } else {
             console.error("Categoría no encontrada para el producto");
           }
-         
-         
-          
+
           const unit = productsUnitsOptions.find((unit) => {
-             return unit.value === data.product.unitID;
+            return unit.value === data.product.unitID;
           });
 
-      
-          
           if (unit) {
             setProductUnit({
               value: unit.value,
@@ -118,9 +117,6 @@ const EditProduct = () => {
           } else {
             console.error("Unidad no encontrada para el producto");
           }
-
-
-          
         } else {
           throw new Error("Error al obtener la categoría");
         }
@@ -146,92 +142,110 @@ const EditProduct = () => {
 
     console.log("Producto: ", productData);
 
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/products/${pid}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(productData),
+    const result = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "¿Confirmar modificacion de detalle?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, modificar",
+      cancelButtonText: "No, cancelar",
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
+        overlay: "my-overlay-class",
+      },
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/products/${pid}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(productData),
+          }
+        );
+
+        const result = await response.json();
+
+        switch (response.status) {
+          case 200:
+            Swal.fire({
+              title: "Producto modificado con exito",
+              icon: "success",
+              confirmButtonText: "Aceptar",
+              customClass: {
+                title: "my-title-class",
+                popup: "my-popup-class",
+                confirmButton: "my-confirm-button-class",
+                overlay: "my-overlay-class",
+              },
+            }).then(() => {
+              resetForm();
+            });
+            break;
+
+          case 400:
+            const errorMessages =
+              result.errorMessages && result.errorMessages.length > 0
+                ? result.errorMessages[0] // Une los mensajes con saltos de línea
+                : "Error desconocido";
+
+            Swal.fire({
+              title: "Error al modificar producto",
+              text: errorMessages,
+              icon: "error",
+              confirmButtonText: "Aceptar",
+              customClass: {
+                title: "my-title-class",
+                popup: "my-popup-class",
+                confirmButton: "my-confirm-button-class",
+                overlay: "my-overlay-class",
+              },
+            });
+            break;
+          case 409:
+            Swal.fire({
+              title: `Error al crear modificar: ${productName} ya existe`,
+              icon: "warning",
+              confirmButtonText: "Aceptar",
+              customClass: {
+                title: "my-title-class",
+                popup: "my-popup-class",
+                confirmButton: "my-confirm-button-class",
+                overlay: "my-overlay-class",
+              },
+            });
+            break;
+
+          default:
+            Swal.fire({
+              title: "Error inesperado",
+              text: `Código de estado: ${response.status}`,
+              icon: "error",
+              confirmButtonText: "Aceptar",
+              customClass: {
+                title: "my-title-class",
+                popup: "my-popup-class",
+                confirmButton: "my-confirm-button-class",
+                overlay: "my-overlay-class",
+              },
+            });
+
+            // Registro en la consola para depuración adicional
+            console.error(`Estado inesperado: ${response.status}`, response);
+
+            // Puedes agregar redireccionamiento o manejo adicional aquí si es necesario
+            break;
         }
-      );
-
-      const result = await response.json();
-
-      switch (response.status) {
-        case 200:
-          Swal.fire({
-            title: "Producto modificado con exito",
-            icon: "success",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
-          }).then(() => {
-            resetForm();
-          });
-          break;
-
-        case 400:
-          const errorMessages =
-            result.errorMessages && result.errorMessages.length > 0
-              ? result.errorMessages[0] // Une los mensajes con saltos de línea
-              : "Error desconocido";
-
-          Swal.fire({
-            title: "Error al crear producto",
-            text: errorMessages,
-            icon: "error",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
-          });
-          break;
-        case 409:
-          Swal.fire({
-            title: `Error al crear producto: ${productName} ya existe`,
-            icon: "warning",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
-          });
-          break;
-
-        default:
-          Swal.fire({
-            title: "Error inesperado",
-            text: `Código de estado: ${response.status}`,
-            icon: "error",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
-          });
-
-          // Registro en la consola para depuración adicional
-          console.error(`Estado inesperado: ${response.status}`, response);
-
-          // Puedes agregar redireccionamiento o manejo adicional aquí si es necesario
-          break;
+      } catch (error) {
+        console.error("Error en la solicitud", error);
       }
-    } catch (error) {
-      console.error("Error en la solicitud", error);
     }
   };
   const options = ["Metros"];
@@ -303,13 +317,11 @@ const EditProduct = () => {
                 </select>
               </div>
 
-              
-
               <div className="product__item__select">
                 <label htmlFor="productUnit">Unidad</label>
                 <DropdownSelect
                   options={productsUnitsOptions}
-                  value={productUnit} 
+                  value={productUnit}
                   onChange={(option) => setProductUnit(option)}
                   placeholder="Selecciona una unidad"
                 />

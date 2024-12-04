@@ -46,4 +46,32 @@ export class ClientService {
             throw error;
         }
     }
+
+    async getClientByEmail(clientEmail){
+        try {
+            const client = await ClientModel.findOne({clientEmail: clientEmail});
+            return client;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getClientByFilter(clientEmail, clientLastName){
+        try {
+            const query = {};
+
+            if(clientEmail){
+                query.clientEmail = clientEmail;
+            }
+
+            if(clientLastName){
+                query.clientLastName = clientLastName
+            }
+
+            return await ClientModel.find(query).exec();
+        } catch (error) {
+            console.error(error);
+            throw error; 
+        }
+    }
 }

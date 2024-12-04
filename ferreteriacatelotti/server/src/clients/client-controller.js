@@ -9,9 +9,15 @@ export class ClientController {
 
         try {
             const existingClient = await clientService.getClientByDni(clientDni);
+            const existingClientByEmail = await clientService.getClientByEmail(clientEmail);
 
             if (existingClient) {
-                return res.status(409).json({ error: `El client ${clientFirstName} ${clientLastName} ya existe` });
+                return res.status(409).json({ error: `El client con el dni ${clientDni} ya está registrado.` });
+            }
+
+            
+            if (existingClientByEmail) {
+                return res.status(409).json({ error: `El correo ${clientEmail} ya está registrado.`});
             }
 
             const newClient = {
@@ -20,6 +26,8 @@ export class ClientController {
                 clientEmail,
                 clientDni
             }
+
+            
 
             const client = await clientService.addClient(newClient);
             return res.status(201).json({ message: "Client agregado", client });
@@ -47,7 +55,7 @@ export class ClientController {
         const { cid } = req.params;
 
         try {
-            req.logger.info("iD CLIENTE: " + cid);
+            req.logger.info("Cliente id: " + cid);
             
             const client = await clientService.getClientById(cid);
             
@@ -57,15 +65,46 @@ export class ClientController {
 
             return res.status(200).json({client})
         } catch (error) {
-            console.error('Error al buscar productos:', error);
+            console.error('Error al buscar clientes:', error);
+            return res.status(500).json({ message: 'Error en el servidor', error });
+        }
+    }
+
+    async getClientByFilter(req, res){
+        try {
+            const {clientEmail, clientLastName} = req.query;
+
+            req.logger.info("Email: " + clientEmail);
+            req.logger.info("Apellido: " + clientLastName);
+            
+            const clients = await clientService.getClientByFilter(clientEmail, clientLastName);
+
+            if(clients.length > 0){
+                return res.status(200).json({message: "Clientes", clients})
+            }else{
+                return res.status(404).json({message: "Clientes no encontrados"})
+            }
+        } catch (error) {
             return res.status(500).json({ message: 'Error en el servidor', error });
         }
     }
 
     async updateClient(req, res) {
         const { cid } = req.params;
-        const  clientData  = req.body;
-        req.logger.info("Datos recibidos desde el frontend: ", req.body);
+        const  {clientFirstName, clientLastName, clientEmail, clientDni } = req.body;
+        
+
+        const updateClient = {
+            clientFirstName,
+            clientLastName,
+            clientEmail,
+            clientDni
+        }
+
+
+        req.logger.info("cid: " + cid);
+
+        req.logger.info("Cliente: " + updateClient);
 
         try {
             req.logger.info("cid: " + cid);
@@ -79,7 +118,7 @@ export class ClientController {
 
            
             // Actualizar el cliente
-            const client = await clientService.updateClient(cid, clientData);
+            const client = await clientService.updateClient(cid, updateClient);
 
             req.logger.info("Cliente modificado: " + client);
             // Devolver la respuesta si se actualiza correctamente

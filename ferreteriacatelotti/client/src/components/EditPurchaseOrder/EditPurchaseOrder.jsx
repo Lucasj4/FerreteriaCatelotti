@@ -9,24 +9,44 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { useAppContext } from "../context/OrderContext";
 import Swal from "sweetalert2";
-import PurchaseOrder from "../PurchaseOrder/PurchaseOrder";
+import ExcelJS from 'exceljs';
+
+
+
 
 const EditPurchaseOrder = () => {
   const [rows, setRows] = useState([]);
-  const { fecha, proveedor, saveData, estado, detalleIds, clearDetalleIds, addDetalleId} =
-    useAppContext();
+  const {
+    fecha,
+    proveedor,
+    saveData,
+    estado,
+    detalleIds,
+    clearDetalleIds,
+    addDetalleId,
+  } = useAppContext();
   const { pid } = useParams();
   const [purchaseOrderDate, setPurchaseOrderDate] = useState("");
   const [amount, setAmount] = useState(0);
   const [suppliers, setSuppliers] = useState([]);
   const [selectedSuppliers, setSelectedSuppliers] = useState([]);
   const [localStatus, setLocalStatus] = useState("Pendiente");
+  const [product, setProduct] = useState("");
+  const [productQuantity, setProductQuantity] = useState(0);
+  const [productUnitCost, setProductUnitCost] = useState(0);
+  const [productData, setProductData] = useState([]);
+  const [proveedorValue, setProveedorValue] = useState('');
+
   const tableHeaders = [
     { value: "detailOrderProduct", label: "Producto" },
     { value: "detailOrderQuantity", label: "Cantidad" },
     { value: "detailOrderUnitCost", label: "Costo Unitario" },
   ];
 
+  const datosTabla = [
+    { producto: "Producto 1", cantidad: 2, precioUnitario: 50, total: 100 },
+    { producto: "Producto 2", cantidad: 1, precioUnitario: 30, total: 30 },
+  ];
 
   const navigate = useNavigate();
 
@@ -50,7 +70,6 @@ const EditPurchaseOrder = () => {
   };
 
   useEffect(() => {
-   
     const fetchSuppliers = async () => {
       try {
         const response = await fetch("http://localhost:8080/api/suppliers"); // Endpoint de proveedores
@@ -78,14 +97,13 @@ const EditPurchaseOrder = () => {
         const purchaseOrder = data.purchaseOrder;
         const detailOrders = data.detailOrders;
 
+        console.log(data);
+        
         for (const detail of detailOrders) {
           addDetalleId(detail._id); // Los duplicados son manejados automáticamente por el Set
         }
         console.log("Detalle ids final: ", Array.from(detalleIds));
-       
-        
-        
-        
+
         const groupedDetails = groupDetailsByProduct(detailOrders);
 
         const total = groupedDetails.reduce((acc, order) => {
@@ -108,23 +126,16 @@ const EditPurchaseOrder = () => {
           (supplier) => supplier._id === purchaseOrder.supplierID
         );
 
-    
-     
-      setSelectedSuppliers(
-        selectedSupplierOption
-          ? [
-              {
-                label: selectedSupplierOption.lastName, // Campo que se mostrará en el MultiSelect
-                value: selectedSupplierOption._id, // ID del cliente
-              },
-            ]
-          : []
-      );
-
-    
-      
-
-       
+        setSelectedSuppliers(
+          selectedSupplierOption
+            ? [
+                {
+                  label: selectedSupplierOption.lastName, // Campo que se mostrará en el MultiSelect
+                  value: selectedSupplierOption._id, // ID del cliente
+                },
+              ]
+            : []
+        );
       } catch (error) {
         console.error("Error fetching purchase order with details:", error);
         Swal.fire({
@@ -136,7 +147,45 @@ const EditPurchaseOrder = () => {
     };
 
     fetchPurchaseOrderWithDetails();
-  }, [pid,  suppliers]);
+  }, [pid, suppliers]);
+
+  useEffect(() => {
+    const handlePdf = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/purchaseorders/purchaseorderswithdetails/${pid}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Error al obtener el pedido de compra");
+        }
+
+        const data = await response.json();
+        const purchaseOrder = data.purchaseOrder;
+        const detailOrders = data.detailOrders;
+
+        // Datos de proveedor, estado y monto
+        const proveedorValue = selectedSuppliers.length > 0 ? selectedSuppliers[0].label : "";
+        setPurchaseOrderDate(purchaseOrder.purchaseOrderDate);
+        setLocalStatus(purchaseOrder.status);
+        setProveedorValue(proveedorValue);
+        
+
+        // Extraemos los productos
+        const products = detailOrders.map((order) => ({
+          product: order.detailOrderProduct,
+          quantity: order.detailOrderQuantity,
+          unitCost: order.detailOrderUnitCost,
+        }));
+
+        setProductData(products);
+      } catch (error) {
+        console.error("Error en la petición de eliminación", error);
+      }
+    };
+
+    handlePdf();
+  }, [pid, selectedSuppliers]);
 
   const handleSupplierChange = (selectedOptions) => {
     setSelectedSuppliers(selectedOptions); // Actualiza el estado con las opciones seleccionadas
@@ -150,16 +199,64 @@ const EditPurchaseOrder = () => {
 
   const handleDateChange = (e) => {
     const selectedDate = e.target.value;
-    console.log(selectedDate);
+    
 
     setPurchaseOrderDate(selectedDate);
-   
   };
 
   const handleDeleteCell = (indice) => {
     const nuevasFilas = [...filas];
     nuevasFilas.splice(indice, 1);
     setFilas(nuevasFilas);
+  };
+
+   const generateExcel = async () => {
+    // Crear un nuevo libro de trabajo (workbook)
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Orden de Compra');
+
+    // Añadir datos generales
+    worksheet.addRow(['Fecha', purchaseOrderDate]);
+    worksheet.addRow(['Estado', localStatus]);
+    worksheet.addRow(['Proveedor', proveedorValue]);
+    worksheet.addRow(['Importe', amount]);
+
+    // Dejar una línea en blanco entre los datos generales y la tabla
+    worksheet.addRow([]);
+
+    // Añadir los encabezados de la tabla
+    worksheet.addRow(['Producto', 'Cantidad', 'Precio Unitario']);
+
+    // Definir los estilos para las celdas (bordes)
+    const borderStyle = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' },
+    };
+
+    // Añadir los productos y aplicar bordes
+    productData.forEach(item => {
+      const row = worksheet.addRow([item.product, item.quantity, item.unitCost]);
+
+      // Aplicar bordes a todas las celdas de la fila
+      row.eachCell((cell, colNumber) => {
+        cell.border = borderStyle;
+      });
+    });
+
+    // Aplicar bordes a los encabezados
+    worksheet.getRow(1).eachCell((cell) => {
+      cell.border = borderStyle;
+    });
+
+    // Generar el archivo Excel y descargarlo
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'purchaseOrder.xlsx';
+    link.click();
   };
 
   const handleDeleteBudgetDetail = async (budgetDetailId, index) => {
@@ -201,6 +298,8 @@ const EditPurchaseOrder = () => {
     }
   };
 
+ 
+
   const handleExit = async () => {
     const result = await Swal.fire({
       title: "¿Estás seguro?",
@@ -228,12 +327,8 @@ const EditPurchaseOrder = () => {
     console.log("Data: ", purchaseOrderDate);
     console.log("Data: ", localStatus);
     console.log("Data: ", selectedSuppliers.length);
-    
-    if (
-      !purchaseOrderDate ||
-      !localStatus||
-      !selectedSuppliers.length
-    ) {
+
+    if (!purchaseOrderDate || !localStatus || !selectedSuppliers.length) {
       Swal.fire({
         title: "Campos incompletos",
         text: "Por favor, completa todos los campos antes de actualizar el pedido de compra.",
@@ -255,7 +350,7 @@ const EditPurchaseOrder = () => {
       purchaseOrderStatus: localStatus,
       supplierID: proveedorValue,
       purchaseOrderAmount: amount,
-      detalleIds: Array.from(detalleIds)
+      detalleIds: Array.from(detalleIds),
     };
 
     console.log("Purchase order para actualizar: ", updatedPurchaseOrder);
@@ -370,7 +465,8 @@ const EditPurchaseOrder = () => {
             </Link>
 
             <button onClick={handleUpdateOrder}>Guardar</button>
-
+            
+            <button onClick={generateExcel}>Generar PDF</button>
             <button onClick={handleExit}>Salir</button>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import React from "react";
 import "./PurchaseOrder.css";
 import Checkbox from "@mui/material/Checkbox";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import Table from "../TableCustom/TableCustom";
@@ -14,10 +14,12 @@ const PurchaseOrder = () => {
   const [filas, setFilas] = useState([]);
   const { fecha, proveedor, saveData, estado, detalleIds, clearDetalleIds } =
     useAppContext();
+
+  
   const [purchaseOrderId, setPurchaseOrderId] = useState("");
   const [showOnlySelected, setShowOnlySelected] = useState(false);
   const [showOnlyRecibidos, setShowOnlyRecibidos] = useState(false);
-
+ 
   const [suppliers, setSuppliers] = useState([]);
   const [selectedSuppliers, setSelectedSuppliers] = useState([]);
 
@@ -26,6 +28,9 @@ const PurchaseOrder = () => {
     { value: "purchaseOrderStatus", label: "Estado" },
     { value: "proveedor", label: "Proveedor" },
   ];
+
+  
+
   const [selectedProveedores, setSelectedProveedores] = useState(null);
 
   const [selectedState, setSelectedState] = useState(null);
@@ -209,7 +214,7 @@ const PurchaseOrder = () => {
       },
     });
     console.log("Id purhcase order");
-    
+
     if (result.isConfirmed) {
       try {
         const response = await fetch(
@@ -219,7 +224,6 @@ const PurchaseOrder = () => {
           }
         );
 
-        
         if (response.status === 200) {
           const nuevasFilas = [...filas];
           nuevasFilas.splice(indice, 1);
@@ -238,7 +242,7 @@ const PurchaseOrder = () => {
           });
         }
       } catch (error) {
-        console.error(error)
+        console.error(error);
       }
     }
   };
@@ -430,6 +434,7 @@ const PurchaseOrder = () => {
           <button className="actions__button">Imprimir</button>
           <button className="actions__button">Salir</button>
           <button className="actions__button">Guardar</button>
+       
         </div>
       </div>
     </>

@@ -6,12 +6,14 @@ import { Link, useParams } from "react-router-dom";
 import Table from "../TableCustom/TableCustom";
 import Swal from "sweetalert2";
 import { Logger } from "sass";
+import Invoice from "../Invoice/Invoice";
 
 const BudgetComponent = () => {
   const [filas, setFilas] = useState([]);
   const [clients, setClients] = useState([]);
   const [selectedClients, setSelectedClients] = useState([]);
   const [selectedProveedores, setSelectedProveedores] = useState(null);
+  const [selectedBudget, setSelectedBudget] = useState(null);
   const [budgets, setBudgets] = useState([]);
   const [showOnlySelected, setShowOnlySelected] = useState(false);
   const [showOnlyPendiente, setShowOnlyPendiente] = useState(false);
@@ -23,6 +25,10 @@ const BudgetComponent = () => {
     { value: "budgetAmount", label: "Importe" },
   ];
 
+  const handleGenerateInvoice = (budget) => {
+    setSelectedBudget(budget); // Guarda los datos del presupuesto seleccionado para pasarlos a la factura
+  };
+
   useEffect(() => {
     const fetchBudgets = async () => {
       try {
@@ -32,8 +38,9 @@ const BudgetComponent = () => {
           const budgets = await response.json();
 
           console.log("Budgets: ", budgets);
-          
+
           setFilas(budgets.budgets);
+          
         }
       } catch (error) {
         throw error;
@@ -98,7 +105,7 @@ const BudgetComponent = () => {
       if (response.status === 200) {
         const result = await response.json();
 
-        console.log("resultado",  result);
+        console.log("resultado", result);
 
         setFilas(result.budgets); // Actualiza el estado de las filas con los presupuestos encontrados
       } else {
@@ -140,7 +147,6 @@ const BudgetComponent = () => {
           const nuevasFilas = [...filas];
           nuevasFilas.splice(index, 1);
           setFilas(nuevasFilas);
-          
         } else {
           console.error("Error al eliminar el presupuesto en la base de datos");
         }
@@ -204,11 +210,13 @@ const BudgetComponent = () => {
             getEditPath={(id) => `/presupuesto/${id}`}
           />
 
+          
+
           <div className="budget__actions">
             <Link to="/presupuesto/agregarpresupuesto">
               <button className="budget__actions__button">Nuevo</button>
             </Link>
-            <button className="budget__actions__button">Facturar</button>
+            <button className="budget__actions__button" onClick={handleGenerateInvoice}>Facturar</button>
             <button className="budget__actions__button">Guardar</button>
             <button className="budget__actions__button">Salir</button>
           </div>

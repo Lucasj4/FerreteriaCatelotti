@@ -10,13 +10,23 @@ export const validateProduct = (req, res, next) => {
             "string.base": "El nombre del producto debe contener solo letras",
             "string.pattern.base": "El nombre del producto debe contener solo letras y espacios, sin números"
         }),
-        productPrice: Joi.number().required().messages({
+        productPrice: Joi.number().positive().required().custom((value, helpers) => {
+            // Expresión regular para permitir solo hasta 2 decimales
+            if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+                return helpers.error('number.precision'); // Lanza un error si hay más de 2 decimales
+            }
+            return value;
+        }).messages({
             "number.base": "El precio del producto debe ser un número",
-            "any.required": "El precio del producto es obligatorio"
+            "any.required": "El precio del producto es obligatorio",
+            "number.positive": "El precio del producto debe ser un número positivo",
+            "number.precision": "El precio debe tener como máximo dos decimales",
         }),
-        productStock: Joi.number().required().messages({
+
+        productStock: Joi.number().min(0).required().messages({
             "number.base": "El stock del producto debe ser un número",
-            "any.required": "El stock del producto es obligatorio"
+            "any.required": "El stock del producto es obligatorio",
+            "number.min": "El valor minimo es 0 para el stock del producto"
         }),
         productUnit: Joi.string().required().messages({
             "string.base": "La unidad del producto debe ser una cadena",
@@ -30,7 +40,7 @@ export const validateProduct = (req, res, next) => {
             "number.base": "El costo del producto debe ser un número",
             "any.required": "El costo del producto es obligatorio"
         })
-    });
+    }).unknown();
 
     const { error } = schema.validate(req.body, { abortEarly: false });
 
@@ -39,5 +49,5 @@ export const validateProduct = (req, res, next) => {
         return res.status(400).json({ errorMessages }); // Enviar array de mensajes de error
     }
     next();
-    
+
 };

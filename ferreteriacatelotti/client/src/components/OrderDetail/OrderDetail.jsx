@@ -242,6 +242,7 @@ const OrderDetail = () => {
             <Link to="/pedido">
               <button >Guardar</button>
             </Link>
+      
             <Link to="/">
               <button>Salir</button>
             </Link>

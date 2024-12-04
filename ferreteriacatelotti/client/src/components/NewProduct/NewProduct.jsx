@@ -73,13 +73,13 @@ const NewProduct = () => {
     const productData = {
       productName,
       productStock,
-      productUnit,
+      productUnit: productUnit.name,
       productPrice,
       productCategory,
       productCost,
     };
 
-    console.log(productData);
+    console.log("Producto: ", productData);
     
 
     try {

@@ -1,15 +1,37 @@
-import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TableCustom from "../TableCustom/TableCustom";
 import { Link } from "react-router-dom";
+import './UserComponent.css'
 const UserComponent = () => {
+  const [row, setRows] = useState([]);
+
   const tableHeaders = [
-    { value: "name", label: "Nombre" },
-    { value: "lastname", label: "Apellido" },
-    { value: "phone", label: "Telefono" },
-    { value: "email", label: "Email" },
+    { value: "userUsername", label: "Usuario" },
+    { value: "userPassword", label: "Contraseña" },
+    { value: "userEmail", label: "Email" },
   ];
-  const [filas, setFilas] = useState([]);
+
+  useEffect(()=> {
+
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/users");
+        const data = await response.json();
+
+        if(response.status === 200){
+          setRows(data.users)
+        }
+
+
+      } catch (error) {
+        console.error("Error en la solicitud:", error.message);
+      }
+    }
+
+    fetchUsers();
+
+  }, [])
+  
   return (
     <>
         <div className="clientcomponent__container">
@@ -32,7 +54,8 @@ const UserComponent = () => {
             deleteIconClassName="table__deleteIcon"
             editIconClassName="table__editIcon"
             headers={tableHeaders}
-            data={filas}
+            getEditPath={(id) =>`/users/${id}`}
+            data={row}
           />
           <div className="clientecomponent__actions">
         
