@@ -27,6 +27,7 @@ const PurchaseOrder = () => {
     { value: "purchaseOrderDate", label: "Fecha" },
     { value: "purchaseOrderStatus", label: "Estado" },
     { value: "proveedor", label: "Proveedor" },
+    { value: "purchaseOrderAmount", label: "Importe"}
   ];
 
   
@@ -58,6 +59,8 @@ const PurchaseOrder = () => {
       try {
         const response = await fetch("http://localhost:8080/api/suppliers");
         const result = await response.json();
+        
+        
         setSuppliers(result.suppliers);
       } catch (error) {
         console.error("Error fetching suppliers: ", error);
@@ -76,6 +79,8 @@ const PurchaseOrder = () => {
         const data = await response.json();
         const purchaseOrders = data.purchaseOrders;
 
+        console.log(purchaseOrders);
+        
         // Mapear cada orden y obtener detalles del proveedor por supplierID
         const ordersWithSuppliers = await Promise.all(
           purchaseOrders.map(async (order) => {
@@ -119,7 +124,7 @@ const PurchaseOrder = () => {
     const endDate = dateRange[0].endDate;
 
     // Verificar si la fecha de inicio es mayor o igual que la fecha de fin
-    if (startDate >= endDate) {
+    if (startDate > endDate) {
       Swal.fire({
         icon: "error",
         title: "Error de fechas",

@@ -9,43 +9,24 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { useAppContext } from "../context/OrderContext";
 import Swal from "sweetalert2";
-import ExcelJS from 'exceljs';
-
-
-
+import ExcelJS from "exceljs";
 
 const EditPurchaseOrder = () => {
   const [rows, setRows] = useState([]);
-  const {
-    fecha,
-    proveedor,
-    saveData,
-    estado,
-    detalleIds,
-    clearDetalleIds,
-    addDetalleId,
-  } = useAppContext();
+  const { detalleIds, clearDetalleIds, addDetalleId } = useAppContext();
   const { pid } = useParams();
-  const [purchaseOrderDate, setPurchaseOrderDate] = useState("");
+  const [orderDate, setOrderDate] = useState("");
   const [amount, setAmount] = useState(0);
   const [suppliers, setSuppliers] = useState([]);
   const [selectedSuppliers, setSelectedSuppliers] = useState([]);
-  const [localStatus, setLocalStatus] = useState("Pendiente");
-  const [product, setProduct] = useState("");
-  const [productQuantity, setProductQuantity] = useState(0);
-  const [productUnitCost, setProductUnitCost] = useState(0);
+  const [purchaseOrderStatus, setPurchaseOrderStatus] = useState("Pendiente")
   const [productData, setProductData] = useState([]);
-  const [proveedorValue, setProveedorValue] = useState('');
+  const [proveedorValue, setProveedorValue] = useState("");
 
   const tableHeaders = [
     { value: "detailOrderProduct", label: "Producto" },
     { value: "detailOrderQuantity", label: "Cantidad" },
     { value: "detailOrderUnitCost", label: "Costo Unitario" },
-  ];
-
-  const datosTabla = [
-    { producto: "Producto 1", cantidad: 2, precioUnitario: 50, total: 100 },
-    { producto: "Producto 2", cantidad: 1, precioUnitario: 30, total: 30 },
   ];
 
   const navigate = useNavigate();
@@ -85,6 +66,8 @@ const EditPurchaseOrder = () => {
 
   useEffect(() => {
     const fetchPurchaseOrderWithDetails = async () => {
+      
+      
       try {
         const response = await fetch(
           `http://localhost:8080/api/purchaseorders/purchaseorderswithdetails/${pid}`
@@ -98,7 +81,7 @@ const EditPurchaseOrder = () => {
         const detailOrders = data.detailOrders;
 
         console.log(data);
-        
+
         for (const detail of detailOrders) {
           addDetalleId(detail._id); // Los duplicados son manejados automáticamente por el Set
         }
@@ -114,13 +97,25 @@ const EditPurchaseOrder = () => {
 
         setRows(groupedDetails);
 
+        console.log("fecha del fetch: ", purchaseOrder.purchaseOrderDate);
+
         const formattedDate = purchaseOrder.purchaseOrderDate
-          ? purchaseOrder.purchaseOrderDate.split("/").reverse().join("-")
+          ? purchaseOrder.purchaseOrderDate
+              .split("/")
+              .reverse()
+              .map((part) => part.padStart(2, "0")) // Formatea correctamente
+              .join("-")
           : "";
 
-        setPurchaseOrderDate(formattedDate); // Inicializa con la fecha del pedido
-        setLocalStatus(purchaseOrder.purchaseOrderStatus || "Pendiente");
+        console.log("FECHA FORMATTEDDATE: ", formattedDate);
 
+        setOrderDate(formattedDate);
+
+        setPurchaseOrderStatus(purchaseOrder.purchaseOrderStatus || "Pendiente");
+
+        console.log("Fecha purchaseOrderDATE: ", orderDate);
+
+        console.log("Nuevo status: ", purchaseOrderStatus );
         // Seleccionar el proveedor como { label, value }
         const selectedSupplierOption = suppliers.find(
           (supplier) => supplier._id === purchaseOrder.supplierID
@@ -147,6 +142,7 @@ const EditPurchaseOrder = () => {
     };
 
     fetchPurchaseOrderWithDetails();
+    
   }, [pid, suppliers]);
 
   useEffect(() => {
@@ -165,11 +161,11 @@ const EditPurchaseOrder = () => {
         const detailOrders = data.detailOrders;
 
         // Datos de proveedor, estado y monto
-        const proveedorValue = selectedSuppliers.length > 0 ? selectedSuppliers[0].label : "";
-        setPurchaseOrderDate(purchaseOrder.purchaseOrderDate);
-        setLocalStatus(purchaseOrder.status);
+        const proveedorValue =
+          selectedSuppliers.length > 0 ? selectedSuppliers[0].label : "";
+
+        setPurchaseOrderStatus(purchaseOrder.status);
         setProveedorValue(proveedorValue);
-        
 
         // Extraemos los productos
         const products = detailOrders.map((order) => ({
@@ -192,52 +188,50 @@ const EditPurchaseOrder = () => {
   };
 
   const handleStatusChange = (e) => {
-    const nuevoEstado = e.target.value;
-    console.log("Nuevo estado seleccionado: ", nuevoEstado); // Verifica el valor del estado
-    setLocalStatus(nuevoEstado); // Actualiza el estado
+    const newStatus = e.target.value;
+    setPurchaseOrderStatus(newStatus); // Asegúrate de actualizar el estado aquí
   };
 
   const handleDateChange = (e) => {
     const selectedDate = e.target.value;
-    
+    console.log("fecha que cambia: ", selectedDate);
 
-    setPurchaseOrderDate(selectedDate);
+    setOrderDate(selectedDate);
   };
 
-  const handleDeleteCell = (indice) => {
-    const nuevasFilas = [...filas];
-    nuevasFilas.splice(indice, 1);
-    setFilas(nuevasFilas);
-  };
 
-   const generateExcel = async () => {
+  const generateExcel = async () => {
     // Crear un nuevo libro de trabajo (workbook)
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Orden de Compra');
+    const worksheet = workbook.addWorksheet("Orden de Compra");
 
     // Añadir datos generales
-    worksheet.addRow(['Fecha', purchaseOrderDate]);
-    worksheet.addRow(['Estado', localStatus]);
-    worksheet.addRow(['Proveedor', proveedorValue]);
-    worksheet.addRow(['Importe', amount]);
+    worksheet.addRow(["Fecha", purchaseOrderDate]);
+    worksheet.addRow(["Estado", purchaseOrderStatus]);
+    worksheet.addRow(["Proveedor", proveedorValue]);
+    worksheet.addRow(["Importe", amount]);
 
     // Dejar una línea en blanco entre los datos generales y la tabla
     worksheet.addRow([]);
 
     // Añadir los encabezados de la tabla
-    worksheet.addRow(['Producto', 'Cantidad', 'Precio Unitario']);
+    worksheet.addRow(["Producto", "Cantidad", "Precio Unitario"]);
 
     // Definir los estilos para las celdas (bordes)
     const borderStyle = {
-      top: { style: 'thin' },
-      left: { style: 'thin' },
-      bottom: { style: 'thin' },
-      right: { style: 'thin' },
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
     };
 
     // Añadir los productos y aplicar bordes
-    productData.forEach(item => {
-      const row = worksheet.addRow([item.product, item.quantity, item.unitCost]);
+    productData.forEach((item) => {
+      const row = worksheet.addRow([
+        item.product,
+        item.quantity,
+        item.unitCost,
+      ]);
 
       // Aplicar bordes a todas las celdas de la fila
       row.eachCell((cell, colNumber) => {
@@ -252,14 +246,16 @@ const EditPurchaseOrder = () => {
 
     // Generar el archivo Excel y descargarlo
     const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const link = document.createElement('a');
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = 'purchaseOrder.xlsx';
+    link.download = "purchaseOrder.xlsx";
     link.click();
   };
 
-  const handleDeleteBudgetDetail = async (budgetDetailId, index) => {
+  const handleDeleteCell = async (detailOrderId, index) => {
     const result = await Swal.fire({
       title: "¿Estás seguro?",
       text: "Una vez eliminado, no podrás recuperar este detalle.",
@@ -279,14 +275,27 @@ const EditPurchaseOrder = () => {
     if (result.isConfirmed) {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/budgetsdetails/${budgetDetailId}`,
+          `http://localhost:8080/api/detailsorder/${detailOrderId}`,
           {
             method: "DELETE",
           }
         );
 
-        if (response) {
-          const nuevasFilas = [...row];
+
+
+        if (response.status === 200) {
+          Swal.fire({
+            title: "Detalle eliminado",
+            icon: "success",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              overlay: "my-overlay-class",
+            },
+          });
+          const nuevasFilas = [...rows];
           nuevasFilas.splice(index, 1);
           setRows(nuevasFilas);
         } else {
@@ -297,8 +306,6 @@ const EditPurchaseOrder = () => {
       }
     }
   };
-
- 
 
   const handleExit = async () => {
     const result = await Swal.fire({
@@ -323,35 +330,23 @@ const EditPurchaseOrder = () => {
     return;
   };
 
-  const validateForm = () => {
-    console.log("Data: ", purchaseOrderDate);
-    console.log("Data: ", localStatus);
-    console.log("Data: ", selectedSuppliers.length);
-
-    if (!purchaseOrderDate || !localStatus || !selectedSuppliers.length) {
-      Swal.fire({
-        title: "Campos incompletos",
-        text: "Por favor, completa todos los campos antes de actualizar el pedido de compra.",
-        icon: "warning",
-      });
-      return false;
-    }
-    return true;
-  };
+  
 
   const handleUpdateOrder = async () => {
     const proveedorValue =
       selectedSuppliers.length > 0 ? selectedSuppliers[0].value : "";
 
-    if (!validateForm()) return;
+   
 
     const updatedPurchaseOrder = {
-      purchaseOrderDate: new Date(purchaseOrderDate),
-      purchaseOrderStatus: localStatus,
+      purchaseOrderDate: new Date(orderDate),
+      purchaseOrderStatus: purchaseOrderStatus || "Pendiente",
       supplierID: proveedorValue,
       purchaseOrderAmount: amount,
       detalleIds: Array.from(detalleIds),
     };
+
+
 
     console.log("Purchase order para actualizar: ", updatedPurchaseOrder);
 
@@ -414,7 +409,7 @@ const EditPurchaseOrder = () => {
               <input
                 type="date"
                 className="date-selector__item__date"
-                value={purchaseOrderDate}
+                value={orderDate}
                 onChange={handleDateChange}
               />
             </div>
@@ -430,7 +425,7 @@ const EditPurchaseOrder = () => {
             <div className="date-selector__item">
               <p>Estado</p>
               <select
-                value={localStatus || "Pendiente"} // Asegúrate de que nunca sea undefined
+                value={purchaseOrderStatus|| "Pendiente"} // Asegúrate de que nunca sea undefined
                 onChange={handleStatusChange}
                 className="purchaseOrder__status"
               >
@@ -465,7 +460,7 @@ const EditPurchaseOrder = () => {
             </Link>
 
             <button onClick={handleUpdateOrder}>Guardar</button>
-            
+
             <button onClick={generateExcel}>Generar PDF</button>
             <button onClick={handleExit}>Salir</button>
           </div>

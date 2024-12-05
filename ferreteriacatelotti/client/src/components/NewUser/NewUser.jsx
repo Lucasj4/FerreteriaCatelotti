@@ -4,21 +4,18 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import DropdownSelect from "../DropDownSelect/DropDownSelect";
-
+import "./NewUser.css";
 const NewUser = () => {
   const [userUsername, setUserName] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  const [userRole, setUserRole] = useState("")
+  
 
-  const options = ["Administrador"]
+  
 
   const resetForm = () => {
-    setUserName(""),
-    setUserPassword(""),
-    setUserEmail(""),
-    setUserRole("")
-  }
+    setUserName(""), setUserPassword(""), setUserEmail(""), setUserRole("");
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -26,10 +23,10 @@ const NewUser = () => {
       userUsername,
       userPassword,
       userEmail,
- 
-    }
-     console.log("User data: " , userData);
-     
+      userRole: "Admin"
+    };
+    console.log("User data: ", userData);
+
     try {
       const response = await fetch("http://localhost:8080/api/users", {
         method: "POST",
@@ -37,11 +34,11 @@ const NewUser = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(userData),
-      })
+      });
 
       const result = await response.json();
       console.log("result: " + result.errorMessages);
-      
+
       switch (response.status) {
         case 201:
           Swal.fire({
@@ -60,38 +57,38 @@ const NewUser = () => {
           break;
 
         case 400:
-            const errorMessages =
-              result.errorMessages && result.errorMessages.length > 0
-                ? result.errorMessages[0] // Une los mensajes con saltos de línea
-                : "Error desconocido";
-  
-            Swal.fire({
-              title: "Error al crear producto",
-              text: errorMessages,
-              icon: "error",
-              confirmButtonText: "Aceptar",
-              customClass: {
-                title: "my-title-class",
-                popup: "my-popup-class",
-                confirmButton: "my-confirm-button-class",
-                overlay: "my-overlay-class",
-              },
-            });
-            break;
-        
-        case 409: 
-        Swal.fire({
-          title: `El email ${userEmail} ya esta registrado`,
-          icon: "success",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
-        })
-        break;
+          const errorMessages =
+            result.errorMessages && result.errorMessages.length > 0
+              ? result.errorMessages[0] // Une los mensajes con saltos de línea
+              : "Error desconocido";
+
+          Swal.fire({
+            title: "Error al crear producto",
+            text: errorMessages,
+            icon: "error",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              overlay: "my-overlay-class",
+            },
+          });
+          break;
+
+        case 409:
+          Swal.fire({
+            title: `El email ${userEmail} ya esta registrado`,
+            icon: "success",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              overlay: "my-overlay-class",
+            },
+          });
+          break;
 
         default:
           Swal.fire({
@@ -114,7 +111,7 @@ const NewUser = () => {
     } catch (error) {
       console.error("Error en la solicitud", error);
     }
-  }
+  };
   return (
     <>
       <div className="component__container">
@@ -150,15 +147,19 @@ const NewUser = () => {
               onChange={(e) => setUserEmail(e.target.value)}
             />
 
-            {/* <DropdownSelect
-              options={options}
-              value={userRole}
-              onChange={setUserRole}
-              placeholder="Selecciona una unidad"
-            /> */}
+            <div className="form__item">
+              {/* <DropdownSelect
+                options={options}
+                value={userRole}
+                onChange={setUserRole}
+                placeholder="Selecciona un rol"
+              /> */}
+            </div>
           </form>
           <div className="form__containerbuttons">
-            <button className="form__button" onClick={handleSubmit}>Guardar</button>
+            <button className="form__button" onClick={handleSubmit}>
+              Guardar
+            </button>
             <Link to={"/usuarios"}>
               <button className="form__button">Salir</button>
             </Link>

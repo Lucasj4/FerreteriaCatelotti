@@ -1,11 +1,13 @@
 import jwt from 'jsonwebtoken'
 
 export const checkUserRole = (allowedRoles) => (req, res, next) => {
-    const token = req.cookies.coderCookieToken;
-  
+    const token = req.cookies.ferreteriaCookieToken;
+    
+    console.log("Token: ", token);
+    
 
     if (token) {
-        jwt.verify(token, 'coderhouse', (err, decoded) => {
+        jwt.verify(token, 'ferreteria', (err, decoded) => {
             if (err) {
                 res.status(403).send('Acceso denegado. Token inválido.');
             } else {

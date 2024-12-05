@@ -13,19 +13,28 @@ import { detailOrderRoute } from './src/detailorder/detailorder-route.js';
 import { purchaseOrderRouter } from './src/purchaseorders/purchaseorder-route.js';
 import { budgetRouter } from './src/budget/budget-router.js';
 import { budgetDetailRouter } from './src/budgetdetail/budgetdetail-route.js';
+import cookieParser from 'cookie-parser';
+import {authMiddleware} from './src/middlewares/authmiddleware.js';
+
 
 const app = express();
 
+
+
+
 app.use(express.json());
 app.use(addLogger)
-
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors())
+app.use(cors({
+    origin: "http://localhost:5173", // Dominio del frontend
+    credentials: true,              // Permite enviar cookies
+  }));
 
 
 
 
-
+// app.use(authMiddleware);
 app.use("/api/products", productRouter);
 app.use("/api/suppliers", supplierRouter);
 app.use("/api/units", unitRouter);
@@ -37,6 +46,7 @@ app.use("/api/detailsorder", detailOrderRoute)
 app.use('/api/budgets', budgetRouter)
 app.use('/api/budgetsdetails', budgetDetailRouter)
 app.use(errorHandler);
+
 
 
 

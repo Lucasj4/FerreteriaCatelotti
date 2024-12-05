@@ -49,6 +49,16 @@ export class DetailOrderService{
         }
     }
 
+    async deleteDetailOrder(id){
+        try {
+            const detailOderDelete = await DetailOrderModel.findByIdAndDelete(id);
+            return detailOderDelete;
+        } catch (error) {
+            console.error(error);
+            throw error; 
+        }
+    }
+
 
 
 

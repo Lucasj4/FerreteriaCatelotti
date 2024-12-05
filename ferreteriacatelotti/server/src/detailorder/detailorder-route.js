@@ -9,3 +9,4 @@ detailOrderRoute.post('/editdetailorderline', detailOrderController.createEditDe
 detailOrderRoute.get('/', detailOrderController.getDetailOrders);
 detailOrderRoute.get('/:rowid', detailOrderController.getDetailOrderById);
 detailOrderRoute.put('/:rowid', detailOrderController.updateDetailOrderLine);
+detailOrderRoute.delete('/:doi' , detailOrderController.deleteDetailOrder);

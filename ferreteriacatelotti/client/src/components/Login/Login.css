@@ -2,6 +2,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: var(--background);
     height: 100vh;
 
 }
@@ -20,7 +21,7 @@
   height: 500px;
 }
 .login__information {
-  background-color: var(--dark-blue);
+  background-color: var(--color-primary);
   display: flex;
   align-items: center;
   width: 45%;

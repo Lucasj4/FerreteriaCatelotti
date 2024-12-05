@@ -139,6 +139,8 @@ export class PurchaseOrderController {
                 supplierID
             };
 
+            
+
             console.log("updateData: ", updateData);
             console.log(" Detalle ids: ", detalleIds);
             

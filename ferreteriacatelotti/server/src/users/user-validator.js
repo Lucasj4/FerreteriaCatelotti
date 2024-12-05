@@ -24,7 +24,7 @@ export const userValidator = (req,res,next) => {
             "string.max": "La contraseña no debe exceder los 30 caracteres",
             "string.pattern.base": "La contraseña debe incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial (como @ $ ! % * ? & _ . )"
         }),
-    })
+    }).unknown();
 
     const { error } = schema.validate(req.body, { abortEarly: false });
 

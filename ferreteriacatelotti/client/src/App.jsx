@@ -25,6 +25,7 @@ import EditDetailOrderLine from "./components/EditDetailOrderLine/EditDetailOrde
 import EditBudgetDetailLine from "./components/EditBudgetDetailLine/EditBudgetDetailLine";
 import NewBudget from "./components/NewBudget/NewBudget";
 import { BudgetProvider } from "./components/context/BudgetContext";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 function App() {
   return (
@@ -32,41 +33,81 @@ function App() {
       <BrowserRouter>
         <OrderProvider>
           <BudgetProvider>
+            <Routes>
+              <Route path="/iniciosesion" element={<Login />} />
+            </Routes>
             <SideBar>
               <Routes>
                 {/* Rutas de presupuesto */}
                 <Route path="/presupuesto" element={<BudgetComponent />} />
-                <Route path="/presupuesto/agregarpresupuesto" element={<NewBudget />}/>
-                <Route path="/presupuesto/agregardetalle" element={<BudgetDetailLine isNewBudget={true}/>}/>
+                <Route
+                  path="/presupuesto/agregarpresupuesto"
+                  element={<NewBudget />}
+                />
+                <Route
+                  path="/presupuesto/agregardetalle"
+                  element={<BudgetDetailLine isNewBudget={true} />}
+                />
                 <Route path="/presupuesto/:pid" element={<BudgetDetail />} />
-                <Route path="/presupuesto/:pid/detalle/nuevalinea" element={<BudgetDetailLine isNewBudget={false} />}/>
-                <Route path="/presupuesto/:pid/detalle/:rowid" element={<EditBudgetDetailLine />}/>
+                <Route
+                  path="/presupuesto/:pid/detalle/nuevalinea"
+                  element={<BudgetDetailLine isNewBudget={false} />}
+                />
+                <Route
+                  path="/presupuesto/:pid/detalle/:rowid"
+                  element={<EditBudgetDetailLine />}
+                />
 
                 {/* Rutas de pedido */}
                 <Route path="/pedido" element={<PurchaseOrder />} />
                 <Route path="/pedido/agregarpedido" element={<OrderDetail />} />
-                <Route path="/pedido/agregardetalle" element={<NewDetailOrderLine/>}/>
+                <Route
+                  path="/pedido/agregardetalle"
+                  element={<NewDetailOrderLine />}
+                />
                 <Route path="/pedido/:pid" element={<EditPurchaseOrder />} />
-                <Route path="/pedido/:pid/detallepedido/nuevalinea" element={<NewDetailOrderLine />}/>
-                <Route path="/pedido/:pid/detalle/:rowid" element={<EditDetailOrderLine />}/>
-                
+                <Route
+                  path="/pedido/:pid/detallepedido/nuevalinea"
+                  element={<NewDetailOrderLine />}
+                />
+                <Route
+                  path="/pedido/:pid/detalle/:rowid"
+                  element={<EditDetailOrderLine />}
+                />
 
                 {/* Otras rutas */}
-                <Route path="/iniciosesion" element={<Login />} />
-                <Route path="/clientes" element={<ClientComponent />} />
-                <Route path="/clientes/agregarcliente" element={<NewClient />}/>
+
+                {/* <Route path="/clientes" element={<ClientComponent />} /> */}
+                <Route
+                  path="/clientes/agregarcliente"
+                  element={<NewClient />}
+                />
                 <Route path="/clientes/:cid" element={<EditClient />} />
                 <Route path="/usuarios" element={<UserComponent />} />
                 <Route path="/usuarios/agregarusuario" element={<NewUser />} />
-
+                <Route
+                  path="/clientes"
+                  element={
+                    <ProtectedRoute
+                      allowedRoles={["Empleado"]}
+                      element={ClientComponent} // Pasa el componente a proteger
+                    />
+                  }
+                />
                 {/*Productos */}
                 <Route path="/productos" element={<ProductComponent />} />
                 <Route path="/productos/:pid" element={<EditProduct />} />
-                <Route path="/productos/agregarproducto" element={<NewProduct />}/>
+                <Route
+                  path="/productos/agregarproducto"
+                  element={<NewProduct />}
+                />
 
                 {/*Proveedores */}
                 <Route path="/proveedores" element={<SupplierManagement />} />
-                <Route path="/proveedores/agregarproveedor" element={<NewSupplier />}/>
+                <Route
+                  path="/proveedores/agregarproveedor"
+                  element={<NewSupplier />}
+                />
               </Routes>
             </SideBar>
           </BudgetProvider>

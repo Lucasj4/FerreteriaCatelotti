@@ -1,6 +1,7 @@
 import BudgetModel from "./budget-model.js";
 import BudgetDetailModel from '../budgetdetail/budgetdetail-model.js'
 import mongoose from "mongoose";
+
 export class BudgetService {
 
     async createBudget(data) {
@@ -17,6 +18,7 @@ export class BudgetService {
     async getBudgets() {
         try {
             const budgets = await BudgetModel.find().populate('clientId', 'clientLastName');
+            
             return budgets;
         } catch (error) {
             console.log(error);

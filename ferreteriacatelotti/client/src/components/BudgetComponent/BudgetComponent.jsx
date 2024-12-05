@@ -25,9 +25,7 @@ const BudgetComponent = () => {
     { value: "budgetAmount", label: "Importe" },
   ];
 
-  const handleGenerateInvoice = (budget) => {
-    setSelectedBudget(budget); // Guarda los datos del presupuesto seleccionado para pasarlos a la factura
-  };
+ 
 
   useEffect(() => {
     const fetchBudgets = async () => {
@@ -143,6 +141,17 @@ const BudgetComponent = () => {
         );
 
         if (response.status === 200) {
+          Swal.fire({
+            title: "Presupuesto eliminado",
+            icon: "success",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              overlay: "my-overlay-class",
+            },
+          });
           // Si la eliminación fue exitosa, eliminamos la fila visualmente
           const nuevasFilas = [...filas];
           nuevasFilas.splice(index, 1);
@@ -216,7 +225,7 @@ const BudgetComponent = () => {
             <Link to="/presupuesto/agregarpresupuesto">
               <button className="budget__actions__button">Nuevo</button>
             </Link>
-            <button className="budget__actions__button" onClick={handleGenerateInvoice}>Facturar</button>
+            
             <button className="budget__actions__button">Guardar</button>
             <button className="budget__actions__button">Salir</button>
           </div>

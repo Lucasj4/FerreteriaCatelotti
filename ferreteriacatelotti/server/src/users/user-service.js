@@ -29,6 +29,24 @@ export class UserService{
         }
     }
 
+    async getUserByUsername(username){
+        try {
+            const user = await UserModel.find({userUsername: username});
+            return user;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getUserById(id){
+        try {
+            const user = await UserModel.findById(id);
+            return user
+        } catch (error) {
+            throw error;
+        }
+    }
+
     
 
     

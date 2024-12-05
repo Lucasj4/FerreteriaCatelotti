@@ -53,4 +53,14 @@ export class BudgetDetaiLService {
         }
     }
 
+    async getBudgetDetailsByBudgetId(budgetId){
+        try {
+            const budgetDetails = await BudgetDetaiLModel.find({budgetID: budgetId})
+            return budgetDetails;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }
+    }
+
 }

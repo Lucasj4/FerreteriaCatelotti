@@ -118,7 +118,7 @@ export class DetailOrderController {
                     updatedOrder: updateDetailOrder
                 });
             } else {
-                res.status(404).json({ message: "Linea de detalle actualizada con exito" });
+                res.status(404).json({ message: "Detalle no encontrado" });
 
             }
         } catch (error) {
@@ -126,6 +126,22 @@ export class DetailOrderController {
             res.status(500).json({ error: 'Error interno del servidor' });
         }
 
+    }
 
+    async deleteDetailOrder(req, res){
+        const {doi} = req.params;
+
+        try {
+            const detailOrderDelete = await detailOrderService.deleteDetailOrder(doi);
+
+            if(detailOrderDelete){
+                res.status(200).json({message: "Detalle eliminado", detailOrderDelete})
+            }else{
+                res.status(404).json({ message: "Detalle no encontrado" });
+            }
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Error interno del servidor' });
+        }
     }
 }

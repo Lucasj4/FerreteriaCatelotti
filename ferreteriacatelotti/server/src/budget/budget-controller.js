@@ -1,6 +1,11 @@
 import { BudgetService } from "./budget-service.js";
 import BudgetDetaiLModel from '../budgetdetail/budgetdetail-model.js'
+import { ProductService } from "../products/product-service.js";
+import {BudgetDetaiLService} from '../budgetdetail/budgetdetail-service.js'
+
+const productService = new ProductService();
 const budgetService = new BudgetService();
+const budgetDetailService = new BudgetDetaiLService();
 
 export class BudgetController {
 
@@ -120,6 +125,8 @@ export class BudgetController {
                 return res.status(404).json({ message: data.error });
             }
 
+            console.log(data.budget);
+            
             res.status(200).json({
                 budget: data.budget,
                 budgetDetailOrders: data.budgetDetails
@@ -145,13 +152,25 @@ export class BudgetController {
         }
 
         req.logger.info("update budget: " + updateBudget);
-        
+
         try {
             if (!updateBudget || !pid) {
                 return res.status(400).json({ message: "Datos insuficientes para actualizar el presupuesto." });
             }
 
             const budget = await budgetService.updateBudget(updateBudget, pid);
+
+            if(budgetStatus === "Facturado"){
+                const budgetDetails = await budgetDetailService.getBudgetDetailsByBudgetId(pid);
+                
+                for(const budgetDetail of budgetDetails){
+                    const product = await productService.getProductById(budgetDetail.productID);
+                    if(product)
+                    product.productStock -= budgetDetail.budgetDetailQuantity;
+                    await productService.updateProductStock(budgetDetail.productID, product.productStock )
+                    console.log(`Stock actualizado para el producto ${product.productName}: Nuevo stock ${product.productStock}`);
+                }
+            }
 
             if (budget) {
                 res.status(200).json({ message: "Presupeusto actualizado con exito", budget })
@@ -163,6 +182,10 @@ export class BudgetController {
             res.status(500).json({ message: "Error en el servidor al actualizar el presupuesto." });
         }
 
+
+        
+        
+       
 
     }
 
@@ -202,7 +225,7 @@ export class BudgetController {
     async deleteBudget(req, res) {
         const {idBudget } = req.params;
         
-        req.logger.info('Id budget: ' + idB)
+        req.logger.info('Id budget: ' + idBudget)
 
         try {
             req.logger.info("Desde controllador deleteBudget")

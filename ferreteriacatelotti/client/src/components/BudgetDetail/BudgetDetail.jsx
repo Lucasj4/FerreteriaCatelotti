@@ -89,7 +89,8 @@ const BudgetDetail = () => {
           console.log("Budget: ", budget);
           console.log("Client ID en presupuesto:", budget.clientId);
           console.log("Lista de clientes:", clients);
-
+          console.log("fecha que llego del fetch ", budget.budgetDate);
+          
           // Formatear la fecha de DD/MM/YYYY a YYYY-MM-DD
           const formattedDate = budget.budgetDate
             ? budget.budgetDate.split("/").reverse().join("-")
@@ -235,7 +236,7 @@ const BudgetDetail = () => {
       budgetStatus,
       clientId,
     };
-    console.log("PID: ", pid);
+    console.log("updateBudget: ", budgetStatus);
 
     try {
       const response = await fetch(`http://localhost:8080/api/budgets/${pid}`, {
