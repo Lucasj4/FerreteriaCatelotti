@@ -14,12 +14,9 @@ const PurchaseOrder = () => {
   const [filas, setFilas] = useState([]);
   const { fecha, proveedor, saveData, estado, detalleIds, clearDetalleIds } =
     useAppContext();
-
-  
   const [purchaseOrderId, setPurchaseOrderId] = useState("");
   const [showOnlySelected, setShowOnlySelected] = useState(false);
   const [showOnlyRecibidos, setShowOnlyRecibidos] = useState(false);
- 
   const [suppliers, setSuppliers] = useState([]);
   const [selectedSuppliers, setSelectedSuppliers] = useState([]);
 
@@ -30,11 +27,6 @@ const PurchaseOrder = () => {
     { value: "purchaseOrderAmount", label: "Importe"}
   ];
 
-  
-
-  const [selectedProveedores, setSelectedProveedores] = useState(null);
-
-  const [selectedState, setSelectedState] = useState(null);
 
   const [dateRange, setDateRange] = useState([
     {
@@ -116,13 +108,16 @@ const PurchaseOrder = () => {
   }, []);
 
   const handleSearch = async () => {
-    const selectedSupplierIds = selectedSuppliers.map(
-      (supplier) => supplier.id
-    );
-    console.log("Selected Supplier IDs:", selectedSupplierIds);
-    const startDate = dateRange[0].startDate;
-    const endDate = dateRange[0].endDate;
-
+   
+    
+    console.log("SelectedSuppliers: ", selectedSuppliers);
+    
+    const startDate = dateRange[0]?.startDate
+    const endDate = dateRange[0]?.endDate
+    console.log("start date: ", startDate);
+    console.log("end date: ", endDate);
+    
+    const supplier = selectedSuppliers[0].value
     // Verificar si la fecha de inicio es mayor o igual que la fecha de fin
     if (startDate > endDate) {
       Swal.fire({
@@ -137,9 +132,11 @@ const PurchaseOrder = () => {
     // Crear el objeto de parámetros de búsqueda
     const searchParams = new URLSearchParams();
 
-    if (selectedSupplierIds.length > 0) {
-      searchParams.append("suppliers", selectedSupplierIds.join(","));
-    }
+    console.log("SUPPLIER: ", supplier);
+    
+    
+      searchParams.append("supplier", supplier);
+    
 
     if (startDate && endDate) {
       searchParams.append("startDate", startDate.toISOString());
@@ -167,7 +164,8 @@ const PurchaseOrder = () => {
         });
         return;
       }
-
+      console.log("Purchase orders: ", purchaseOrders);
+      
       const ordersWithSuppliers = await Promise.all(
         purchaseOrders.map(async (order) => {
           try {

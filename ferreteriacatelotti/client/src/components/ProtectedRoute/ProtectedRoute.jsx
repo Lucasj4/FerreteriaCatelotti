@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Route, Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-const ProtectedRoute = ({ element: Component, allowedRoles, ...rest }) => {
+const ProtectedRoute = ({ children, allowedRoles }) => {
   const [userRole, setUserRole] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -57,7 +57,7 @@ const ProtectedRoute = ({ element: Component, allowedRoles, ...rest }) => {
     Swal.fire({
       icon: 'error',
       title: 'Acceso denegado',
-      text: 'No tienes el rol necesario para acceder a esta funcion.',
+      text: 'No tienes el rol necesario para acceder a esta función.',
       customClass: {
         title: "my-title-class",
         popup: "my-popup-class",
@@ -68,7 +68,7 @@ const ProtectedRoute = ({ element: Component, allowedRoles, ...rest }) => {
     return <Navigate to="/home" />;
   }
 
-  return <Component {...rest} />;
+  return children; 
 };
 
 export default ProtectedRoute;

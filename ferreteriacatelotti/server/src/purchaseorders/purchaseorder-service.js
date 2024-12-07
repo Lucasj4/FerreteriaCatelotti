@@ -41,11 +41,11 @@ export class PurchaseOrderService {
         }
     }
 
-    async getPurchaseOrdersByFilters(supplierIds, startDate, endDate, estado) {
+    async getPurchaseOrdersByFilters(supplier, startDate, endDate, estado) {
         const query = {};
 
-        if (supplierIds.length > 0) {
-            query.supplierID = { $in: supplierIds }; // Filtrar por proveedores
+        if (supplier) {
+            query.supplierID = { $in: supplier}; // Filtrar por proveedores
         }
 
         if (startDate && endDate) {

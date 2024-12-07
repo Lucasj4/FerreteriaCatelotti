@@ -95,15 +95,19 @@ export class PurchaseOrderController {
 
     async getPurchaseOrdersBySupplierAndDate(req, res) {
         try {
-            const { suppliers, startDate, endDate, estado } = req.query;
+            const { supplier, startDate, endDate, estado } = req.query;
+
+            req.logger.info("Query Params: ", req.query);
             req.logger.info("StartData: " + startDate);
             req.logger.info("EndDate: " + endDate);
-            req.logger.info("Suppliers: " + suppliers);
+            req.logger.info("Proveedor: " + supplier);
             req.logger.info("Estado: " + estado);
 
-            const supplierIds = suppliers ? suppliers.split(",") : [];
-            const purchaseOrders = await purchaseOrderService.getPurchaseOrdersByFilters(supplierIds, startDate, endDate, estado);
+           
+            const purchaseOrders = await purchaseOrderService.getPurchaseOrdersByFilters(supplier, startDate, endDate, estado);
 
+            console.log("Purchase orders: ", purchaseOrders);
+            
 
             if (purchaseOrders.length > 0) {
                 const formattedPurchaseOrders = purchaseOrders.map(order => ({
