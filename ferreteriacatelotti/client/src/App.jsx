@@ -26,6 +26,8 @@ import EditBudgetDetailLine from "./components/EditBudgetDetailLine/EditBudgetDe
 import NewBudget from "./components/NewBudget/NewBudget";
 import { BudgetProvider } from "./components/context/BudgetContext";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import RequestResetPassword from "./components/RequestResetPassword/RequestResetPassword";
+import ResetPassword from "./components/ResetPassword/ResetPassword";
 
 function App() {
   return (
@@ -34,6 +36,9 @@ function App() {
         <Routes>
           {/* Ruta de inicio de sesión fuera del SideBar */}
           <Route path="/iniciosesion" element={<Login />} />
+          <Route path="/restablecercontraseña" element={<RequestResetPassword />} />
+          <Route path="/cambiarcontraseña" element={<ResetPassword />} />
+
 
           {/* Rutas protegidas que necesitan el SideBar */}
           <Route

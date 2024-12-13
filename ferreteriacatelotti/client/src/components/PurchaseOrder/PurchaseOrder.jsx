@@ -24,9 +24,8 @@ const PurchaseOrder = () => {
     { value: "purchaseOrderDate", label: "Fecha" },
     { value: "purchaseOrderStatus", label: "Estado" },
     { value: "proveedor", label: "Proveedor" },
-    { value: "purchaseOrderAmount", label: "Importe"}
+    { value: "purchaseOrderAmount", label: "Importe" },
   ];
-
 
   const [dateRange, setDateRange] = useState([
     {
@@ -49,10 +48,11 @@ const PurchaseOrder = () => {
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/suppliers");
+        const response = await fetch("http://localhost:8080/api/suppliers", {
+          credentials: "include",
+        });
         const result = await response.json();
-        
-        
+
         setSuppliers(result.suppliers);
       } catch (error) {
         console.error("Error fetching suppliers: ", error);
@@ -72,14 +72,17 @@ const PurchaseOrder = () => {
         const purchaseOrders = data.purchaseOrders;
 
         console.log(purchaseOrders);
-        
+
         // Mapear cada orden y obtener detalles del proveedor por supplierID
         const ordersWithSuppliers = await Promise.all(
           purchaseOrders.map(async (order) => {
             try {
               // Hacer fetch de proveedor por supplierID
               const supplierResponse = await fetch(
-                `http://localhost:8080/api/suppliers/${order.supplierID}`
+                `http://localhost:8080/api/suppliers/${order.supplierID}`,
+                {
+                  credentials: "include",
+                }
               );
               const supplierData = await supplierResponse.json();
 
@@ -108,16 +111,14 @@ const PurchaseOrder = () => {
   }, []);
 
   const handleSearch = async () => {
-   
-    
     console.log("SelectedSuppliers: ", selectedSuppliers);
-    
-    const startDate = dateRange[0]?.startDate
-    const endDate = dateRange[0]?.endDate
+
+    const startDate = dateRange[0]?.startDate;
+    const endDate = dateRange[0]?.endDate;
     console.log("start date: ", startDate);
     console.log("end date: ", endDate);
-    
-    const supplier = selectedSuppliers[0].value
+
+    const supplier = selectedSuppliers[0].value;
     // Verificar si la fecha de inicio es mayor o igual que la fecha de fin
     if (startDate > endDate) {
       Swal.fire({
@@ -132,11 +133,7 @@ const PurchaseOrder = () => {
     // Crear el objeto de parámetros de búsqueda
     const searchParams = new URLSearchParams();
 
-    console.log("SUPPLIER: ", supplier);
-    
-    
-      searchParams.append("supplier", supplier);
-    
+    searchParams.append("supplier", supplier);
 
     if (startDate && endDate) {
       searchParams.append("startDate", startDate.toISOString());
@@ -165,7 +162,7 @@ const PurchaseOrder = () => {
         return;
       }
       console.log("Purchase orders: ", purchaseOrders);
-      
+
       const ordersWithSuppliers = await Promise.all(
         purchaseOrders.map(async (order) => {
           try {
@@ -437,7 +434,6 @@ const PurchaseOrder = () => {
           <button className="actions__button">Imprimir</button>
           <button className="actions__button">Salir</button>
           <button className="actions__button">Guardar</button>
-       
         </div>
       </div>
     </>

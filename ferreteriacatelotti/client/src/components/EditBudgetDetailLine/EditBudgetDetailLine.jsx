@@ -18,7 +18,9 @@ const BudgetDetailLine = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/products");
+        const response = await fetch("http://localhost:8080/api/products", {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           throw new Error("Error al obtener los productos");
@@ -32,8 +34,6 @@ const BudgetDetailLine = () => {
           unitPrice: product.productPrice, // El nombre del producto como etiqueta visible
         }));
 
-       
-
         setProductsOption(productOptions);
       } catch (error) {
         console.error("Error en la solicitud:", error.message);
@@ -46,22 +46,27 @@ const BudgetDetailLine = () => {
   useEffect(() => {
     const fetchBudgetDetail = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/budgetsdetails/${rowid}`);
+        const response = await fetch(
+          `http://localhost:8080/api/budgetsdetails/${rowid}`,
+          {
+            credentials: "include",
+          }
+        );
         const data = await response.json();
-        
+
         console.log("data: ", data.budgetDetail);
-        
-        
-        const product = productsOptions.find(product => product.value === data.budgetDetail.productID);
-        
-        
+
+        const product = productsOptions.find(
+          (product) => product.value === data.budgetDetail.productID
+        );
+
         if (product) {
           setBudgetDetailItem({
             id: data.budgetDetail.productID,
-            name: product.label 
+            name: product.label,
           });
         }
-        
+
         setBudgetDetailQuantity(data.budgetDetail.budgetDetailQuantity);
         setBudgetDetailUnitCost(data.budgetDetail.budgetDetailUnitCost);
       } catch (error) {
@@ -75,7 +80,6 @@ const BudgetDetailLine = () => {
     }
   }, [rowid, productsOptions]); // Dependiendo de `productsOptions` también
 
-  
   const handleProductChange = (product) => {
     if (product) {
       setBudgetDetailItem({ id: product.value, name: product.label });
@@ -110,69 +114,69 @@ const BudgetDetailLine = () => {
         overlay: "my-overlay-class",
       },
     });
-    
-    if(result.isConfirmed){
-        
+
+    if (result.isConfirmed) {
       const updateBudget = {
-          budgetDetailItem: budgetDetailItem.name,
-          budgetDetailQuantity,
-          budgetDetailUnitCost,
-          productID: budgetDetailItem.id,
-          budgetID: pid,
-        };
+        budgetDetailItem: budgetDetailItem.name,
+        budgetDetailQuantity,
+        budgetDetailUnitCost,
+        productID: budgetDetailItem.id,
+        budgetID: pid,
+      };
 
-        console.log("Budget detail: ", updateBudget);
+      console.log("Budget detail: ", updateBudget);
 
-        try {
-          const response = await fetch(`http://localhost:8080/api/budgetsdetails/${rowid}`, {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/budgetsdetails/${rowid}`,
+          {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify(updateBudget),
-          });
-          
-          console.log("Response: ", response);
-          if (response.status === 200) {
-            Swal.fire({
-              title: "Linea de detalle modificada con exito",
-              icon: "success",
-              confirmButtonText: "Aceptar",
-              customClass: {
-                title: "my-title-class",
-                popup: "my-popup-class",
-                confirmButton: "my-confirm-button-class",
-                overlay: "my-overlay-class",
-              },
-            }).then(() => {
-              resetForm();
-            });
-          } else if (response.status === 400) {
-            const errorMessages =
-              result.errorMessages && result.errorMessages.length > 0
-                ? result.errorMessages[0] // Une los mensajes con saltos de línea
-                : "Error desconocido";
-    
-            Swal.fire({
-              title: "Error al agregar linea de detalle",
-              text: errorMessages,
-              icon: "error",
-              confirmButtonText: "Aceptar",
-              customClass: {
-                title: "my-title-class",
-                popup: "my-popup-class",
-                confirmButton: "my-confirm-button-class",
-                overlay: "my-overlay-class",
-              },
-            });
           }
-      }catch (error) {
-        console.error("Error:", error.message);
-      };
+        );
 
+        console.log("Response: ", response);
+        if (response.status === 200) {
+          Swal.fire({
+            title: "Linea de detalle modificada con exito",
+            icon: "success",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              overlay: "my-overlay-class",
+            },
+          }).then(() => {
+            resetForm();
+          });
+        } else if (response.status === 400) {
+          const errorMessages =
+            result.errorMessages && result.errorMessages.length > 0
+              ? result.errorMessages[0] // Une los mensajes con saltos de línea
+              : "Error desconocido";
+
+          Swal.fire({
+            title: "Error al agregar linea de detalle",
+            text: errorMessages,
+            icon: "error",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              overlay: "my-overlay-class",
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Error:", error.message);
+      }
     }
-   
-    
   };
 
   return (
@@ -204,7 +208,9 @@ const BudgetDetailLine = () => {
               <label htmlFor="productUnit">Productos</label>
               <DropdownSelect
                 options={productsOptions}
-                value={productsOptions.find((product) => product.value === budgetDetailItem.id)}
+                value={productsOptions.find(
+                  (product) => product.value === budgetDetailItem.id
+                )}
                 onChange={handleProductChange}
                 placeholder="Selecciona un producto"
                 isClearable // Permite borrar la selección

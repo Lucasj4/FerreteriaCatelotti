@@ -122,13 +122,14 @@ const OrderDetail = () => {
         headers: {
           "Content-Type": "application/json",
         },
+
+        credentials: "include",
+
         body: JSON.stringify(newPurchaseOrder),
       });
 
       const result = await response.json();
 
-      console.log("Id: ", result.purchaseOrder._id);
-      
       if (response.status === 201) {
         setPurchaseOrderId(result.purchaseOrder._id);
         await Swal.fire({
@@ -178,10 +179,6 @@ const OrderDetail = () => {
       });
     }
   };
-
-  
-  
- 
 
   return (
     <>
@@ -240,9 +237,9 @@ const OrderDetail = () => {
           <div className="orderdetail__buttons">
             <button onClick={handleSubmit}>Nueva Linea</button>
             <Link to="/pedido">
-              <button >Guardar</button>
+              <button>Guardar</button>
             </Link>
-      
+
             <Link to="/">
               <button>Salir</button>
             </Link>

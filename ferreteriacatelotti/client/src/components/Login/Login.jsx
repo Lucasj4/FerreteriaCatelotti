@@ -10,6 +10,7 @@ const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
     
@@ -32,8 +33,10 @@ const Login = () => {
 
       const data = await response.json();
       
+      console.log("Response: ", response);
+      
      
-      if (response.ok) {
+      if (response.status === 200) {
         // Si la respuesta es exitosa, redirigir al usuario o manejar el login
         console.log(response);
         console.log("docuement cokkie: " ,document.cookie);
@@ -112,7 +115,7 @@ const Login = () => {
               />
             </div>
           </form>
-          <Link to="/recuperarcontraseña">
+          <Link to="/restablecercontraseña">
             <p className="login__forgotpassword">¿Olvidaste tu contraseña?</p>
           </Link>
           <button className="button__login" onClick={handleLoginSubmit}>

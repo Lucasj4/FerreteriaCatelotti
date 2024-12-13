@@ -27,7 +27,10 @@ const BudgetDetail = () => {
       clearBudgetId();
       try {
         const response = await fetch(
-          `http://localhost:8080/api/budgets/budgetwithdetails/${pid}`
+          `http://localhost:8080/api/budgets/budgetwithdetails/${pid}`,
+          {
+            credentials: "include",
+          }
         );
 
         if (response.ok) {
@@ -79,18 +82,16 @@ const BudgetDetail = () => {
     const fetchBudget = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/budgets/${pid}`
+          `http://localhost:8080/api/budgets/${pid}`,
+          {
+            credentials: "include",
+          }
         );
 
         if (response.ok) {
           const data = await response.json();
           const budget = data.budget;
 
-          console.log("Budget: ", budget);
-          console.log("Client ID en presupuesto:", budget.clientId);
-          console.log("Lista de clientes:", clients);
-          console.log("fecha que llego del fetch ", budget.budgetDate);
-          
           // Formatear la fecha de DD/MM/YYYY a YYYY-MM-DD
           const formattedDate = budget.budgetDate
             ? budget.budgetDate.split("/").reverse().join("-")
@@ -100,8 +101,6 @@ const BudgetDetail = () => {
           const clientOption = clients.find(
             (client) => client.clientLastName === budget.clientId
           );
-
-          console.log("Cliente encontrado:", clientOption);
 
           // Actualizar estados
           setBudgetDate(formattedDate); // Asigna la fecha formateada
@@ -131,7 +130,9 @@ const BudgetDetail = () => {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/clients");
+        const response = await fetch("http://localhost:8080/api/clients", {
+          credentials: "include",
+        });
 
         const data = await response.json();
 
@@ -177,6 +178,8 @@ const BudgetDetail = () => {
           `http://localhost:8080/api/budgetsdetails/${budgetDetailId}`,
           {
             method: "DELETE",
+
+            credentials: "include",
           }
         );
 
@@ -244,6 +247,7 @@ const BudgetDetail = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(updateBudget),
       });
 
@@ -290,9 +294,7 @@ const BudgetDetail = () => {
       // Verificar si el presupuesto ya está facturado
       const response = await fetch(`http://localhost:8080/api/budgets/${pid}`);
       const budgetData = await response.json();
-      
-      
-      
+
       if (budgetData.budget.budgetStatus === "Facturado") {
         // Si el presupuesto ya está facturado, mostrar un mensaje de error
         Swal.fire({
@@ -303,7 +305,7 @@ const BudgetDetail = () => {
         });
         return; // Detener la ejecución si ya está facturado
       }
-  
+
       // Si no está facturado, pedir confirmación para facturar
       const result = await Swal.fire({
         title: "¿Estás seguro?",
@@ -320,26 +322,27 @@ const BudgetDetail = () => {
           overlay: "my-overlay-class",
         },
       });
-  
+
       if (result.isConfirmed) {
         // Paso 1: Descontar las cantidades seleccionadas del stock
         for (const item of row) {
           const productId = item.productID; // ID del producto
           const quantityToDecrease = item.budgetDetailQuantity; // Cantidad a descontar
-  
+
           console.log("Product id: ", productId);
-  
+
           const response = await fetch(
-            `http://localhost:8080/api/products/${productId}`);
-  
+            `http://localhost:8080/api/products/${productId}`
+          );
+
           const productData = await response.json();
           const currentStock = productData.product.productStock; // Stock actual del producto
-  
+
           // Verificar si hay suficiente stock
           if (currentStock >= quantityToDecrease) {
             // Descontar el stock
             const updatedStock = currentStock - quantityToDecrease;
-  
+
             // Actualizar el stock del producto
             const stockResponse = await fetch(
               `http://localhost:8080/api/products/updateproductstock/${productId}`,
@@ -348,16 +351,17 @@ const BudgetDetail = () => {
                 headers: {
                   "Content-Type": "application/json",
                 },
+                credentials: "include",
                 body: JSON.stringify({ quantityToDecrease: updatedStock }),
               }
             );
-  
+
             if (stockResponse.status === 200) {
               // Paso 2: Actualizar el estado del presupuesto a "Facturado"
               const updateBudget = {
                 budgetStatus: "Facturado", // Cambiar el estado
               };
-  
+
               const updateBudgetResponse = await fetch(
                 `http://localhost:8080/api/budgets/updatestatus/${pid}`,
                 {
@@ -365,10 +369,13 @@ const BudgetDetail = () => {
                   headers: {
                     "Content-Type": "application/json",
                   },
+
+                  credentials: "include",
+
                   body: JSON.stringify(updateBudget),
                 }
               );
-  
+
               if (updateBudgetResponse.status === 200) {
                 Swal.fire({
                   title: "Presupuesto facturado con éxito",
@@ -381,7 +388,7 @@ const BudgetDetail = () => {
                     overlay: "my-overlay-class",
                   },
                 });
-  
+
                 // Redirigir a otra página si es necesario, por ejemplo:
                 navigate(`/presupuesto/${pid}`);
               } else {
@@ -413,7 +420,6 @@ const BudgetDetail = () => {
       });
     }
   };
-  
 
   return (
     <>

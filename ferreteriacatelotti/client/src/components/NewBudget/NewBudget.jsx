@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import "../BudgetDetail/BudgetDetail.css";
 import Table from "../TableCustom/TableCustom";
-import { Link, useParams, useNavigate} from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import BudgetContext from "../context/BudgetContext";
@@ -18,9 +18,9 @@ const NewBudget = () => {
     selectedOption,
     setSelectedOption,
     detailIds,
-    budgetId, 
+    budgetId,
     setBudgetId,
-    clearDetailIds
+    clearDetailIds,
   } = useContext(BudgetContext);
 
   const tableHeaders = [
@@ -66,7 +66,9 @@ const NewBudget = () => {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/clients");
+        const response = await fetch("http://localhost:8080/api/clients", {
+          credentials: "include",
+        });
 
         const data = await response.json();
 
@@ -113,6 +115,7 @@ const NewBudget = () => {
           `http://localhost:8080/api/budgetsdetails/${budgetDetailId}`,
           {
             method: "DELETE",
+            credentials: "include",
           }
         );
 
@@ -159,13 +162,14 @@ const NewBudget = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(newBudget),
       });
 
       const result = await response.json();
 
       if (response.status === 201) {
-        setBudgetId(result.budget._id)
+        setBudgetId(result.budget._id);
         await Swal.fire({
           title: "Presupuesto creado con éxito",
           icon: "success",
@@ -177,7 +181,7 @@ const NewBudget = () => {
             overlay: "my-overlay-class",
           },
         });
-        navigate('/presupuesto/agregardetalle');
+        navigate("/presupuesto/agregardetalle");
       } else if (response.status === 400) {
         const errorMessages =
           result.errorMessages && result.errorMessages.length > 0
@@ -221,7 +225,7 @@ const NewBudget = () => {
 
     console.log("clientId: ", clientId);
 
-    if (!budgetDate || !clientId|| !budgetStatus) {
+    if (!budgetDate || !clientId || !budgetStatus) {
       await Swal.fire({
         title: "Campos incompletos",
         text: "Por favor, completa la fecha, selecciona un cliente y el estado antes de agregar una línea de detalle.",
@@ -245,13 +249,7 @@ const NewBudget = () => {
       detailIds,
     };
 
-    await postBudget(newBudget)
-
-  
-    
-    
-    
-   
+    await postBudget(newBudget);
   };
   return (
     <>
@@ -313,11 +311,11 @@ const NewBudget = () => {
 
           <div className="budgetdetail__buttoncontainer">
             <Link to={`/presupuesto/agregardetalle`}>
-              <button className="budgetdetail__button" onClick={handleSubmit}>Nueva línea</button>
+              <button className="budgetdetail__button" onClick={handleSubmit}>
+                Nueva línea
+              </button>
             </Link>
-            <button className="budgetdetail__button" >
-              Guardar
-            </button>
+            <button className="budgetdetail__button">Guardar</button>
             <Link to="/presupuesto">
               <button className="budgetdetail__button">Salir</button>
             </Link>

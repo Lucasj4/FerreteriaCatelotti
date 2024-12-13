@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import "./BudgetComponent.css";
+import "../../components/BudgetComponent/BudgetComponent.css";
 import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import Checkbox from "@mui/material/Checkbox";
 import { Link, useParams } from "react-router-dom";
 import Table from "../TableCustom/TableCustom";
 import Swal from "sweetalert2";
-import { Logger } from "sass";
-import Invoice from "../Invoice/Invoice";
 
 const BudgetComponent = () => {
   const [filas, setFilas] = useState([]);
@@ -25,20 +23,17 @@ const BudgetComponent = () => {
     { value: "budgetAmount", label: "Importe" },
   ];
 
- 
-
   useEffect(() => {
     const fetchBudgets = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/budgets");
+        const response = await fetch("http://localhost:8080/api/budgets", {
+          credentials: "include",
+        });
 
         if (response) {
           const budgets = await response.json();
 
-          console.log("Budgets: ", budgets);
-
           setFilas(budgets.budgets);
-          
         }
       } catch (error) {
         throw error;
@@ -51,7 +46,9 @@ const BudgetComponent = () => {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/clients");
+        const response = await fetch("http://localhost:8080/api/clients", {
+          credentials: "include",
+        });
 
         if (response) {
           const data = await response.json();
@@ -97,13 +94,14 @@ const BudgetComponent = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/budgets/search?${queryParams.toString()}`
+        `http://localhost:8080/api/budgets/search?${queryParams.toString()}`,
+        {
+          credentials: "include",
+        }
       );
 
       if (response.status === 200) {
         const result = await response.json();
-
-        console.log("resultado", result);
 
         setFilas(result.budgets); // Actualiza el estado de las filas con los presupuestos encontrados
       } else {
@@ -137,6 +135,7 @@ const BudgetComponent = () => {
           `http://localhost:8080/api/budgets/${idBudget}`,
           {
             method: "DELETE",
+            credentials: "include",
           }
         );
 
@@ -219,13 +218,11 @@ const BudgetComponent = () => {
             getEditPath={(id) => `/presupuesto/${id}`}
           />
 
-          
-
           <div className="budget__actions">
             <Link to="/presupuesto/agregarpresupuesto">
               <button className="budget__actions__button">Nuevo</button>
             </Link>
-            
+
             <button className="budget__actions__button">Guardar</button>
             <button className="budget__actions__button">Salir</button>
           </div>

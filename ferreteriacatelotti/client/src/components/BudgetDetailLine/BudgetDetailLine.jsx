@@ -22,7 +22,9 @@ const BudgetDetailLine = ({ isNewBudget }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/products");
+        const response = await fetch("http://localhost:8080/api/products", {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           throw new Error("Error al obtener los productos");
@@ -74,7 +76,7 @@ const BudgetDetailLine = ({ isNewBudget }) => {
       budgetID: isNewBudget ? budgetId : pid,
     };
 
-    console.log("Budget detail: ", budgetDetailLine);
+    
 
     try {
       const response = await fetch("http://localhost:8080/api/budgetsdetails", {
@@ -82,6 +84,7 @@ const BudgetDetailLine = ({ isNewBudget }) => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(budgetDetailLine),
       });
 

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import TableCustom from "../TableCustom/TableCustom";
 import "./ClientComponent.css";
 import { Link } from "react-router-dom";
-import ExportToExcel from "../ExportExcel/ExportExcel"
+import ExportToExcel from "../ExportExcel/ExportExcel";
 import Swal from "sweetalert2";
 
 const ClientComponent = () => {
@@ -22,7 +22,7 @@ const ClientComponent = () => {
     clientLastName: "Apellido",
     clientFirstName: "Nombre",
     clientEmail: "Correo Electrónico",
-    clientDni: "Dni"
+    clientDni: "Dni",
     // Agrega más campos si es necesario
   };
 
@@ -44,12 +44,15 @@ const ClientComponent = () => {
         searchCriteria === "clientLastName"
           ? `clientLastName=${clientLastName}`
           : `clientEmail=${clientEmail}`;
-          
-          const response = await fetch(
-        `http://localhost:8080/api/clients/search?${queryParam}`
+
+      const response = await fetch(
+        `http://localhost:8080/api/clients/search?${queryParam}`,
+        {
+          credentials: "include",
+        }
       );
 
-      if (response.status === 404 && searchCriteria === 'clientLastName') {
+      if (response.status === 404 && searchCriteria === "clientLastName") {
         Swal.fire({
           title: "Cliente no enconctrado con ese apellido",
           icon: "warning",
@@ -61,7 +64,7 @@ const ClientComponent = () => {
             overlay: "my-overlay-class",
           },
         });
-      }else if(response.status === 404 && searchCriteria === 'clientEmail'){
+      } else if (response.status === 404 && searchCriteria === "clientEmail") {
         Swal.fire({
           title: "Cliente no encontrado con ese email",
           icon: "warning",
@@ -78,7 +81,7 @@ const ClientComponent = () => {
       const data = await response.json(); // Convierte la respuesta a JSON
 
       console.log("data: ", data);
-      
+
       // Asegúrate de que 'products' está disponible en la respuesta
       if (data.clients) {
         setRows(data.clients); // Actualiza el estado con los productos encontrados
@@ -91,7 +94,9 @@ const ClientComponent = () => {
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/clients");
+        const response = await fetch("http://localhost:8080/api/clients", {
+          credentials: 'include',
+        });
 
         if (response) {
           const clients = await response.json();
@@ -123,11 +128,24 @@ const ClientComponent = () => {
               placeholder={
                 searchCriteria === "clientLastName" ? "Apellido" : "Email"
               }
-              value={searchCriteria === 'clientLastName' ? clientLastName : clientEmail }
+              value={
+                searchCriteria === "clientLastName"
+                  ? clientLastName
+                  : clientEmail
+              }
               onChange={handleInputChange}
             />
-            <button className="clientecomponent__search-button" onClick={getClients}>Buscar</button>
-            <ExportToExcel data={rows} fileName={"Clientes"} columnMap={columnMap} />
+            <button
+              className="clientecomponent__search-button"
+              onClick={getClients}
+            >
+              Buscar
+            </button>
+            <ExportToExcel
+              data={rows}
+              fileName={"Clientes"}
+              columnMap={columnMap}
+            />
           </div>
           <TableCustom
             tableClassName="table"

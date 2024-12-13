@@ -19,7 +19,7 @@ const EditPurchaseOrder = () => {
   const [amount, setAmount] = useState(0);
   const [suppliers, setSuppliers] = useState([]);
   const [selectedSuppliers, setSelectedSuppliers] = useState([]);
-  const [purchaseOrderStatus, setPurchaseOrderStatus] = useState("Pendiente")
+  const [purchaseOrderStatus, setPurchaseOrderStatus] = useState("Pendiente");
   const [productData, setProductData] = useState([]);
   const [proveedorValue, setProveedorValue] = useState("");
 
@@ -53,7 +53,10 @@ const EditPurchaseOrder = () => {
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/suppliers"); // Endpoint de proveedores
+        const response = await fetch("http://localhost:8080/api/suppliers", {
+          credentials: "include",
+        });
+
         const data = await response.json();
         setSuppliers(data.suppliers);
       } catch (error) {
@@ -66,11 +69,12 @@ const EditPurchaseOrder = () => {
 
   useEffect(() => {
     const fetchPurchaseOrderWithDetails = async () => {
-      
-      
       try {
         const response = await fetch(
-          `http://localhost:8080/api/purchaseorders/purchaseorderswithdetails/${pid}`
+          `http://localhost:8080/api/purchaseorders/purchaseorderswithdetails/${pid}`,
+          {
+            credentials: "include",
+          }
         );
 
         if (!response.ok) {
@@ -111,11 +115,13 @@ const EditPurchaseOrder = () => {
 
         setOrderDate(formattedDate);
 
-        setPurchaseOrderStatus(purchaseOrder.purchaseOrderStatus || "Pendiente");
+        setPurchaseOrderStatus(
+          purchaseOrder.purchaseOrderStatus || "Pendiente"
+        );
 
         console.log("Fecha purchaseOrderDATE: ", orderDate);
 
-        console.log("Nuevo status: ", purchaseOrderStatus );
+        console.log("Nuevo status: ", purchaseOrderStatus);
         // Seleccionar el proveedor como { label, value }
         const selectedSupplierOption = suppliers.find(
           (supplier) => supplier._id === purchaseOrder.supplierID
@@ -142,14 +148,16 @@ const EditPurchaseOrder = () => {
     };
 
     fetchPurchaseOrderWithDetails();
-    
   }, [pid, suppliers]);
 
   useEffect(() => {
     const handlePdf = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/purchaseorders/purchaseorderswithdetails/${pid}`
+          `http://localhost:8080/api/purchaseorders/purchaseorderswithdetails/${pid}`,
+          {
+            credentials: "include",
+          }
         );
 
         if (!response.ok) {
@@ -198,7 +206,6 @@ const EditPurchaseOrder = () => {
 
     setOrderDate(selectedDate);
   };
-
 
   const generateExcel = async () => {
     // Crear un nuevo libro de trabajo (workbook)
@@ -278,10 +285,9 @@ const EditPurchaseOrder = () => {
           `http://localhost:8080/api/detailsorder/${detailOrderId}`,
           {
             method: "DELETE",
+            credentials: "include",
           }
         );
-
-
 
         if (response.status === 200) {
           Swal.fire({
@@ -330,13 +336,9 @@ const EditPurchaseOrder = () => {
     return;
   };
 
-  
-
   const handleUpdateOrder = async () => {
     const proveedorValue =
       selectedSuppliers.length > 0 ? selectedSuppliers[0].value : "";
-
-   
 
     const updatedPurchaseOrder = {
       purchaseOrderDate: new Date(orderDate),
@@ -345,8 +347,6 @@ const EditPurchaseOrder = () => {
       purchaseOrderAmount: amount,
       detalleIds: Array.from(detalleIds),
     };
-
-
 
     console.log("Purchase order para actualizar: ", updatedPurchaseOrder);
 
@@ -358,6 +358,9 @@ const EditPurchaseOrder = () => {
           headers: {
             "Content-Type": "application/json",
           },
+
+          credentials: "include",
+
           body: JSON.stringify(updatedPurchaseOrder),
         }
       );
@@ -425,7 +428,7 @@ const EditPurchaseOrder = () => {
             <div className="date-selector__item">
               <p>Estado</p>
               <select
-                value={purchaseOrderStatus|| "Pendiente"} // Asegúrate de que nunca sea undefined
+                value={purchaseOrderStatus || "Pendiente"} // Asegúrate de que nunca sea undefined
                 onChange={handleStatusChange}
                 className="purchaseOrder__status"
               >

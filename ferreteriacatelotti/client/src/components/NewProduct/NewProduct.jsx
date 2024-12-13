@@ -28,7 +28,9 @@ const NewProduct = () => {
     // Función asíncrona para obtener las categorías desde la API
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/categories");
+        const response = await fetch("http://localhost:8080/api/categories", {
+          credentials: "include",
+        });
         if (!response.ok) {
           throw new Error("Error al obtener las categorías");
         }
@@ -46,7 +48,9 @@ const NewProduct = () => {
   useEffect(() => {
     const fetchUnits = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/units");
+        const response = await fetch("http://localhost:8080/api/units", {
+          credentials: "include",
+        });
         if (!response.ok) {
           throw new Error("Error al obtener las categorías");
         }
@@ -80,7 +84,6 @@ const NewProduct = () => {
     };
 
     console.log("Producto: ", productData);
-    
 
     try {
       const response = await fetch(
@@ -90,6 +93,9 @@ const NewProduct = () => {
           headers: {
             "Content-Type": "application/json",
           },
+
+          credentials: "include",
+
           body: JSON.stringify(productData),
         }
       );

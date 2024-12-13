@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import './database.js'
+import passport from "passport";
 import { productRouter } from './src/products/product-router.js';
 import { supplierRouter } from './src/suppliers/supplier-router.js';
 import { unitRouter } from './src/units/unit-router.js';
@@ -14,6 +15,7 @@ import { purchaseOrderRouter } from './src/purchaseorders/purchaseorder-route.js
 import { budgetRouter } from './src/budget/budget-router.js';
 import { budgetDetailRouter } from './src/budgetdetail/budgetdetail-route.js';
 import cookieParser from 'cookie-parser';
+import { initializePassport } from "./src/config/passport.config.js";
 import {authMiddleware} from './src/middlewares/authmiddleware.js';
 
 
@@ -32,7 +34,7 @@ app.use(cors({
   }));
 
 
-
+app.use(passport.initialize());
 
 // app.use(authMiddleware);
 app.use("/api/products", productRouter);
@@ -45,9 +47,11 @@ app.use("/api/purchaseorders", purchaseOrderRouter)
 app.use("/api/detailsorder", detailOrderRoute)
 app.use('/api/budgets', budgetRouter)
 app.use('/api/budgetsdetails', budgetDetailRouter)
+
+app.use(authMiddleware);
 app.use(errorHandler);
 
-
+initializePassport();
 
 
 app.listen(8080, () => {

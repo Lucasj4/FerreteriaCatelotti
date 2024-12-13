@@ -17,7 +17,7 @@ const NewDetailOrderLine = () => {
   const [detailOrderUnitCost, setDetailOrderUnitCost] = useState("");
   const [productsOptions, setProductsOption] = useState([]);
   const [unidad, setUnidad] = useState(option[0]);
-  const {pid} = useParams();
+  const { pid } = useParams();
 
   const handleQuantity = (e) => {
     setDetailOrderQuantity(e.target.value);
@@ -38,13 +38,11 @@ const NewDetailOrderLine = () => {
   };
 
   useEffect(() => {
-    
-    
     const fetchProducts = async () => {
-      
-
       try {
-        const response = await fetch("http://localhost:8080/api/products");
+        const response = await fetch("http://localhost:8080/api/products", {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           throw new Error("Error al obtener los productos");
@@ -99,6 +97,7 @@ const NewDetailOrderLine = () => {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(orderDetailOrderLine),
       });
 

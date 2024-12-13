@@ -47,6 +47,15 @@ export class UserService{
         }
     }
 
+    async deleteUser(id){
+        try {
+            const deleteUser = await UserModel.findByIdAndDelete(id);
+            return deleteUser;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     
 
     

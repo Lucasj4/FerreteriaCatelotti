@@ -38,10 +38,10 @@ const EditDetailOrderLine = () => {
   useEffect(() => {
     console.log("pid: ", pid);
     const fetchProducts = async () => {
-      
-      
       try {
-        const response = await fetch(`http://localhost:8080/api/products`);
+        const response = await fetch(`http://localhost:8080/api/products`, {
+          credentials: "include",
+        });
 
         if (!response.ok) {
           throw new Error("Error al obtener los productos");
@@ -54,10 +54,9 @@ const EditDetailOrderLine = () => {
           label: product.productName, // El nombre del producto como etiqueta visible
           unitPrice: product.productPrice,
         }));
-        
 
         console.log("Product Options: ", productOptions);
-        
+
         setProductsOption(productOptions);
       } catch (error) {
         console.error("Error en la solicitud:", error.message);
@@ -71,34 +70,31 @@ const EditDetailOrderLine = () => {
     const fetchDetailOrder = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/detailsorder/${rowid}`
+          `http://localhost:8080/api/detailsorder/${rowid}`,
+          {
+            credentials: "include",
+          }
         );
-  
+
         const data = await response.json();
-        console.log("Detail order:", data);
-  
+
         // Solo buscar el producto si las opciones están cargadas
         const product = productsOptions.find(
           (product) => product.value === data.detailOrder.productID
-
         );
-        
-        console.log("Producto: ", product);
-        
+
         setDetailOrderProduct({
           id: data.detailOrder.productID, // Utilizar el ID del producto
           name: product ? product.label : "", // Obtener el nombre si está disponible
         });
 
-       
-  
         setDetailOrderQuantity(data.detailOrder.detailOrderQuantity);
         setDetailOrderUnitCost(data.detailOrder.detailOrderUnitCost);
       } catch (error) {
         console.error("Error fetching detail order:", error);
       }
     };
-  
+
     if (productsOptions.length > 0) {
       fetchDetailOrder();
     }
@@ -107,7 +103,7 @@ const EditDetailOrderLine = () => {
   const handleProductChange = (product) => {
     if (product) {
       // setSelectedProduct(product.label);
-      
+
       setDetailOrderUnitCost(product.unitPrice || ""); // Actualiza el precio unitario
       setDetailOrderProduct({ id: product.value, name: product.label });
     } else {
@@ -137,7 +133,7 @@ const EditDetailOrderLine = () => {
       },
     });
 
-    if(result.isConfirmed){
+    if (result.isConfirmed) {
       const orderDetailOrderLine = {
         detailOrderProduct: detailOrderProduct.name, // Nombre del producto
         detailOrderQuantity,
@@ -145,10 +141,10 @@ const EditDetailOrderLine = () => {
         productID: detailOrderProduct.id, // ID del producto
         purchaseOrderID: pid,
       };
-  
+
       console.log("orderDetailOrderLine: ", orderDetailOrderLine);
       console.log("Row id: ", rowid);
-      
+
       try {
         const response = await fetch(
           `http://localhost:8080/api/detailsorder/${rowid}`,
@@ -157,19 +153,19 @@ const EditDetailOrderLine = () => {
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify(orderDetailOrderLine),
           }
         );
-  
+
         if (!response.ok) {
           throw new Error("Error al enviar los datos al servidor");
         }
-  
+
         // Puedes hacer algo con la respuesta si es necesario
         const responseData = await response.json();
         console.log("detalle", responseData);
-       
-    
+
         if (response.status === 200) {
           Swal.fire({
             title: "Detalle modificado",
@@ -188,7 +184,6 @@ const EditDetailOrderLine = () => {
         console.error("Error:", error.message);
       }
     }
-   
   };
   return (
     <>
@@ -217,7 +212,9 @@ const EditDetailOrderLine = () => {
               <label htmlFor="productUnit">Productos</label>
               <DropdownSelect
                 options={productsOptions}
-                value={productsOptions.find((product) => product.value === detailOrderProduct.id)} // Muestra la etiqueta del producto seleccionado
+                value={productsOptions.find(
+                  (product) => product.value === detailOrderProduct.id
+                )} // Muestra la etiqueta del producto seleccionado
                 onChange={handleProductChange}
                 placeholder="Selecciona un producto"
               />

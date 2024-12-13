@@ -185,8 +185,13 @@ const ProductComponent = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
+      console.log("codercookie: ", document.cookie);
+      
       try {
-        const response = await fetch("http://localhost:8080/api/products");
+        const response = await fetch("http://localhost:8080/api/products" ,{
+          credentials: 'include',
+        }
+        );
 
         if (response) {
           const products = await response.json();

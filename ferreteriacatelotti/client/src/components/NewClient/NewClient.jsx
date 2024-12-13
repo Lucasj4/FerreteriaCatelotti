@@ -1,9 +1,9 @@
 import React from "react";
 import FormItem from "../FormItem/FormItem";
 import { useState } from "react";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./NewClient.css";
-import Swal from "sweetalert2"; 
+import Swal from "sweetalert2";
 
 const NewClient = () => {
   const [clientFirstName, setClientFirstName] = useState("");
@@ -18,10 +18,9 @@ const NewClient = () => {
     setClientDni("");
   };
 
-  const handleExit = async (e)=>{ 
-    
+  const handleExit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const result = await Swal.fire({
         text: "¿Estas seguro que deseas salir?",
@@ -36,16 +35,15 @@ const NewClient = () => {
           cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
           overlay: "my-overlay-class",
         },
-      })
-  
-      if(result.isConfirmed){
-        navigate("/clientes")
+      });
+
+      if (result.isConfirmed) {
+        navigate("/clientes");
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-    
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,18 +52,18 @@ const NewClient = () => {
       clientFirstName,
       clientLastName,
       clientEmail,
-      clientDni
-    }
+      clientDni,
+    };
     try {
-      const response = await fetch( "http://localhost:8080/api/clients",  
-      {
+      const response = await fetch("http://localhost:8080/api/clients", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(clientData),
-      })
-      
+      });
+
       console.log("clientData:", clientData);
       const result = await response.json();
 
@@ -106,8 +104,8 @@ const NewClient = () => {
           });
           break;
         case 409:
-          const error = result.error
-          
+          const error = result.error;
+
           Swal.fire({
             title: `${error}`,
             icon: "warning",
@@ -141,11 +139,10 @@ const NewClient = () => {
           // Puedes agregar redireccionamiento o manejo adicional aquí si es necesario
           break;
       }
-    
     } catch (error) {
       console.error("Error en la solicitud", error);
     }
-  }
+  };
   return (
     <>
       <div className="clientcontainer">
@@ -159,7 +156,7 @@ const NewClient = () => {
               label="Nombre"
               labelClassname="form__label"
               inputClassname="form__input"
-              onChange={(e)=> setClientFirstName(e.target.value)}
+              onChange={(e) => setClientFirstName(e.target.value)}
             />
             <FormItem
               formItemClassName="form__item"
@@ -168,7 +165,7 @@ const NewClient = () => {
               label="Apellido"
               labelClassname="form__label"
               inputClassname="form__input"
-              onChange={(e)=> setClientLastName(e.target.value)}
+              onChange={(e) => setClientLastName(e.target.value)}
             />
             <FormItem
               formItemClassName="form__item"
@@ -177,7 +174,7 @@ const NewClient = () => {
               typeInput="text"
               labelClassname="form__label"
               inputClassname="form__input"
-              onChange={(e)=> setClientDni(e.target.value)}
+              onChange={(e) => setClientDni(e.target.value)}
             />
             <FormItem
               formItemClassName="form__item"
@@ -186,12 +183,16 @@ const NewClient = () => {
               typeInput="text"
               labelClassname="form__label"
               inputClassname="form__input"
-              onChange={(e)=> setClientEmail(e.target.value)}
+              onChange={(e) => setClientEmail(e.target.value)}
             />
           </form>
           <div className="form__containerbuttons">
-            <button className="form__button" onClick={handleSubmit}>Guardar</button>
-            <button className="form__button" onClick={handleExit}>Salir</button>
+            <button className="form__button" onClick={handleSubmit}>
+              Guardar
+            </button>
+            <button className="form__button" onClick={handleExit}>
+              Salir
+            </button>
           </div>
         </div>
         <div></div>

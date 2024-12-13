@@ -16,7 +16,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
           credentials: 'include',
         });
 
-        if (response.ok) {
+        console.log("Response fetchUserrole: ", response);
+        
+        if (response.status === 200) {
           const data = await response.json();
           setUserRole(data.role);
           setIsAuthenticated(true);

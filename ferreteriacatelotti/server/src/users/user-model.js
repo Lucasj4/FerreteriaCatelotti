@@ -11,14 +11,18 @@ const UserSchema = new Schema({
     type: String,
     required: true
   },
-  userEmail:{
+  userEmail: {
     type: String,
     required: true
   },
   userRole: {
     type: String,
-    
-  }
+
+  },
+  userResetToken: {
+    token: String,
+    expiresAt: Date
+  },
 });
 
 // Modelo de usuario

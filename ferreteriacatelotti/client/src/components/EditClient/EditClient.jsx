@@ -13,13 +13,14 @@ const EditClient = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-
     const fetchClient = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/clients/${cid}`
+          `http://localhost:8080/api/clients/${cid}`,
+          {
+            credentials: "include",
+          }
         );
-       
         if (response) {
           const data = await response.json();
           console.log("Cliente: ", data.client);
@@ -38,10 +39,9 @@ const EditClient = () => {
     fetchClient();
   }, [cid]);
 
-  const handleExit = async (e)=>{ 
-    
+  const handleExit = async (e) => {
     e.preventDefault();
-    
+
     try {
       const result = await Swal.fire({
         text: "¿Estas seguro que deseas salir?",
@@ -56,16 +56,15 @@ const EditClient = () => {
           cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
           overlay: "my-overlay-class",
         },
-      })
-  
-      if(result.isConfirmed){
-        navigate("/clientes")
+      });
+
+      if (result.isConfirmed) {
+        navigate("/clientes");
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-    
-  }
+  };
 
   const handlesubmit = async (event) => {
     event.preventDefault();
@@ -93,8 +92,7 @@ const EditClient = () => {
         clientDni,
       };
 
-
-      console.log("Cliente modificado" , clientData);
+      console.log("Cliente modificado", clientData);
       try {
         const response = await fetch(
           `http://localhost:8080/api/clients/${cid}`,
@@ -103,6 +101,9 @@ const EditClient = () => {
             headers: {
               "Content-Type": "application/json",
             },
+
+            credentials: "include",
+
             body: JSON.stringify(clientData),
           }
         );
@@ -217,7 +218,9 @@ const EditClient = () => {
             <button className="form__button" onClick={handlesubmit}>
               Editar
             </button>
-            <button className="form__button" onClick={handleExit}>Salir</button>
+            <button className="form__button" onClick={handleExit}>
+              Salir
+            </button>
           </div>
         </div>
         <div></div>

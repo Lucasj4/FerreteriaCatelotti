@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import TableCustom from "../TableCustom/TableCustom";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 import './UserComponent.css'
 const UserComponent = () => {
   const [row, setRows] = useState([]);
 
   const tableHeaders = [
     { value: "userUsername", label: "Usuario" },
-    { value: "userPassword", label: "Contraseña" },
+    { value: "userRole", label: "Rol" },
     { value: "userEmail", label: "Email" },
   ];
 
@@ -15,7 +16,9 @@ const UserComponent = () => {
 
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/users");
+        const response = await fetch("http://localhost:8080/api/users", {
+          credentials: 'include',
+        });
         const data = await response.json();
 
         if(response.status === 200){
@@ -31,6 +34,58 @@ const UserComponent = () => {
     fetchUsers();
 
   }, [])
+
+  const handleDeleteCell = async (id, index) => {
+    const result = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Una vez eliminado, no podrás recuperar este presupuesto.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "No, cancelar",
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
+        overlay: "my-overlay-class",
+      },
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/users/${id}`,
+          {
+            method: "DELETE",
+            credentials: "include",
+          }
+        );
+
+        if (response.status === 200) {
+          Swal.fire({
+            title: "Presupuesto eliminado",
+            icon: "success",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              overlay: "my-overlay-class",
+            },
+          });
+          // Si la eliminación fue exitosa, eliminamos la fila visualmente
+          const newRows = [...row];
+          newRows.splice(index, 1);
+          setRows(newRows);
+        } else {
+          console.error("Error al eliminar el presupuesto en la base de datos");
+        }
+      } catch (error) {
+        console.error("Error en la petición de eliminación", error);
+      }
+    }
+  }
   
   return (
     <>
@@ -55,6 +110,7 @@ const UserComponent = () => {
             editIconClassName="table__editIcon"
             headers={tableHeaders}
             getEditPath={(id) =>`/users/${id}`}
+            handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
             data={row}
           />
           <div className="clientecomponent__actions">
