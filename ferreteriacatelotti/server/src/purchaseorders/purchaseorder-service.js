@@ -45,7 +45,7 @@ export class PurchaseOrderService {
         const query = {};
 
         if (supplier) {
-            query.supplierID = { $in: supplier}; // Filtrar por proveedores
+            query.supplierID = supplier; // Filtrar por proveedores
         }
 
         if (startDate && endDate) {

@@ -118,7 +118,7 @@ const PurchaseOrder = () => {
     console.log("start date: ", startDate);
     console.log("end date: ", endDate);
 
-    const supplier = selectedSuppliers[0].value;
+     const supplier = selectedSuppliers?.length > 0 ? selectedSuppliers[0]?.value : "";
     // Verificar si la fecha de inicio es mayor o igual que la fecha de fin
     if (startDate > endDate) {
       Swal.fire({
@@ -126,6 +126,12 @@ const PurchaseOrder = () => {
         title: "Error de fechas",
         text: "La fecha de inicio no puede ser igual o mayor que la fecha de fin.",
         confirmButtonText: "Entendido",
+        customClass: {
+          title: "my-title-class",
+          popup: "my-popup-class",
+          confirmButton: "my-confirm-button-class",
+          overlay: "my-overlay-class",
+        },
       });
       return; // Terminar la ejecución si hay un error
     }
@@ -133,12 +139,9 @@ const PurchaseOrder = () => {
     // Crear el objeto de parámetros de búsqueda
     const searchParams = new URLSearchParams();
 
-    searchParams.append("supplier", supplier);
-
-    if (startDate && endDate) {
-      searchParams.append("startDate", startDate.toISOString());
-      searchParams.append("endDate", endDate.toISOString());
-    }
+    if (supplier) searchParams.append("supplier", supplier);
+    if (startDate) searchParams.append("startDate", startDate.toISOString());
+    if (endDate) searchParams.append("endDate", endDate.toISOString());
 
     if (showOnlySelected) {
       searchParams.append("estado", "Pendiente");
@@ -148,7 +151,10 @@ const PurchaseOrder = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/purchaseorders/search?${searchParams.toString()}`
+        `http://localhost:8080/api/purchaseorders/search?${searchParams.toString()}`,
+        {
+          credentials: "include",
+        }
       );
       const data = await response.json();
       const purchaseOrders = data.purchaseOrders;
@@ -158,6 +164,12 @@ const PurchaseOrder = () => {
           icon: "info",
           text: "No se encontro ningun pedido de compra con los parametros establecidos",
           confirmButtonText: "Entendido",
+          customClass: {
+            title: "my-title-class",
+            popup: "my-popup-class",
+            confirmButton: "my-confirm-button-class",
+            overlay: "my-overlay-class",
+          },
         });
         return;
       }
@@ -168,10 +180,12 @@ const PurchaseOrder = () => {
           try {
             // Hacer fetch de proveedor por supplierID
             const supplierResponse = await fetch(
-              `http://localhost:8080/api/suppliers/${order.supplierID}`
+              `http://localhost:8080/api/suppliers/${order.supplierID}`,
+              {
+                credentials: "include",
+              }
             );
             const supplierData = await supplierResponse.json();
-            console.log("Datos del Proveedor: ", supplierData);
 
             // Formatear la orden con el apellido del proveedor
             return {
@@ -187,6 +201,7 @@ const PurchaseOrder = () => {
           }
         })
       );
+
       setFilas(ordersWithSuppliers);
     } catch (error) {
       console.error("Error al buscar órdenes de compra:", error);
@@ -221,6 +236,7 @@ const PurchaseOrder = () => {
           `http://localhost:8080/api/purchaseorders/${purchaseOrderId}`,
           {
             method: "DELETE",
+            credentials: "include",
           }
         );
 
@@ -346,7 +362,8 @@ const PurchaseOrder = () => {
                   className="dateselector__date"
                   value={dateRange[0].startDate.toISOString().split("T")[0]}
                   onChange={(e) => {
-                    const newStartDate = new Date(e.target.value);
+                    const [year, month, day] = e.target.value.split("-");
+                    const newStartDate = new Date(year, month - 1, day); // Año, Mes (0-11), Día sin ajuste horario
                     setDateRange([
                       {
                         startDate: newStartDate,
@@ -365,7 +382,8 @@ const PurchaseOrder = () => {
                   className="dateselector__date"
                   value={dateRange[0].endDate.toISOString().split("T")[0]}
                   onChange={(e) => {
-                    const newEndDate = new Date(e.target.value);
+                    const [year, month, day] = e.target.value.split("-");
+                    const newEndDate = new Date(year, month - 1, day); // Año, Mes (0-11), Día sin ajuste horario
                     setDateRange([
                       {
                         startDate: dateRange[0].startDate,
@@ -374,6 +392,7 @@ const PurchaseOrder = () => {
                       },
                     ]);
                   }}
+                 
                 />
               </div>
             </div>
@@ -385,7 +404,7 @@ const PurchaseOrder = () => {
               selectedOptions={selectedSuppliers}
               onChange={handleSupplierChange}
               placeholder="Select suppliers"
-              labelKey="lastName"
+              labelKey="supplierLastName"
             />
           </div>
         </div>
@@ -433,7 +452,6 @@ const PurchaseOrder = () => {
           </Link>
           <button className="actions__button">Imprimir</button>
           <button className="actions__button">Salir</button>
-          <button className="actions__button">Guardar</button>
         </div>
       </div>
     </>

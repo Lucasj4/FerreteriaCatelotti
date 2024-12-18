@@ -23,7 +23,7 @@ export class SupplierService{
     async getById(id){
         try {
             const supplier = await SupplierModel.findOne({_id: id});
-            return supplier.lastName; 
+            return supplier.supplierLastName; 
         } catch (error) {
             throw error;
         }

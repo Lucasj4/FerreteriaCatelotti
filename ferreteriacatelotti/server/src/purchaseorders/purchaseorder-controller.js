@@ -1,6 +1,9 @@
 import { PurchaseOrderService } from "./purchaseorder-service.js";
 import { ProductService } from "../products/product-service.js";
 import {DetailOrderService} from "../detailorder/detailorder-service.js";
+import PDFDocument from "pdfkit";
+import fs from "fs";
+import path from "path";
 const purchaseOrderService = new PurchaseOrderService();
 const detailOrderService = new DetailOrderService();
 const productService = new ProductService();
@@ -205,6 +208,71 @@ export class PurchaseOrderController {
         } catch (error) {
             console.error("Error al eliminar el presupuesto:", error);
             res.status(500).json({ message: "Error en el servidor al eliminar el presupuesto" });
+        }
+    }
+    async downloadPurchaseOrder(req, res) {
+        const { pid } = req.params; // ID de la orden de compra
+        try {
+            // Obtén los datos del pedido y sus detalles
+            const result = await purchaseOrderService.getPurchaseOrderWithDetails(pid);
+
+            if (result.error) {
+                return res.status(404).json({ message: result.error });
+            }
+
+            const { purchaseOrder, detailOrders } = result;
+
+            // Crear un nuevo documento PDF
+            const doc = new PDFDocument();
+            const filePath = path.join(__dirname, `purchaseOrder_${pid}.pdf`);
+            const writeStream = fs.createWriteStream(filePath);
+
+            doc.pipe(writeStream);
+
+            // Información general del pedido de compra
+            doc
+                .fontSize(20)
+                .text("Orden de Compra", { align: "center" })
+                .moveDown(2)
+                .fontSize(12)
+                .text(`ID del Pedido: ${purchaseOrder._id}`)
+                .text(`Fecha: ${new Date(purchaseOrder.purchaseOrderDate).toLocaleDateString("es-ES")}`)
+                .text(`Estado: ${purchaseOrder.purchaseOrderStatus}`)
+                .text(`Proveedor: ${purchaseOrder.supplierID}`)
+                .moveDown();
+
+            // Agregar tabla de detalles del pedido
+            doc.fontSize(14).text("Detalles del Pedido").moveDown();
+            detailOrders.forEach((detail, index) => {
+                doc
+                    .fontSize(12)
+                    .text(`Producto: ${detail.detailOrderProduct}`)
+                    .text(`Cantidad: ${detail.detailOrderQuantity}`)
+                    .text(`Precio Unitario: ${detail.detailOrderUnitCost}`)
+                    .moveDown();
+            });
+
+            doc.end();
+
+            // Cuando se finaliza la creación del archivo
+            writeStream.on("finish", () => {
+                res.setHeader("Content-Type", "application/pdf");
+                res.setHeader(
+                    "Content-Disposition",
+                    `attachment; filename=purchaseOrder_${pid}.pdf`
+                );
+
+                fs.createReadStream(filePath).pipe(res);
+            });
+
+            // Manejar errores
+            writeStream.on("error", (error) => {
+                console.error("Error al generar PDF:", error);
+                res.status(500).json({ message: "Error al generar el archivo PDF" });
+            });
+        } catch (error) {
+            console.error("Error al descargar el PDF:", error);
+            res.status(500).json({ error: "Error interno del servidor" });
         }
     }
 }

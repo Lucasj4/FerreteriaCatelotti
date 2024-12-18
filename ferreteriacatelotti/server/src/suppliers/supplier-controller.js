@@ -5,24 +5,25 @@ const supplierService = new SupplierService();
 export class SupplierController {
    
     async addSupplier(req, res){
-        const { firstName, lastName, email, dni } = req.body;
-       
+        const { supplierFirstName, supplierLastName, supplierEmail, supplierDni } = req.body;
+        
+        req.logger.info("Email: " + supplierEmail);
         try {
-            if (!firstName || !lastName || !email || !dni) {
+            if (!supplierFirstName || !supplierLastName || !supplierEmail || !supplierDni) {
                 return res.status(400).json({ message: 'Missing required fields: firstname, lastname, email, or dni' });
             }
         
-            const existingSupplier = await supplierService.getByDni(dni);
+            const existingSupplier = await supplierService.getByDni(supplierDni);
     
             if(existingSupplier){
                 return res.status(409).json({ error: "Ya existe un proveedor con el mismo dni" });
             }
 
             const newSupplier = {
-                firstName,
-                lastName,
-                email,
-                dni
+                supplierFirstName,
+                supplierLastName,
+                supplierEmail,
+                supplierDni
             }
             console.log("New Supplier: ", newSupplier);
             await supplierService.addSupplier(newSupplier);
@@ -49,9 +50,12 @@ export class SupplierController {
     async getSupplierById(req, res) {
         const { id } = req.params;
 
+        req.logger.info("id supplier: " + id)
         try {
             const supplier = await supplierService.getById(id);
 
+            console.log("Supplier: ", supplier);
+            
             if (!supplier) {
                 return res.status(404).json({ message: 'Proveedor no encontrado' });
             }

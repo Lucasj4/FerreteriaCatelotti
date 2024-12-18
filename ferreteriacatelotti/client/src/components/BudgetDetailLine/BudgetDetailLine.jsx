@@ -90,7 +90,7 @@ const BudgetDetailLine = ({ isNewBudget }) => {
 
       const result = await response.json();
 
-      if (response.status === 201) {
+      if (response.status === 201 || response.status === 200 ) {
         Swal.fire({
           title: "Linea de detalle agregada con exito",
           icon: "success",
@@ -104,7 +104,7 @@ const BudgetDetailLine = ({ isNewBudget }) => {
         }).then(() => {
           resetForm();
         });
-        addDetailId(result.budgetDetail._id);
+        
       } else if (response.status === 400) {
         const errorMessages =
           result.errorMessages && result.errorMessages.length > 0

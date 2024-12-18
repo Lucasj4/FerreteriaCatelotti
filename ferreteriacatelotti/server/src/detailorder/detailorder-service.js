@@ -49,10 +49,34 @@ export class DetailOrderService{
         }
     }
 
+    async updateDetailOrderQuantity(detailOrderId, detailOrderQuantity){
+        try {
+            const updateDetailOrder = await DetailOrderModel.findByIdAndUpdate(detailOrderId, {detailOrderQuantity: detailOrderQuantity}, { new: true } );
+            return updateDetailOrder;
+        } catch (error) {
+            console.error(error);
+            throw error; 
+        }
+    }
+
     async deleteDetailOrder(id){
         try {
             const detailOderDelete = await DetailOrderModel.findByIdAndDelete(id);
             return detailOderDelete;
+        } catch (error) {
+            console.error(error);
+            throw error; 
+        }
+    }
+
+    async findByOrderIdandProductName(purchaseOrderId, productName){
+        try {
+            const detailOrder = await DetailOrderModel.findOne({
+                purchaseOrderID: purchaseOrderId,
+                detailOrderProduct: productName
+            })
+
+            return detailOrder;
         } catch (error) {
             console.error(error);
             throw error; 

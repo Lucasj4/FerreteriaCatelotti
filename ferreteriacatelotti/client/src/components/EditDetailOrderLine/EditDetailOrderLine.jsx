@@ -260,7 +260,7 @@ const EditDetailOrderLine = () => {
           </form>
 
           <div className="newPurchaseOrder__form__containerbuttons">
-            <Link to={"/detallepedido"}>
+            <Link to={`/pedido/${pid}`}>
               <button className="newPurchaseOrder__form__button">Salir</button>
             </Link>
             <Link to={"/detallepedido"}>

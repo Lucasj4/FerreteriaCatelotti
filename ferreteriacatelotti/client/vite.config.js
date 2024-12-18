@@ -10,6 +10,7 @@ export default defineConfig({
         additionalData: `@import "src/styles/variables.scss";`, // Opcional: importa variables globales
       },
     },
+    
   },
   server: {
     port: 5173, // Cambia si es necesario

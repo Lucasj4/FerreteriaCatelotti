@@ -9,7 +9,7 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { useAppContext } from "../context/OrderContext";
 import Swal from "sweetalert2";
-import ExcelJS from "exceljs";
+
 
 const EditPurchaseOrder = () => {
   const [rows, setRows] = useState([]);
@@ -31,24 +31,7 @@ const EditPurchaseOrder = () => {
 
   const navigate = useNavigate();
 
-  const groupDetailsByProduct = (details) => {
-    return details.reduce((acc, order) => {
-      const existing = acc.find(
-        (item) => item.detailOrderProduct === order.detailOrderProduct
-      );
-      if (existing) {
-        existing.detailOrderQuantity += order.detailOrderQuantity;
-        existing.totalCost =
-          existing.detailOrderQuantity * order.detailOrderUnitCost;
-      } else {
-        acc.push({
-          ...order,
-          totalCost: order.detailOrderQuantity * order.detailOrderUnitCost,
-        });
-      }
-      return acc;
-    }, []);
-  };
+  
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -86,20 +69,15 @@ const EditPurchaseOrder = () => {
 
         console.log(data);
 
-        for (const detail of detailOrders) {
-          addDetalleId(detail._id); // Los duplicados son manejados automáticamente por el Set
-        }
-        console.log("Detalle ids final: ", Array.from(detalleIds));
+        const total = detailOrders.reduce(
+          (acc, detail) => acc + detail.detailOrderQuantity * detail.detailOrderUnitCost,
+          0
+        );
 
-        const groupedDetails = groupDetailsByProduct(detailOrders);
-
-        const total = groupedDetails.reduce((acc, order) => {
-          return acc + order.totalCost;
-        }, 0);
-
+        
         setAmount(total);
 
-        setRows(groupedDetails);
+        setRows(detailOrders);
 
         console.log("fecha del fetch: ", purchaseOrder.purchaseOrderDate);
 
@@ -119,9 +97,7 @@ const EditPurchaseOrder = () => {
           purchaseOrder.purchaseOrderStatus || "Pendiente"
         );
 
-        console.log("Fecha purchaseOrderDATE: ", orderDate);
-
-        console.log("Nuevo status: ", purchaseOrderStatus);
+      
         // Seleccionar el proveedor como { label, value }
         const selectedSupplierOption = suppliers.find(
           (supplier) => supplier._id === purchaseOrder.supplierID
@@ -131,7 +107,7 @@ const EditPurchaseOrder = () => {
           selectedSupplierOption
             ? [
                 {
-                  label: selectedSupplierOption.lastName, // Campo que se mostrará en el MultiSelect
+                  label: selectedSupplierOption.supplierLastName, // Campo que se mostrará en el MultiSelect
                   value: selectedSupplierOption._id, // ID del cliente
                 },
               ]
@@ -207,111 +183,7 @@ const EditPurchaseOrder = () => {
     setOrderDate(selectedDate);
   };
 
-  const generateExcel = async () => {
-    // Crear un nuevo libro de trabajo (workbook)
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Orden de Compra");
-
-    // Añadir datos generales
-    worksheet.addRow(["Fecha", purchaseOrderDate]);
-    worksheet.addRow(["Estado", purchaseOrderStatus]);
-    worksheet.addRow(["Proveedor", proveedorValue]);
-    worksheet.addRow(["Importe", amount]);
-
-    // Dejar una línea en blanco entre los datos generales y la tabla
-    worksheet.addRow([]);
-
-    // Añadir los encabezados de la tabla
-    worksheet.addRow(["Producto", "Cantidad", "Precio Unitario"]);
-
-    // Definir los estilos para las celdas (bordes)
-    const borderStyle = {
-      top: { style: "thin" },
-      left: { style: "thin" },
-      bottom: { style: "thin" },
-      right: { style: "thin" },
-    };
-
-    // Añadir los productos y aplicar bordes
-    productData.forEach((item) => {
-      const row = worksheet.addRow([
-        item.product,
-        item.quantity,
-        item.unitCost,
-      ]);
-
-      // Aplicar bordes a todas las celdas de la fila
-      row.eachCell((cell, colNumber) => {
-        cell.border = borderStyle;
-      });
-    });
-
-    // Aplicar bordes a los encabezados
-    worksheet.getRow(1).eachCell((cell) => {
-      cell.border = borderStyle;
-    });
-
-    // Generar el archivo Excel y descargarlo
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "purchaseOrder.xlsx";
-    link.click();
-  };
-
-  const handleDeleteCell = async (detailOrderId, index) => {
-    const result = await Swal.fire({
-      title: "¿Estás seguro?",
-      text: "Una vez eliminado, no podrás recuperar este detalle.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "No, cancelar",
-      customClass: {
-        title: "my-title-class",
-        popup: "my-popup-class",
-        confirmButton: "my-confirm-button-class",
-        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
-        overlay: "my-overlay-class",
-      },
-    });
-
-    if (result.isConfirmed) {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/api/detailsorder/${detailOrderId}`,
-          {
-            method: "DELETE",
-            credentials: "include",
-          }
-        );
-
-        if (response.status === 200) {
-          Swal.fire({
-            title: "Detalle eliminado",
-            icon: "success",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
-          });
-          const nuevasFilas = [...rows];
-          nuevasFilas.splice(index, 1);
-          setRows(nuevasFilas);
-        } else {
-          console.error("Error al eliminar el detalle en la base de datos");
-        }
-      } catch (error) {
-        console.error("Error en la petición de eliminación", error);
-      }
-    }
-  };
+  
 
   const handleExit = async () => {
     const result = await Swal.fire({
@@ -347,6 +219,32 @@ const EditPurchaseOrder = () => {
       purchaseOrderAmount: amount,
       detalleIds: Array.from(detalleIds),
     };
+
+    if(purchaseOrderStatus === "Recibido"){
+      for(const item of rows){
+        const productId = item.productID; // ID del producto
+          const quantityToDecrease = item.budgetDetailQuantity; // Cantidad a descontar
+
+          console.log("Cantidad producto vendido: ", quantityToDecrease);
+
+          
+
+         
+          // Actualizar el stock del producto
+          const stockResponse = await fetch(
+            `http://localhost:8080/api/products/updateproductstock/${productId}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include",
+              body: JSON.stringify({ quantityToDecrease }),
+            }
+          );
+      }
+      
+    }
 
     console.log("Purchase order para actualizar: ", updatedPurchaseOrder);
 
@@ -402,6 +300,68 @@ const EditPurchaseOrder = () => {
     }
   };
 
+  const handleDeleteCell = async (id, index) => {
+    console.log("id del detalle: ", id);
+    
+    const result = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Una vez eliminado, no podrás recuperar este detalle.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "No, cancelar",
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
+        overlay: "my-overlay-class",
+      },
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/detailsorder/${id}`,
+          {
+            method: "DELETE",
+
+            credentials: "include",
+          }
+        );
+
+        if (response.status === 200) {
+          const newRows = [...rows];
+          newRows.splice(index, 1);
+          setRows(newRows);
+          const updatedDetails = rows.filter((order) => order._id !== id);
+
+          const newTotal = updatedDetails.reduce((acc, order) => {
+            return acc + order.budgetDetailQuantity * order.detailOrderUnitCost;
+          }, 0);
+
+          setAmount(newTotal);
+          Swal.fire({
+            text: "Detalle eliminado",
+            icon: "success",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
+              overlay: "my-overlay-class",
+            },
+          });
+        } else {
+          console.error("Error al eliminar el detalle en la base de datos");
+        }
+      } catch (error) {
+        console.error("Error en la petición de eliminación", error);
+      }
+    }
+  }
+
   return (
     <>
       <div className="orderdetail__container">
@@ -423,6 +383,7 @@ const EditPurchaseOrder = () => {
                 selectedOptions={selectedSuppliers}
                 onChange={handleSupplierChange}
                 placeholder="Seleccionar Proveedor"
+                labelKey="supplierLastName"
               />
             </div>
             <div className="date-selector__item">
@@ -449,7 +410,7 @@ const EditPurchaseOrder = () => {
               editIconClassName="orderdetail__table__editIcon"
               headers={tableHeaders}
               data={rows}
-              handleDeleteCell={handleDeleteCell}
+              handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
               linkPrefix="/detallepedido/editarpedido/"
               getEditPath={(id) => `/pedido/${pid}/detalle/${id}`}
             />
@@ -464,7 +425,7 @@ const EditPurchaseOrder = () => {
 
             <button onClick={handleUpdateOrder}>Guardar</button>
 
-            <button onClick={generateExcel}>Generar PDF</button>
+            {/* <button onClick={generatePDF}>Generar PDF</button> */}
             <button onClick={handleExit}>Salir</button>
           </div>
         </div>

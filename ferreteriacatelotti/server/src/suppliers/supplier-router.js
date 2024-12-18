@@ -7,6 +7,6 @@ const supplierController = new SupplierController();
 
 export const supplierRouter = express.Router();
 
-supplierRouter.post('/', authMiddleware, checkUserRole(["Admin", "Dueño"]), supplierController.addSupplier);
-supplierRouter.get('/',  authMiddleware, checkUserRole(["Admin", "Dueño"]),supplierController.getSuppliers);
+supplierRouter.post('/', /*authMiddleware, checkUserRole(["Admin", "Dueño"]),*/ supplierController.addSupplier);
 supplierRouter.get('/:id',authMiddleware, checkUserRole(["Admin", "Dueño"]), supplierController.getSupplierById);
+supplierRouter.get('/',  authMiddleware, checkUserRole(["Admin", "Dueño"]),supplierController.getSuppliers);

@@ -105,6 +105,7 @@ const ProductComponent = () => {
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include"
           }
         );
 
@@ -254,7 +255,7 @@ const ProductComponent = () => {
             <button className="component__actions__button" onClick={getProductsWithLowStock}>
               Quiebre Stock
             </button>
-            <button className="component__actions__button">Guardar</button>
+            
             <button className="component__actions__button">Salir</button>
           </div>
         </div>

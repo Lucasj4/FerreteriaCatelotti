@@ -159,7 +159,7 @@ const NewDetailOrderLine = () => {
             <FormItem
               formItemClassName="newPurchaseOrder__form__item"
               id="detailOrderQuantity"
-              inputClassname="newPurchaseOrder__form__input"
+              inputClassname="form__input"
               typeInput="text"
               label="Cantindad"
               labelClassname="newPurchaseOrder__form__label"
@@ -169,7 +169,7 @@ const NewDetailOrderLine = () => {
             <FormItem
               formItemClassName="newPurchaseOrder__form__item"
               id="detailOrderUnitCost"
-              inputClassname="newPurchaseOrder__form__input"
+              inputClassname="form__input"
               typeInput="text"
               label="Costo Unitario"
               labelClassname="newPurchaseOrder__form__label"

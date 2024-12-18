@@ -36,39 +36,14 @@ const BudgetDetail = () => {
         if (response.ok) {
           const data = await response.json();
           const budgetdetails = data.budgetDetailOrders;
-
-          const groupedDetails = budgetdetails.reduce((acc, order) => {
-            const existing = acc.find(
-              (item) => item.budgetDetailItem === order.budgetDetailItem
-            );
-
-            console.log("Existing: ", existing);
-
-            if (existing) {
-              // Sumar las cantidades
-              existing.budgetDetailQuantity += order.budgetDetailQuantity;
-
-              // Actualizar el costo total basado en la suma de cantidades y el costo unitario original
-              existing.totalCost =
-                existing.budgetDetailQuantity * order.budgetDetailUnitCost;
-            } else {
-              // Si es un nuevo producto, se inicializa el totalCost
-              acc.push({
-                ...order,
-                totalCost:
-                  order.budgetDetailQuantity * order.budgetDetailUnitCost,
-              });
-            }
-
-            return acc;
-          }, []);
-
-          const total = groupedDetails.reduce((acc, order) => {
-            return acc + order.totalCost;
+          console.log(budgetdetails);
+          
+          const total = budgetdetails.reduce((acc, order) => {
+            return acc + order.budgetDetailQuantity * order.budgetDetailUnitCost ;
           }, 0);
 
           setAmount(total);
-          setRow(groupedDetails || []);
+          setRow(budgetdetails);
         } else if (response.status === 404) {
           console.error("Presupuesto no encontrado");
         } else {
@@ -187,6 +162,16 @@ const BudgetDetail = () => {
           const nuevasFilas = [...row];
           nuevasFilas.splice(index, 1);
           setRow(nuevasFilas);
+          console.log("Eliminar row: ", row);
+          const updatedDetails = row.filter((order) => order._id !== budgetDetailId);
+          
+          
+          const newTotal = updatedDetails.reduce((acc, order) => {
+            return acc + order.budgetDetailQuantity * order.budgetDetailUnitCost;
+          }, 0);
+        
+          // Actualizar el monto con el nuevo total
+          setAmount(newTotal);
         } else {
           console.error("Error al eliminar el detalle en la base de datos");
         }
@@ -292,7 +277,9 @@ const BudgetDetail = () => {
   const handleInvoice = async () => {
     try {
       // Verificar si el presupuesto ya está facturado
-      const response = await fetch(`http://localhost:8080/api/budgets/${pid}`);
+      const response = await fetch(`http://localhost:8080/api/budgets/${pid}`, {
+        credentials: "include",
+      });
       const budgetData = await response.json();
 
       if (budgetData.budget.budgetStatus === "Facturado") {
@@ -302,6 +289,13 @@ const BudgetDetail = () => {
           text: "No se puede facturar nuevamente.",
           icon: "info",
           confirmButtonText: "Aceptar",
+          customClass: {
+            title: "my-title-class",
+            popup: "my-popup-class",
+            confirmButton: "my-confirm-button-class",
+            cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
+            overlay: "my-overlay-class",
+          },
         });
         return; // Detener la ejecución si ya está facturado
       }
@@ -329,84 +323,66 @@ const BudgetDetail = () => {
           const productId = item.productID; // ID del producto
           const quantityToDecrease = item.budgetDetailQuantity; // Cantidad a descontar
 
-          console.log("Product id: ", productId);
+          console.log("Cantidad producto vendido: ", quantityToDecrease);
 
-          const response = await fetch(
-            `http://localhost:8080/api/products/${productId}`
+          
+
+         
+          // Actualizar el stock del producto
+          const stockResponse = await fetch(
+            `http://localhost:8080/api/products/updateproductstock/${productId}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include",
+              body: JSON.stringify({ quantityToDecrease }),
+            }
           );
 
-          const productData = await response.json();
-          const currentStock = productData.product.productStock; // Stock actual del producto
+          if (stockResponse.status === 200) {
+            // Paso 2: Actualizar el estado del presupuesto a "Facturado"
+            const updateBudget = {
+              budgetStatus: "Facturado", // Cambiar el estado
+            };
 
-          // Verificar si hay suficiente stock
-          if (currentStock >= quantityToDecrease) {
-            // Descontar el stock
-            const updatedStock = currentStock - quantityToDecrease;
-
-            // Actualizar el stock del producto
-            const stockResponse = await fetch(
-              `http://localhost:8080/api/products/updateproductstock/${productId}`,
+            const updateBudgetResponse = await fetch(
+              `http://localhost:8080/api/budgets/updatestatus/${pid}`,
               {
                 method: "PUT",
                 headers: {
                   "Content-Type": "application/json",
                 },
+
                 credentials: "include",
-                body: JSON.stringify({ quantityToDecrease: updatedStock }),
+
+                body: JSON.stringify(updateBudget),
               }
             );
 
-            if (stockResponse.status === 200) {
-              // Paso 2: Actualizar el estado del presupuesto a "Facturado"
-              const updateBudget = {
-                budgetStatus: "Facturado", // Cambiar el estado
-              };
+            if (updateBudgetResponse.status === 200) {
+              Swal.fire({
+                title: "Presupuesto facturado con éxito",
+                icon: "success",
+                confirmButtonText: "Aceptar",
+                customClass: {
+                  title: "my-title-class",
+                  popup: "my-popup-class",
+                  confirmButton: "my-confirm-button-class",
+                  overlay: "my-overlay-class",
+                },
+              });
 
-              const updateBudgetResponse = await fetch(
-                `http://localhost:8080/api/budgets/updatestatus/${pid}`,
-                {
-                  method: "PUT",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-
-                  credentials: "include",
-
-                  body: JSON.stringify(updateBudget),
-                }
-              );
-
-              if (updateBudgetResponse.status === 200) {
-                Swal.fire({
-                  title: "Presupuesto facturado con éxito",
-                  icon: "success",
-                  confirmButtonText: "Aceptar",
-                  customClass: {
-                    title: "my-title-class",
-                    popup: "my-popup-class",
-                    confirmButton: "my-confirm-button-class",
-                    overlay: "my-overlay-class",
-                  },
-                });
-
-                // Redirigir a otra página si es necesario, por ejemplo:
-                navigate(`/presupuesto/${pid}`);
-              } else {
-                Swal.fire({
-                  title: "Error al facturar el presupuesto",
-                  icon: "error",
-                  confirmButtonText: "Aceptar",
-                });
-              }
+              // Redirigir a otra página si es necesario, por ejemplo:
+              navigate(`/presupuesto/${pid}`);
+            } else {
+              Swal.fire({
+                title: "Error al facturar el presupuesto",
+                icon: "error",
+                confirmButtonText: "Aceptar",
+              });
             }
-          } else {
-            Swal.fire({
-              title: "Error",
-              text: `No hay suficiente stock para el producto ${item.budgetDetailItem}.`,
-              icon: "error",
-              confirmButtonText: "Aceptar",
-            });
-            return; // Detener la facturación si no hay suficiente stock
           }
         }
       }

@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./OrderDetail.css";
 import { Link, useNavigate } from "react-router-dom";
 import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import { useAppContext } from "../context/OrderContext";
 import Table from "../TableCustom/TableCustom";
 import Swal from "sweetalert2";
-import { amber } from "@mui/material/colors";
+
 
 const OrderDetail = () => {
   const { purchaseOrderId, setPurchaseOrderId } = useAppContext();
@@ -32,8 +32,12 @@ const OrderDetail = () => {
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/suppliers");
+        const response = await fetch("http://localhost:8080/api/suppliers", {
+          credentials: "include",
+        });
         const result = await response.json();
+        console.log(result);
+        
         setSuppliers(result.suppliers);
       } catch (error) {
         console.error("Error fetching suppliers: ", error);
@@ -43,26 +47,7 @@ const OrderDetail = () => {
     fetchSuppliers();
   }, []);
 
-  // useEffect(()=> {
-  //   const fetchDetailsOrder = async () => {
-  //     try {
-  //       const response = await fetch("http://localhost:8080/api/detailsorder");
 
-  //       const data = await response.json();
-
-  //       setFilas(data.data)
-  //     } catch (error) {
-  //       console.error("Error fetching suppliers: ", error);
-  //     }
-  //   }
-
-  //   fetchDetailsOrder();
-  // }, [])
-
-  // useEffect(() => {
-  //   console.log("Detalles IDs actualizados: ", detalleIds);
-  //   // Aquí podrías actualizar la tabla o realizar otras acciones si es necesario
-  // }, [detalleIds]);
 
   const handleSupplierChange = (selectedOptions) => {
     setSelectedSuppliers(selectedOptions);
@@ -201,6 +186,7 @@ const OrderDetail = () => {
                 selectedProveedores={selectedSuppliers}
                 onChange={handleSupplierChange}
                 placeholder="Seleccionar Proveedor"
+                labelKey="supplierLastName"
               />
             </div>
             <div className="date-selector__item">

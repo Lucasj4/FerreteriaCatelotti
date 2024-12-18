@@ -7,6 +7,18 @@ export class DetailOrderController {
     async createDetailOrder(req, res) {
         const { detailOrderProduct, detailOrderUnitCost, detailOrderQuantity, productID, purchaseOrderID  } = req.body;
 
+        const existinDetail = await detailOrderService.findByOrderIdandProductName(purchaseOrderID, detailOrderProduct);
+
+        if(existinDetail){
+            const quantityUpdate = Number(detailOrderQuantity) + existinDetail.detailOrderQuantity;
+
+            const updateDetail = await detailOrderService.updateDetailOrderQuantity(existinDetail._id, quantityUpdate);
+
+            if(updateDetail){
+                return res.status(200).json({message: "Detalle actualizado", updateDetail})
+            }
+
+        }
         try {
             const newDetailOrder = {
                 detailOrderProduct,

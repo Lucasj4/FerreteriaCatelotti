@@ -9,6 +9,27 @@ export default class BudgetDetaiLController{
     const {budgetID, budgetDetailQuantity, budgetDetailUnitCost, budgetDetailItem, productID} = req.body;
 
     try {
+
+        const existingDetail = await  budgetDetailService.findDetailByPurchaseOrderAndProductName(budgetID, budgetDetailItem);
+
+        console.log("Existing Detail: ", existingDetail);
+        
+        if(existingDetail){
+          console.log(typeof(existingDetail.budgetDetailQuantity ));
+          console.log(typeof(budgetDetailQuantity ));
+          
+          const quantityUpdate = existingDetail.budgetDetailQuantity + Number(budgetDetailQuantity);
+          console.log("quantity: ", quantityUpdate);
+          
+          const updateBudgetDetail = await budgetDetailService.updateQuantity(existingDetail._id, quantityUpdate);
+
+          console.log("detalle actualizado: ", updateBudgetDetail);
+          
+          if(updateBudgetDetail){
+            return res.status(201).json({message: "Detalle actualizado", updateBudgetDetail})
+          }
+        }
+
         const newBudgetDetail = {
             budgetID,
             budgetDetailQuantity,
