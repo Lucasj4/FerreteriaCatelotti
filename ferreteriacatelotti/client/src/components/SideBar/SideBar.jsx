@@ -1,21 +1,47 @@
-import React, { children } from "react";
+import React from "react";
 import { FaHome, FaTh, FaBars } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import ReceiptIcon from '@mui/icons-material/Receipt';
-import DescriptionIcon from '@mui/icons-material/Description';
-import PeopleIcon from '@mui/icons-material/People';
-import LocalMallIcon from '@mui/icons-material/LocalMall';
-import AccessibilityIcon from '@mui/icons-material/Accessibility';
+import ReceiptIcon from "@mui/icons-material/Receipt";
+import DescriptionIcon from "@mui/icons-material/Description";
+import PeopleIcon from "@mui/icons-material/People";
+import LocalMallIcon from "@mui/icons-material/LocalMall";
+import AccessibilityIcon from "@mui/icons-material/Accessibility";
+import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
 import "./Sidebar.css";
+
 const Sidebar = ({ children }) => {
   const [isOpen, setisOpen] = useState(false);
+  const navigate = useNavigate();
   const toggle = () => {
     setisOpen(!isOpen);
   };
+
+  const handlelogout = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("http://localhost:8080/api/users/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (response.status === 200) {
+        console.log("Logout exitoso");
+        navigate("/iniciosesion");
+      } else {
+        console.error("Logout fallido", response.status);
+      }
+    } catch (error) {
+      console.error("Error al hacer la solicitud de logout:", error);
+    }
+  };
+
   const menuItems = [
     {
-    
       path: "/pedido",
       name: "Pedidos de Compra",
       icon: <ReceiptIcon />,
@@ -23,25 +49,30 @@ const Sidebar = ({ children }) => {
     {
       path: "/presupuesto",
       name: "Presupuesto",
-      icon: <DescriptionIcon/>,
+      icon: <DescriptionIcon />,
     },
     {
       path: "/clientes",
       name: "Clientes",
-      icon: <AccessibilityIcon/>,
+      icon: <AccessibilityIcon />,
     },
     {
       path: "/productos",
       name: "Productos",
-      icon: <LocalMallIcon/>,
+      icon: <LocalMallIcon />,
     },
     {
       path: "/usuarios",
       name: "Usuarios",
-      icon: <PeopleIcon/>,
-    }
-
+      icon: <PeopleIcon />,
+    },
+    {
+      path: "/ventas", // Nueva sección para Ventas
+      name: "Ventas",
+      icon: <PointOfSaleIcon />, // Icono asociado
+    },
   ];
+
   const sidebarClasses = isOpen
     ? "sidebar sidebar-expanded"
     : "sidebar sidebar-collapsed";
@@ -49,30 +80,40 @@ const Sidebar = ({ children }) => {
   const linkClass = isOpen
     ? "link_text link_text-inactive"
     : "link_text link_text-active";
-  const topSecticonClass = isOpen
+  const topSectionClass = isOpen
     ? "top-section top-section__active"
     : "top-section";
+
   return (
     <div className="container">
       <div className={sidebarClasses}>
-        <div className={topSecticonClass}>
-          <h2 className={h2Classes}>Ferreteria Catelotti</h2>
+        <div className={topSectionClass}>
+          <h2 className={h2Classes}>Ferretería Catelotti</h2>
           <div className="bars">
             <FaBars onClick={toggle} />
           </div>
         </div>
 
+        {/* Renderizar los ítems del menú */}
         {menuItems.map((item, index) => (
           <NavLink
             to={item.path}
             key={index}
             className="link"
-          // Nombre del atributo corregido
+            activeclassname="active"
           >
             <div className="icon">{item.icon}</div>
             <div className={linkClass}>{item.name}</div>
           </NavLink>
         ))}
+
+        {/* Ítem de "Cerrar Sesión" */}
+        <div className="logout link" onClick={handlelogout}>
+          <div className="icon">
+            <FaHome />
+          </div>
+          <div className={linkClass}>Cerrar Sesión</div>
+        </div>
       </div>
       <main>{children}</main>
     </div>

@@ -244,7 +244,7 @@ const BudgetDetailLine = () => {
             >
               Guardar
             </button>
-            <Link to="/detallepresupuesto">
+            <Link to={`/presupuesto/${pid}`}>
               <button className="budgetdetailline__button">Salir</button>
             </Link>
           </div>

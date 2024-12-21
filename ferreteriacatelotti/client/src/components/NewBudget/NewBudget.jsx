@@ -164,6 +164,7 @@ const NewBudget = () => {
         },
         credentials: "include",
         body: JSON.stringify(newBudget),
+        
       });
 
       const result = await response.json();

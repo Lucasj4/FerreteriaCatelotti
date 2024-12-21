@@ -80,18 +80,16 @@ export class UserController {
                 return res.status(401).json({ message: "Usuario no válido" });
             }
 
-
-
             const user = existingUser[0];
 
-            // const validUser = isValidPassword(userPassword, user)
+            const validUser = isValidPassword(userPassword, user)
 
 
-            // console.log(validUser);
+            console.log(validUser);
             
-            // if (!validUser) {
-            //     return res.status(401).send("Contraseña incorrecta");
-            // }
+            if (!validUser) {
+                return res.status(401).send("Contraseña incorrecta");
+            }
 
             const token = jwt.sign({ user: user }, "ferreteria", {
                 expiresIn: "1h"

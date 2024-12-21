@@ -37,9 +37,11 @@ const BudgetDetail = () => {
           const data = await response.json();
           const budgetdetails = data.budgetDetailOrders;
           console.log(budgetdetails);
-          
+
           const total = budgetdetails.reduce((acc, order) => {
-            return acc + order.budgetDetailQuantity * order.budgetDetailUnitCost ;
+            return (
+              acc + order.budgetDetailQuantity * order.budgetDetailUnitCost
+            );
           }, 0);
 
           setAmount(total);
@@ -163,13 +165,16 @@ const BudgetDetail = () => {
           nuevasFilas.splice(index, 1);
           setRow(nuevasFilas);
           console.log("Eliminar row: ", row);
-          const updatedDetails = row.filter((order) => order._id !== budgetDetailId);
-          
-          
+          const updatedDetails = row.filter(
+            (order) => order._id !== budgetDetailId
+          );
+
           const newTotal = updatedDetails.reduce((acc, order) => {
-            return acc + order.budgetDetailQuantity * order.budgetDetailUnitCost;
+            return (
+              acc + order.budgetDetailQuantity * order.budgetDetailUnitCost
+            );
           }, 0);
-        
+
           // Actualizar el monto con el nuevo total
           setAmount(newTotal);
         } else {
@@ -274,6 +279,8 @@ const BudgetDetail = () => {
     });
   };
 
+  //Facturar, crear venta, imprimir factura
+
   const handleInvoice = async () => {
     try {
       // Verificar si el presupuesto ya está facturado
@@ -287,7 +294,7 @@ const BudgetDetail = () => {
         Swal.fire({
           title: "Este presupuesto ya está facturado",
           text: "No se puede facturar nuevamente.",
-          icon: "info",
+          icon: "warning",
           confirmButtonText: "Aceptar",
           customClass: {
             title: "my-title-class",
@@ -299,36 +306,33 @@ const BudgetDetail = () => {
         });
         return; // Detener la ejecución si ya está facturado
       }
+    } catch (error) {
+      console.error("Error en el proceso:", error);
+    }
 
-      // Si no está facturado, pedir confirmación para facturar
-      const result = await Swal.fire({
-        title: "¿Estás seguro?",
-        text: "Una vez facturado, no podrás modificar el presupuesto.",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Sí, facturar",
-        cancelButtonText: "No, cancelar",
-        customClass: {
-          title: "my-title-class",
-          popup: "my-popup-class",
-          confirmButton: "my-confirm-button-class",
-          cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
-          overlay: "my-overlay-class",
-        },
-      });
+    // Si no está facturado, pedir confirmación para facturar
+    const result = await Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Una vez facturado, no podrás modificar el presupuesto.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, facturar",
+      cancelButtonText: "No, cancelar",
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
+        overlay: "my-overlay-class",
+      },
+    });
 
-      if (result.isConfirmed) {
-        // Paso 1: Descontar las cantidades seleccionadas del stock
+    if (result.isConfirmed) {
+      try {
         for (const item of row) {
           const productId = item.productID; // ID del producto
-          const quantityToDecrease = item.budgetDetailQuantity; // Cantidad a descontar
+          const quantity = item.budgetDetailQuantity; // Cantidad a descontar
 
-          console.log("Cantidad producto vendido: ", quantityToDecrease);
-
-          
-
-         
-          // Actualizar el stock del producto
           const stockResponse = await fetch(
             `http://localhost:8080/api/products/updateproductstock/${productId}`,
             {
@@ -337,33 +341,73 @@ const BudgetDetail = () => {
                 "Content-Type": "application/json",
               },
               credentials: "include",
-              body: JSON.stringify({ quantityToDecrease }),
+              body: JSON.stringify({ quantity, operationType: "decrease" }),
             }
           );
 
-          if (stockResponse.status === 200) {
-            // Paso 2: Actualizar el estado del presupuesto a "Facturado"
-            const updateBudget = {
-              budgetStatus: "Facturado", // Cambiar el estado
-            };
-
-            const updateBudgetResponse = await fetch(
-              `http://localhost:8080/api/budgets/updatestatus/${pid}`,
-              {
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-
-                credentials: "include",
-
-                body: JSON.stringify(updateBudget),
-              }
+          if (!stockResponse.ok) {
+            throw new Error(
+              `Error al actualizar el stock del producto ${productId}`
             );
+          }
+        }
 
-            if (updateBudgetResponse.status === 200) {
+        // Paso 2: Actualizar el estado del presupuesto a "Facturado" solo una vez
+        const updateBudget = {
+          budgetStatus: "Facturado", // Cambiar el estado
+        };
+
+        const updateBudgetResponse = await fetch(
+          `http://localhost:8080/api/budgets/updatestatus/${pid}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify(updateBudget),
+          }
+        );
+
+        const data = await updateBudgetResponse.json();
+
+        const budget = data.budget;
+
+
+        if (updateBudgetResponse.ok) {
+          Swal.fire({
+            title: "Presupuesto facturado con éxito",
+            icon: "success",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              overlay: "my-overlay-class",
+            },
+          });
+
+          const sale = {
+            saleDate: budget.budgetDate,
+            saleTotalAmount: budget.budgetAmount,
+            clientId: budget.clientId,
+            userId: budget.userId,
+
+
+          }
+          try {
+            const response = await fetch('http://localhost:8080/api/sales', {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include",
+              body: JSON.stringify(sale),
+            })
+
+            if(response.status === 201){
               Swal.fire({
-                title: "Presupuesto facturado con éxito",
+                title: "Venta agregada",
                 icon: "success",
                 confirmButtonText: "Aceptar",
                 customClass: {
@@ -373,30 +417,29 @@ const BudgetDetail = () => {
                   overlay: "my-overlay-class",
                 },
               });
-
-              // Redirigir a otra página si es necesario, por ejemplo:
-              navigate(`/presupuesto/${pid}`);
-            } else {
-              Swal.fire({
-                title: "Error al facturar el presupuesto",
-                icon: "error",
-                confirmButtonText: "Aceptar",
-              });
+    
             }
+          } catch (error) {
+            console.error("Error en el proceso:", error);
           }
+
+          // Redirigir a otra página si es necesario, por ejemplo:
+          navigate(`/presupuesto/${pid}`);
+        } else {
+          throw new Error("Error al facturar el presupuesto");
         }
+      } catch (error) {
+        console.error("Error en el proceso:", error);
+        Swal.fire({
+          title: error.message,
+          icon: "error",
+          confirmButtonText: "Aceptar",
+        });
       }
-    } catch (error) {
-      console.error("Error al facturar el presupuesto", error);
-      Swal.fire({
-        title: "Error",
-        text: "Hubo un problema al intentar facturar el presupuesto.",
-        icon: "error",
-        confirmButtonText: "Aceptar",
-      });
+
+      
     }
   };
-
   return (
     <>
       <div className="budgetdetail__container">

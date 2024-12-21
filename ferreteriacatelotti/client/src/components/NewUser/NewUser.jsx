@@ -9,7 +9,8 @@ const NewUser = () => {
   const [userUsername, setUserName] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  const [userConfirmPassword, setUserConfirmPassword] = useState("")
+  const [userConfirmPassword, setUserConfirmPassword] = useState("");
+  const [userRole, setUserRole] = useState("");
   const resetForm = () => {
     setUserName(""), setUserPassword(""), setUserEmail("");
   };
@@ -22,13 +23,12 @@ const NewUser = () => {
       userPassword,
       userEmail,
       userConfirmPassword,
-      userRole: "Dueño",
+      userRole,
     };
-   
+
     console.log(" Contrasña confirmacion: ", userConfirmPassword);
-    console.log('Password: ', userPassword);
-    
-    
+    console.log("Password: ", userPassword);
+
     if (userPassword !== userConfirmPassword) {
       Swal.fire({
         title: "Las contraseñas no coinciden",
@@ -40,9 +40,9 @@ const NewUser = () => {
           confirmButton: "my-confirm-button-class",
           overlay: "my-overlay-class",
         },
-      })
+      });
       return;
-  }
+    }
     try {
       const response = await fetch("http://localhost:8080/api/users", {
         method: "POST",
@@ -190,12 +190,20 @@ const NewUser = () => {
             />
 
             <div className="form__item">
-              {/* <DropdownSelect
-                options={options}
+              <label htmlFor="userRole" className="form__label">
+                Rol de usuario
+              </label>
+              <select
+                id="userRole"
+                className="form__select"
                 value={userRole}
-                onChange={setUserRole}
-                placeholder="Selecciona un rol"
-              /> */}
+                onChange={(e) => setUserRole(e.target.value)}
+              >
+                <option value="">Selecciona un rol</option>
+                <option value="Admin">Admin</option>
+                <option value="Empleado">Empleado</option>
+                <option value="Dueño">Dueño</option>
+              </select>
             </div>
           </form>
           <div className="form__containerbuttons">

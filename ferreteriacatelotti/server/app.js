@@ -17,12 +17,10 @@ import { budgetDetailRouter } from './src/budgetdetail/budgetdetail-route.js';
 import cookieParser from 'cookie-parser';
 import { initializePassport } from "./src/config/passport.config.js";
 import {authMiddleware} from './src/middlewares/authmiddleware.js';
+import { saleRouter } from './src/sales/sale-router.js';
 
 
 const app = express();
-
-
-
 
 app.use(express.json());
 app.use(addLogger)
@@ -43,11 +41,11 @@ app.use("/api/units", unitRouter);
 app.use("/api/clients", clientRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/users", userRouter);
-app.use("/api/purchaseorders", purchaseOrderRouter)
+app.use("/api/purchaseorders", purchaseOrderRouter);
 app.use("/api/detailsorder", detailOrderRoute)
 app.use('/api/budgets', budgetRouter)
 app.use('/api/budgetsdetails', budgetDetailRouter)
-
+app.use('/api/sales', saleRouter)
 app.use(authMiddleware);
 app.use(errorHandler);
 

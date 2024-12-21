@@ -10,7 +10,6 @@ import "react-date-range/dist/theme/default.css";
 import { useAppContext } from "../context/OrderContext";
 import Swal from "sweetalert2";
 
-
 const EditPurchaseOrder = () => {
   const [rows, setRows] = useState([]);
   const { detalleIds, clearDetalleIds, addDetalleId } = useAppContext();
@@ -30,8 +29,6 @@ const EditPurchaseOrder = () => {
   ];
 
   const navigate = useNavigate();
-
-  
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -67,20 +64,17 @@ const EditPurchaseOrder = () => {
         const purchaseOrder = data.purchaseOrder;
         const detailOrders = data.detailOrders;
 
-        console.log(data);
-
         const total = detailOrders.reduce(
-          (acc, detail) => acc + detail.detailOrderQuantity * detail.detailOrderUnitCost,
+          (acc, detail) =>
+            acc + detail.detailOrderQuantity * detail.detailOrderUnitCost,
           0
         );
 
-        
         setAmount(total);
 
         setRows(detailOrders);
 
-        console.log("fecha del fetch: ", purchaseOrder.purchaseOrderDate);
-
+        console.log("status: ", purchaseOrder.purchaseOrderStatus);
         const formattedDate = purchaseOrder.purchaseOrderDate
           ? purchaseOrder.purchaseOrderDate
               .split("/")
@@ -89,15 +83,10 @@ const EditPurchaseOrder = () => {
               .join("-")
           : "";
 
-        console.log("FECHA FORMATTEDDATE: ", formattedDate);
-
         setOrderDate(formattedDate);
 
-        setPurchaseOrderStatus(
-          purchaseOrder.purchaseOrderStatus || "Pendiente"
-        );
+        setPurchaseOrderStatus(purchaseOrder.purchaseOrderStatus);
 
-      
         // Seleccionar el proveedor como { label, value }
         const selectedSupplierOption = suppliers.find(
           (supplier) => supplier._id === purchaseOrder.supplierID
@@ -126,47 +115,6 @@ const EditPurchaseOrder = () => {
     fetchPurchaseOrderWithDetails();
   }, [pid, suppliers]);
 
-  useEffect(() => {
-    const handlePdf = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/api/purchaseorders/purchaseorderswithdetails/${pid}`,
-          {
-            credentials: "include",
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Error al obtener el pedido de compra");
-        }
-
-        const data = await response.json();
-        const purchaseOrder = data.purchaseOrder;
-        const detailOrders = data.detailOrders;
-
-        // Datos de proveedor, estado y monto
-        const proveedorValue =
-          selectedSuppliers.length > 0 ? selectedSuppliers[0].label : "";
-
-        setPurchaseOrderStatus(purchaseOrder.status);
-        setProveedorValue(proveedorValue);
-
-        // Extraemos los productos
-        const products = detailOrders.map((order) => ({
-          product: order.detailOrderProduct,
-          quantity: order.detailOrderQuantity,
-          unitCost: order.detailOrderUnitCost,
-        }));
-
-        setProductData(products);
-      } catch (error) {
-        console.error("Error en la petición de eliminación", error);
-      }
-    };
-
-    handlePdf();
-  }, [pid, selectedSuppliers]);
-
   const handleSupplierChange = (selectedOptions) => {
     setSelectedSuppliers(selectedOptions); // Actualiza el estado con las opciones seleccionadas
   };
@@ -182,8 +130,6 @@ const EditPurchaseOrder = () => {
 
     setOrderDate(selectedDate);
   };
-
-  
 
   const handleExit = async () => {
     const result = await Swal.fire({
@@ -220,33 +166,33 @@ const EditPurchaseOrder = () => {
       detalleIds: Array.from(detalleIds),
     };
 
-    if(purchaseOrderStatus === "Recibido"){
-      for(const item of rows){
-        const productId = item.productID; // ID del producto
-          const quantityToDecrease = item.budgetDetailQuantity; // Cantidad a descontar
+    if (purchaseOrderStatus === "Recibido") {
+      for (const item of rows) {
+        const productId = item.productID;
+        const quantity = item.detailOrderQuantity;
 
-          console.log("Cantidad producto vendido: ", quantityToDecrease);
+        console.log("Cantidad producto vendido: ", quantity);
 
-          
+        // Actualizar el stock del producto
+        const stockResponse = await fetch(
+          `http://localhost:8080/api/products/updateproductstock/${productId}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ quantity, operationType: "increase" }),
+          }
+        );
 
-         
-          // Actualizar el stock del producto
-          const stockResponse = await fetch(
-            `http://localhost:8080/api/products/updateproductstock/${productId}`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              credentials: "include",
-              body: JSON.stringify({ quantityToDecrease }),
-            }
+        if (!stockResponse.ok) {
+          throw new Error(
+            `Error al actualizar el stock del producto ${productId}`
           );
+        }
       }
-      
     }
-
-    console.log("Purchase order para actualizar: ", updatedPurchaseOrder);
 
     try {
       const response = await fetch(
@@ -298,11 +244,13 @@ const EditPurchaseOrder = () => {
         },
       });
     }
+
+    
   };
 
   const handleDeleteCell = async (id, index) => {
     console.log("id del detalle: ", id);
-    
+
     const result = await Swal.fire({
       title: "¿Estás seguro?",
       text: "Una vez eliminado, no podrás recuperar este detalle.",
@@ -360,7 +308,73 @@ const EditPurchaseOrder = () => {
         console.error("Error en la petición de eliminación", error);
       }
     }
-  }
+  };
+
+  const generateFactura = async (e) => {
+    e.preventDefault();
+
+    const proveedorValue =
+      selectedSuppliers.length > 0 ? selectedSuppliers[0].label : "";
+
+    const purchaseOrder = {
+      amount: amount,
+      date: orderDate,
+      supplier: proveedorValue,
+      details: rows.map((row) => ({
+        producto: row.detailOrderProduct,
+        cantidad: row.detailOrderQuantity,
+        costoUnitario: row.detailOrderUnitCost,
+        total: row.detailOrderQuantity * row.detailOrderUnitCost,
+      })),
+    };
+
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/purchaseorders/factura",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(purchaseOrder),
+        }
+      );
+
+      if (
+        response.ok &&
+        response.headers.get("Content-Type").includes("application/pdf")
+      ) {
+        const pdfBlob = await response.blob();
+
+        // Crea una URL para el Blob del PDF
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+
+        // Crear un enlace para descargar el PDF automáticamente o abrirlo
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = `Peidodecompra.pdf`; // Aquí puedes elegir el nombre del archivo
+        document.body.appendChild(link);
+        link.click();
+
+        // También podrías abrirlo en una nueva ventana
+        // window.open(pdfUrl);
+
+        // Limpiar el objeto URL después de descargar o abrirlo
+        URL.revokeObjectURL(pdfUrl);
+      } else {
+        throw new Error("Error al generar la factura.");
+      }
+    } catch (error) {
+      console.error("Error:", error.message);
+      await Swal.fire({
+        title: "Error",
+        text: error.message,
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
+    }
+  };
 
   return (
     <>
@@ -389,7 +403,7 @@ const EditPurchaseOrder = () => {
             <div className="date-selector__item">
               <p>Estado</p>
               <select
-                value={purchaseOrderStatus || "Pendiente"} // Asegúrate de que nunca sea undefined
+                value={purchaseOrderStatus} // Asegúrate de que nunca sea undefined
                 onChange={handleStatusChange}
                 className="purchaseOrder__status"
               >
@@ -425,7 +439,7 @@ const EditPurchaseOrder = () => {
 
             <button onClick={handleUpdateOrder}>Guardar</button>
 
-            {/* <button onClick={generatePDF}>Generar PDF</button> */}
+            <button onClick={generateFactura}>Imprimir</button>
             <button onClick={handleExit}>Salir</button>
           </div>
         </div>

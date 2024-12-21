@@ -43,6 +43,22 @@ const BudgetComponent = () => {
     fetchBudgets();
   }, []);
 
+  const getAll = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/budgets", {
+        credentials: "include",
+      });
+
+      if (response) {
+        const budgets = await response.json();
+
+        setFilas(budgets.budgets);
+      }
+    } catch (error) {
+      console.log("Error: ", error)
+    }
+  }
+
   useEffect(() => {
     const fetchClients = async () => {
       try {
@@ -104,7 +120,21 @@ const BudgetComponent = () => {
         const result = await response.json();
 
         setFilas(result.budgets); // Actualiza el estado de las filas con los presupuestos encontrados
-      } else {
+      }else if(response.status === 404){
+        const result = await response.json();
+        Swal.fire({
+          title: result.message,
+          icon: "warning",
+          confirmButtonText: "Aceptar",
+          customClass: {
+            title: "my-title-class",
+            popup: "my-popup-class",
+            confirmButton: "my-confirm-button-class",
+            overlay: "my-overlay-class",
+          },
+        });
+      }
+       else {
         console.error("Error al obtener los presupuestos filtrados");
       }
     } catch (error) {
@@ -180,10 +210,10 @@ const BudgetComponent = () => {
                 labelKey="clientLastName"
               />
             </div>
-            <div className="pedido__option__item">
-              <input type="text" className="presupuesto__input" />
-              <button onClick={handleSearch}>Buscar</button>
-            </div>
+        
+           
+              
+       
           </div>
 
           <div className="presupuesto__state">
@@ -223,7 +253,8 @@ const BudgetComponent = () => {
               <button className="budget__actions__button">Nuevo</button>
             </Link>
 
-            <button className="budget__actions__button">Guardar</button>
+            <button className="budget__actions__button" onClick={getAll}>Mostrar todos</button>
+            <button className="budget__actions__button" onClick={handleSearch}>Buscar</button>
             <button className="budget__actions__button">Salir</button>
           </div>
         </div>

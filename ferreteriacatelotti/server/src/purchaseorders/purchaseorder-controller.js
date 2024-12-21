@@ -1,8 +1,9 @@
 import { PurchaseOrderService } from "./purchaseorder-service.js";
 import { ProductService } from "../products/product-service.js";
-import {DetailOrderService} from "../detailorder/detailorder-service.js";
+import { DetailOrderService } from "../detailorder/detailorder-service.js";
 import PDFDocument from "pdfkit";
 import fs from "fs";
+
 import path from "path";
 const purchaseOrderService = new PurchaseOrderService();
 const detailOrderService = new DetailOrderService();
@@ -12,6 +13,9 @@ export class PurchaseOrderController {
     async createPurchaseOrder(req, res) {
 
         const { purchaseOrderDate, purchaseOrderAmount, purchaseOrderStatus, supplierID } = req.body;
+        const userId = req.user.user._id
+      
+        
 
         try {
 
@@ -19,12 +23,13 @@ export class PurchaseOrderController {
                 purchaseOrderDate,
                 purchaseOrderStatus,
                 supplierID,
+                userId
             }
 
             const purchaseOrder = await purchaseOrderService.createPurchaseOrder(newPurchaseOrder);
 
             if (purchaseOrder) {
-                res.status(201).json({
+                return res.status(201).json({
                     message: "Pedido de compra creado con exito",
                     purchaseOrder
                 });
@@ -106,11 +111,11 @@ export class PurchaseOrderController {
             req.logger.info("Proveedor: " + supplier);
             req.logger.info("Estado: " + estado);
 
-           
+
             const purchaseOrders = await purchaseOrderService.getPurchaseOrdersByFilters(supplier, startDate, endDate, estado);
 
             console.log("Purchase orders: ", purchaseOrders);
-            
+
 
             if (purchaseOrders.length > 0) {
                 const formattedPurchaseOrders = purchaseOrders.map(order => ({
@@ -131,7 +136,7 @@ export class PurchaseOrderController {
 
     async updatePurchaseOrder(req, res) {
         const { id } = req.params;
-        const { purchaseOrderDate, purchaseOrderAmount, purchaseOrderStatus, supplierID, detalleIds} = req.body;
+        const { purchaseOrderDate, purchaseOrderAmount, purchaseOrderStatus, supplierID, detalleIds } = req.body;
 
         try {
 
@@ -146,11 +151,11 @@ export class PurchaseOrderController {
                 supplierID
             };
 
-            
+
 
             console.log("updateData: ", updateData);
             console.log(" Detalle ids: ", detalleIds);
-            
+
 
             const updatedOrder = await purchaseOrderService.updatePurchaseOrder(id, updateData);
 
@@ -160,7 +165,7 @@ export class PurchaseOrderController {
                 // Iterar sobre cada detalle y actualizar el stock del producto
                 for (const detail of detailOrders) {
                     console.log(detail);
-                    
+
                     const detailOrder = await detailOrderService.getDetailOrderById(detail)
 
                     req.logger.info("detail order: " + detailOrder)
@@ -273,6 +278,95 @@ export class PurchaseOrderController {
         } catch (error) {
             console.error("Error al descargar el PDF:", error);
             res.status(500).json({ error: "Error interno del servidor" });
+        }
+    }
+
+    async printPurchaseOrder(req, res) {
+        const { amount, date,  supplier, details } = req.body;
+
+
+
+        console.log('Datos recibidos:', req.body);
+
+        if (!supplier || !amount || !date || !details) {
+            return res.status(400).json({ error: "Faltan datos necesarios" });
+        }
+
+
+
+        try {
+
+
+
+            const doc = new PDFDocument();
+
+            // Separar un poco más la fecha y el cliente
+            doc.fontSize(14).text(`Fecha: ${date}`, { align: 'left' }).moveDown(0.5);
+            doc.text(`Proveedor: ${supplier}`, { align: 'left' }).moveDown(0.5);
+
+            // Ajustar un poco más la separación entre "Total" y las demás líneas
+            doc.text(`Total: $${amount}`, { align: 'left' }).moveDown(1.5);
+
+            // Espacio para separar de la cabecera
+            doc.moveDown();
+
+            // Definir columnas de la tabla
+            const tableHeaders = ["Producto", "Cantidad", "Costo Unitario", "Total"];
+            const tableWidths = [100, 100, 100, 100]; // Anchos de las columnas (asegurarse que esta variable existe)
+
+            const pageWidth = 595;  // Ancho de la página en PDF (tamaño carta)
+            const tableWidth = tableWidths.reduce((a, b) => a + b, 0);  // Ancho total de la tabla, sumando los anchos de las columnas
+            const marginLeft = (pageWidth - tableWidth) / 2;  // Centrar la tabla horizontalmente
+
+            const tableTop = doc.y;
+            const rowHeight = 30; // Altura fija de cada fila
+            const marginExtra = 2; // Margen extra entre filas para espacio adicional
+
+            // Dibujar las cabeceras de la tablad 
+            doc.font('Helvetica-Bold')
+                .text(tableHeaders[0], marginLeft, tableTop, { width: tableWidths[0], align: 'center' })
+                .text(tableHeaders[1], marginLeft + tableWidths[0], tableTop, { width: tableWidths[1], align: 'center' })
+                .text(tableHeaders[2], marginLeft + tableWidths[0] + tableWidths[1], tableTop, { width: tableWidths[2], align: 'center' })
+                .text(tableHeaders[3], marginLeft + tableWidths[0] + tableWidths[1] + tableWidths[2], tableTop, { width: tableWidths[3], align: 'center' });
+
+            // Dibujar la línea que separa las cabeceras del resto de la tabla
+            doc.moveTo(marginLeft, tableTop + rowHeight)
+                .lineTo(marginLeft + tableWidths[0] + tableWidths[1] + tableWidths[2] + tableWidths[3], tableTop + rowHeight)
+                .stroke();
+
+            // Ajustar la posición 'y' después de la cabecera
+            let yPosition = tableTop + rowHeight + 5; // Fija la posición 'y' para la primera fila
+
+            // Dibujar cada fila de la tabla
+            details.forEach(detalle => {
+                const productYPosition = yPosition + (rowHeight - 12) / 2; // Centro verticalmente (12 es el tamaño de fuente)
+
+                // Dibujar los datos de la fila con centrado vertical y horizontal
+                doc.font('Helvetica')
+                    .text(detalle.producto, marginLeft, productYPosition, { width: tableWidths[0], align: 'center' })
+                    .text(detalle.cantidad, marginLeft + tableWidths[0], productYPosition, { width: tableWidths[1], align: 'center' })
+                    .text(`$${detalle.costoUnitario.toFixed(2)}`, marginLeft + tableWidths[0] + tableWidths[1], productYPosition, { width: tableWidths[2], align: 'right' })
+                    .text(`$${detalle.total.toFixed(2)}`, marginLeft + tableWidths[0] + tableWidths[1] + tableWidths[2], productYPosition, { width: tableWidths[3], align: 'right' });
+
+                // Mover la posición 'y' después de cada fila, considerando margen extra
+                yPosition += rowHeight + marginExtra;
+
+                // Dibujar una línea después de cada fila
+                doc.moveTo(marginLeft, yPosition)
+                    .lineTo(marginLeft + tableWidths[0] + tableWidths[1] + tableWidths[2] + tableWidths[3], yPosition)
+                    .stroke();
+            });
+
+            // Finalizar el documento y enviarlo como respuesta
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'attachment; filename=factura.pdf');
+
+            doc.pipe(res);
+            doc.end();
+
+        } catch (err) {
+            console.error("Error general:", err);
+            res.status(500).json({ error: "Error al generar la factura." });
         }
     }
 }

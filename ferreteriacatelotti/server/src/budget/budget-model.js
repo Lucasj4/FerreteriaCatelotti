@@ -1,10 +1,10 @@
 import mongoose  from 'mongoose';
 
 const budgetSchema = new mongoose.Schema({
-    userID: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'users',
-      // required: true
+      required: true
     },
     clientId: {
       type: mongoose.Schema.Types.ObjectId,

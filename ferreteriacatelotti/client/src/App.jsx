@@ -28,6 +28,7 @@ import { BudgetProvider } from "./components/context/BudgetContext";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import RequestResetPassword from "./components/RequestResetPassword/RequestResetPassword";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
+import SalesComponent from "./components/SalesComponent/SalesComponent";
 
 function App() {
   return (
@@ -36,9 +37,11 @@ function App() {
         <Routes>
           {/* Ruta de inicio de sesión fuera del SideBar */}
           <Route path="/iniciosesion" element={<Login />} />
-          <Route path="/restablecercontraseña" element={<RequestResetPassword />} />
+          <Route
+            path="/restablecercontraseña"
+            element={<RequestResetPassword />}
+          />
           <Route path="/cambiarcontraseña" element={<ResetPassword />} />
-
 
           {/* Rutas protegidas que necesitan el SideBar */}
           <Route
@@ -50,201 +53,211 @@ function App() {
                     <Routes>
                       {/* Rutas de presupuesto */}
                       <Route
-                  path="/presupuesto"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin", "Empleado"]}>
-                      <BudgetComponent />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/presupuesto/agregarpresupuesto"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin", "Empleado"]}>
-                      <NewBudget />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/presupuesto/agregardetalle"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin", "Empleado"]}>
-                      <BudgetDetailLine isNewBudget={true} />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/presupuesto/:pid"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin", "Empleado"]}>
-                      <BudgetDetail />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/presupuesto/:pid/detalle/nuevalinea"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin", "Empleado"]}>
-                      <BudgetDetailLine isNewBudget={false} />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/presupuesto/:pid/detalle/:rowid"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin", "Empleado"]}>
-                      <EditBudgetDetailLine />
-                    </ProtectedRoute>
-                  }
-                />
+                        path="/presupuesto"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Empleado"]}>
+                            <BudgetComponent />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/presupuesto/agregarpresupuesto"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Empleado"]}>
+                            <NewBudget />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/presupuesto/agregardetalle"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Empleado"]}>
+                            <BudgetDetailLine isNewBudget={true} />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/presupuesto/:pid"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Empleado"]}>
+                            <BudgetDetail />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/presupuesto/:pid/detalle/nuevalinea"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Empleado"]}>
+                            <BudgetDetailLine isNewBudget={false} />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/presupuesto/:pid/detalle/:rowid"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Empleado"]}>
+                            <EditBudgetDetailLine />
+                          </ProtectedRoute>
+                        }
+                      />
 
-                {/* Rutas de pedido */}
-                <Route
-                  path="/pedido"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
-                      <PurchaseOrder />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/pedido/agregarpedido"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
-                      <OrderDetail />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/pedido/agregardetalle"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
-                      <NewDetailOrderLine />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/pedido/:pid"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
-                      <EditPurchaseOrder />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/pedido/:pid/detallepedido/nuevalinea"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
-                      <NewDetailOrderLine />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/pedido/:pid/detalle/:rowid"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
-                      <EditDetailOrderLine />
-                    </ProtectedRoute>
-                  }
-                />
+                      {/* Rutas de pedido */}
+                      <Route
+                        path="/pedido"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
+                            <PurchaseOrder />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/pedido/agregarpedido"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
+                            <OrderDetail />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/pedido/agregardetalle"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
+                            <NewDetailOrderLine />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/pedido/:pid"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
+                            <EditPurchaseOrder />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/pedido/:pid/detallepedido/nuevalinea"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
+                            <NewDetailOrderLine />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/pedido/:pid/detalle/:rowid"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
+                            <EditDetailOrderLine />
+                          </ProtectedRoute>
+                        }
+                      />
 
-                {/* Otras rutas */}
-                <Route
-                  path="/clientes"
-                  element={
-                    <ProtectedRoute
-                      allowedRoles={["Admin", "Dueño", "Empleado"]}
-                    >
-                      <ClientComponent />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/clientes/agregarcliente"
-                  element={
-                    <ProtectedRoute
-                      allowedRoles={["Admin", "Dueño", "Empleado"]}
-                    >
-                      <NewClient />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/clientes/:cid"
-                  element={
-                    <ProtectedRoute
-                      allowedRoles={["Admin", "Dueño", "Empleado"]}
-                    >
-                      <EditClient />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/usuarios"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin"]}>
-                      <UserComponent />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/usuarios/agregarusuario"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin"]}>
-                      <NewUser />
-                    </ProtectedRoute>
-                  }
-                />
+                      {/* Otras rutas */}
+                      <Route
+                        path="/clientes"
+                        element={
+                          <ProtectedRoute
+                            allowedRoles={["Admin", "Dueño", "Empleado"]}
+                          >
+                            <ClientComponent />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/clientes/agregarcliente"
+                        element={
+                          <ProtectedRoute
+                            allowedRoles={["Admin", "Dueño", "Empleado"]}
+                          >
+                            <NewClient />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/clientes/:cid"
+                        element={
+                          <ProtectedRoute
+                            allowedRoles={["Admin", "Dueño", "Empleado"]}
+                          >
+                            <EditClient />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/usuarios"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin"]}>
+                            <UserComponent />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/usuarios/agregarusuario"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin"]}>
+                            <NewUser />
+                          </ProtectedRoute>
+                        }
+                      />
 
-                {/* Productos */}
-                <Route
-                  path="/productos"
-                  element={
-                    <ProtectedRoute
-                      allowedRoles={["Admin", "Empleado", "Dueño"]}
-                    >
-                      <ProductComponent />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/productos/:pid"
-                  element={
-                    <ProtectedRoute
-                      allowedRoles={["Admin", "Empleado", "Dueño"]}
-                    >
-                      <EditProduct />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/productos/agregarproducto"
-                  element={
-                    <ProtectedRoute
-                      allowedRoles={["Admin", "Empleado", "Dueño"]}
-                    >
-                      <NewProduct />
-                    </ProtectedRoute>
-                  }
-                />
+                      {/* Productos */}
+                      <Route
+                        path="/productos"
+                        element={
+                          <ProtectedRoute
+                            allowedRoles={["Admin", "Empleado", "Dueño"]}
+                          >
+                            <ProductComponent />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/productos/:pid"
+                        element={
+                          <ProtectedRoute
+                            allowedRoles={["Admin", "Empleado", "Dueño"]}
+                          >
+                            <EditProduct />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/productos/agregarproducto"
+                        element={
+                          <ProtectedRoute
+                            allowedRoles={["Admin", "Empleado", "Dueño"]}
+                          >
+                            <NewProduct />
+                          </ProtectedRoute>
+                        }
+                      />
 
-                {/* Proveedores */}
-                <Route
-                  path="/proveedores"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
-                      <SupplierManagement />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/proveedores/agregarproveedor"
-                  element={
-                    <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
-                      <NewSupplier />
-                    </ProtectedRoute>
-                  }
-                />
+                      {/* Proveedores */}
+                      <Route
+                        path="/proveedores"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
+                            <SupplierManagement />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/proveedores/agregarproveedor"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
+                            <NewSupplier />
+                          </ProtectedRoute>
+                        }
+                      />
+
+
+                      <Route
+                        path="/ventas"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
+                            <SalesComponent/>
+                          </ProtectedRoute>
+                        }
+                      />
                     </Routes>
                   </SideBar>
                 </BudgetProvider>

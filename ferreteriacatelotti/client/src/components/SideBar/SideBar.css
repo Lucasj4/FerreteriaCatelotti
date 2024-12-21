@@ -1,105 +1,107 @@
-.container{
-    display: flex;
+.container {
+  display: flex;
 }
 
-.sidebar{
-    /* background: #1d2b3a;
+.sidebar {
+  /* background: #1d2b3a;
     color: #F99417;
     height: 100vh;
     transition: all 0.3s; */
-    background: #212121;
-    color: #F99417;
-    height: 100vh;
-    transition: all 0.3s;
-
+  background: #212121;
+  color: #f99417;
+  height: 100vh;
+  transition: all 0.3s;
 }
 
 /* Estilo cuando isOpen es verdadero */
 .sidebar-expanded {
-    width: 350px;
-  }
-  
-  /* Estilo cuando isOpen es falso */
-  .sidebar-collapsed {
-    width: 60px;
-  }
-.top-section{
-    display: flex;
-    align-items: left;
-    padding: 20px 15px;
-    color: #fff;
+  width: 350px;
 }
 
-.top-section h2{
-  
-    font-size: 1.5rem;
+/* Estilo cuando isOpen es falso */
+.sidebar-collapsed {
+  width: 60px;
+}
+.top-section {
+  display: flex;
+  align-items: left;
+  padding: 20px 15px;
+  color: #fff;
 }
 
-.top-section__active{
-    justify-content: space-between ;
+.top-section h2 {
+  font-size: 1.5rem;
 }
 
-.logo{
-    font-size: 30px;
-    margin-right: 50px;
+.top-section__active {
+  justify-content: space-between;
+}
 
+.logo {
+  font-size: 30px;
+  margin-right: 50px;
+  white-space: nowrap; /* No permite saltos de línea */
+  overflow: hidden; /* Esconde el texto si supera el ancho permitido */
+  text-overflow: ellipsis; /* Añade puntos suspensivos si es necesario */
 }
 
 .logo-active {
-    display: block;
-  }
-  
-  /* Estilo cuando el elemento no está activo (display: none) */
-.logo-inactive {
-    display: none;
- }
-.bars{
-    display: flex;
-   
-    font-size: 1.5rem;
+  display: block;
+  width: 100%;
+}
 
+/* Estilo cuando el elemento no está activo (display: none) */
+.logo-inactive {
+  display: none;
+}
+.bars {
+  display: flex;
+
+  font-size: 1.5rem;
 }
 
 .link {
-    display: flex;
-   
-    color: #fff;
-    padding: 10px 15px;
-    gap: 15px;
-    transition: all 0.5s;
-  
-  }
-  
-.link:hover {
-    /* background: #4A90E2; */
-    background: var(--color-primary);
-    color: #fff;
-    transition: all 0.5s;
-}
-
-.active{
-    background: var(--color-primary);
-    color: #000;
-}
-.icon{
   display: flex;
- 
-    
-}
-.icon, .link_text{
-    font-size: 1.6rem;
-    
-}
 
-
-.link_text-active{
-    display: none;
-}
-.link_text-inactive{
-    display: block;
+  color: #fff;
+  padding: 10px 15px;
+  gap: 15px;
+  transition: all 0.5s;
 }
 
+.link:hover {
+  /* background: #4A90E2; */
+  background: var(--color-primary);
+  color: #fff;
+  transition: all 0.5s;
+}
 
-  
-  
+.active {
+  background: var(--color-primary);
+  color: #000;
+}
+.icon {
+  display: flex;
+}
+.icon,
+.link_text {
+  font-size: 1.6rem;
+}
 
+.link_text-active {
+  display: none;
+}
+.link_text-inactive {
+  display: block;
+}
+
+.menu-items {
+  display: flex;
+  flex-direction: column; /* Organiza los ítems en columna */
+  gap: 15px; /* Espaciado entre ítems */
+}
+
+.logout {
+  margin-bottom: 20px; /* Asegura que quede bien separado del borde */
+  cursor: pointer; /* Manito al pasar el cursor */
+}

@@ -4,7 +4,6 @@ import EnhancedEncryptionIcon from "@mui/icons-material/EnhancedEncryption";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 
-
 const Login = () => {
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [username, setUsername] = useState("");
@@ -13,13 +12,12 @@ const Login = () => {
 
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
-    
+
     console.log(username);
     console.log(password);
-    
-    
+
     try {
-      const response = await fetch("http://localhost:8080/api/users/login", { 
+      const response = await fetch("http://localhost:8080/api/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,23 +26,21 @@ const Login = () => {
           userUsername: username,
           userPassword: password,
         }),
-        credentials: "include", 
+        credentials: "include",
       });
 
       const data = await response.json();
-      
+
       console.log("Response: ", response);
-      
-     
+
       if (response.status === 200) {
         // Si la respuesta es exitosa, redirigir al usuario o manejar el login
         console.log(response);
-        console.log("docuement cokkie: " ,document.cookie);
+        console.log("docuement cokkie: ", document.cookie);
         console.log(data);
-       
-        
-        navigate('/productos')
-        
+
+        navigate("/productos");
+
         // Por ejemplo, podrías redirigir al usuario o hacer otras acciones
         // window.location.href = "/dashboard"; // ejemplo de redirección
       } else {
@@ -58,36 +54,17 @@ const Login = () => {
     }
   };
 
-  const handlelogout = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await fetch("http://localhost:8080/api/users/logout", { 
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-       
-        credentials: "include", 
-      });
-
-      if(response.status === 200){
-        console.log("Logout exitoso");
-        
-      }
-    } catch (error) {
-      console.error("Error al hacer la solicitud de logout:", error);
-    }
-
-  }
-
   const handleErrorModalClose = () => {
     setErrorModalVisible(false);
   };
 
   return (
     <div className="login__container">
-      <div className={` ${errorModalVisible ? "container__login--modal" : "container__login"}`}>
+      <div
+        className={` ${
+          errorModalVisible ? "container__login--modal" : "container__login"
+        }`}
+      >
         <div className="login__information">
           <div className="login__texts">
             <h2>Bienvenido a Ferreteria Catelotti</h2>
@@ -121,7 +98,6 @@ const Login = () => {
           <button className="button__login" onClick={handleLoginSubmit}>
             Iniciar Sesion
           </button>
-          <button className="button__login" onClick={handlelogout}>Logout</button>
         </div>
       </div>
 

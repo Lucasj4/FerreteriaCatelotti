@@ -1,7 +1,11 @@
 import { BudgetService } from "./budget-service.js";
 import BudgetDetaiLModel from '../budgetdetail/budgetdetail-model.js'
 import { ProductService } from "../products/product-service.js";
-import {BudgetDetaiLService} from '../budgetdetail/budgetdetail-service.js'
+import { BudgetDetaiLService } from '../budgetdetail/budgetdetail-service.js'
+import {generateInvoiceNumber} from '../utils/geneteinvoicenumber.js'
+import PDFDocument from "pdfkit";
+import fs from "fs";
+import path from "path";
 
 const productService = new ProductService();
 const budgetService = new BudgetService();
@@ -10,11 +14,18 @@ const budgetDetailService = new BudgetDetaiLService();
 export class BudgetController {
 
     async addBudget(req, res) {
-        const { userID, clientId, budgetDate, budgetAmount, budgetStatus, detailIds } = req.body;
+        const { clientId, budgetDate, budgetAmount, budgetStatus, detailIds } = req.body;
+       
+        
+        if (!req.user || !req.user.user || !req.user.user._id) {
+            return res.status(401).json({ error: 'Usuario no autenticado' });
+          }
+       
+        const userId = req.user.user._id;
 
         try {
             const newBudget = {
-                // userID,
+                userId,
                 clientId,
                 budgetDate,
                 budgetAmount,
@@ -44,8 +55,8 @@ export class BudgetController {
             if (budgets) {
 
                 const formattedBudgets = budgets.map(budget => {
-                   
-                    
+
+
                     const date = budget.budgetDate
                         ? new Date(budget.budgetDate).toLocaleDateString('es-ES', { timeZone: 'UTC' })
                         : null;
@@ -55,8 +66,8 @@ export class BudgetController {
                         clientId: budget.clientId ? budget.clientId.clientLastName : null
                     };
                 });
-                
-                
+
+
                 return res.status(200).json({ message: "Presupuestos", budgets: formattedBudgets })
             } else {
                 return res.status(404).json({ message: "Presupuestos no encontrados" })
@@ -77,11 +88,14 @@ export class BudgetController {
             const budgets = await budgetService.searchBudgets(clientId, budgetStatus);
 
             console.log("budgets filtrados: ", budgets);
-            
-            
+
+            if (budgets.length === 0) {
+                return res.status(404).json({ message: "No se encuentran presupuestos con los datos establecidos" })
+            }
+
             const formattedBudgets = budgets.map(budget => {
-                   
-                    
+
+
                 const date = budget.budgetDate
                     ? new Date(budget.budgetDate).toLocaleDateString('es-ES', { timeZone: 'UTC' })
                     : null;
@@ -93,8 +107,11 @@ export class BudgetController {
             });
 
             console.log("formateed: ", formattedBudgets);
-            
+
+
+
             res.status(200).json({ budgets: formattedBudgets });
+
         } catch (error) {
             console.error("Error al buscar presupuestos", error);
             res.status(500).json({ error: "Error en el servidor" });
@@ -126,7 +143,7 @@ export class BudgetController {
             }
 
             console.log(data.budget);
-            
+
             res.status(200).json({
                 budget: data.budget,
                 budgetDetailOrders: data.budgetDetails
@@ -142,7 +159,7 @@ export class BudgetController {
         const { pid } = req.params;
 
         req.logger.info("Id budget: " + pid);
-        
+
 
         const updateBudget = {
             budgetAmount,
@@ -160,14 +177,14 @@ export class BudgetController {
 
             const budget = await budgetService.updateBudget(updateBudget, pid);
 
-            if(budgetStatus === "Facturado"){
+            if (budgetStatus === "Facturado") {
                 const budgetDetails = await budgetDetailService.getBudgetDetailsByBudgetId(pid);
-                
-                for(const budgetDetail of budgetDetails){
+
+                for (const budgetDetail of budgetDetails) {
                     const product = await productService.getProductById(budgetDetail.productID);
-                    if(product)
-                    product.productStock -= budgetDetail.budgetDetailQuantity;
-                    await productService.updateProductStock(budgetDetail.productID, product.productStock )
+                    if (product)
+                        product.productStock -= budgetDetail.budgetDetailQuantity;
+                    await productService.updateProductStock(budgetDetail.productID, product.productStock)
                     console.log(`Stock actualizado para el producto ${product.productName}: Nuevo stock ${product.productStock}`);
                 }
             }
@@ -181,33 +198,27 @@ export class BudgetController {
             console.error("Error actualizando el presupuesto:", error);
             res.status(500).json({ message: "Error en el servidor al actualizar el presupuesto." });
         }
-
-
-        
-        
-       
-
     }
 
     async updateBudgetStatus(req, res) {
-        const { budgetStatus} = req.body;
+        const { budgetStatus } = req.body;
         const { pid } = req.params;
 
         req.logger.info("Id budget: " + pid);
-        
+
 
         const updateStatus = {
             budgetStatus
         }
 
         req.logger.info("update budget: " + updateStatus);
-        
+
         try {
             if (!budgetStatus || !pid) {
                 return res.status(400).json({ message: "Datos insuficientes para actualizar el presupuesto." });
             }
 
-            const budget = await budgetService.updateBudget({budgetStatus: budgetStatus}, pid);
+            const budget = await budgetService.updateBudget({ budgetStatus: budgetStatus }, pid);
 
             if (budget) {
                 res.status(200).json({ message: "Presupeusto actualizado con exito", budget })
@@ -223,13 +234,13 @@ export class BudgetController {
     }
 
     async deleteBudget(req, res) {
-        const {idBudget } = req.params;
-        
+        const { idBudget } = req.params;
+
         req.logger.info('Id budget: ' + idBudget)
 
         try {
             req.logger.info("Desde controllador deleteBudget")
-            const deletedDetails = await BudgetDetaiLModel.deleteMany({ budgetID: idBudget});
+            const deletedDetails = await BudgetDetaiLModel.deleteMany({ budgetID: idBudget });
             console.log(`Detalles eliminados: `, deletedDetails);
             // Intentar eliminar el presupuesto
             const deletedBudget = await budgetService.deleteBudget(idBudget);
@@ -246,14 +257,14 @@ export class BudgetController {
         }
     }
 
-    async getBudgetById(req, res){
-        const {budgetId} = req.params;
-       
+    async getBudgetById(req, res) {
+        const { budgetId } = req.params;
+
         try {
             const budget = await budgetService.getBudgetById(budgetId);
-          
-            
-            
+
+
+
             if (budget) {
                 // Formatear los campos
                 const formattedBudget = {
@@ -263,7 +274,7 @@ export class BudgetController {
                         : null,
                     clientId: budget.clientId?.clientLastName || null, // Si `clientId` es un objeto poblado
                 };
-    
+
                 res.status(200).json({
                     message: "Presupuesto encontrado con éxito",
                     budget: formattedBudget,
@@ -275,5 +286,102 @@ export class BudgetController {
             console.error("Error al encontrar presupuesto:", error);
             res.status(500).json({ message: "Error en el servidor al encontrar presupuesto con id el presupuesto" });
         }
+    }
+
+    async createFactura(req, res) {
+        const { saleTotalAmount, saleDate, client, details } = req.body;
+
+        const invoiceNumber = generateInvoiceNumber();
+
+        if (!client || !saleTotalAmount || !saleDate || !invoiceNumber) {
+            return res.status(400).json({ error: "Faltan datos necesarios" });
+        }
+
+        try {
+            const doc = new PDFDocument();
+
+            // Cabecera del PDF
+            doc.fontSize(14).text(`Factura de venta No. ${invoiceNumber}`, { align: 'right' });
+
+            // Separar un poco más la fecha y el cliente
+            doc.fontSize(14).text(`Fecha: ${fecha}`, { align: 'left' }).moveDown(0.5);
+            doc.text(`Cliente: ${cliente}`, { align: 'left' }).moveDown(0.5);
+
+            // Ajustar un poco más la separación entre "Total" y las demás líneas
+            doc.text(`Total: $${total}`, { align: 'left' }).moveDown(1.5);
+
+            // Espacio para separar de la cabecera
+            doc.moveDown();
+
+            // Definir columnas de la tabla
+            const tableHeaders = ["Producto", "Cantidad", "Costo Unitario", "Total"];
+            const tableWidths = [100, 100, 100, 100]; // Anchos de las columnas (asegurarse que esta variable existe)
+
+            const pageWidth = 595;  // Ancho de la página en PDF (tamaño carta)
+            const tableWidth = tableWidths.reduce((a, b) => a + b, 0);  // Ancho total de la tabla, sumando los anchos de las columnas
+            const marginLeft = (pageWidth - tableWidth) / 2;  // Centrar la tabla horizontalmente
+
+            const tableTop = doc.y;
+            const rowHeight = 30; // Altura fija de cada fila
+            const marginExtra = 2; // Margen extra entre filas para espacio adicional
+
+            // Dibujar las cabeceras de la tabla
+            doc.font('Helvetica-Bold')
+                .text(tableHeaders[0], marginLeft, tableTop, { width: tableWidths[0], align: 'center' })
+                .text(tableHeaders[1], marginLeft + tableWidths[0], tableTop, { width: tableWidths[1], align: 'center' })
+                .text(tableHeaders[2], marginLeft + tableWidths[0] + tableWidths[1], tableTop, { width: tableWidths[2], align: 'center' })
+                .text(tableHeaders[3], marginLeft + tableWidths[0] + tableWidths[1] + tableWidths[2], tableTop, { width: tableWidths[3], align: 'center' });
+
+            // Dibujar la línea que separa las cabeceras del resto de la tabla
+            doc.moveTo(marginLeft, tableTop + rowHeight)
+                .lineTo(marginLeft + tableWidths[0] + tableWidths[1] + tableWidths[2] + tableWidths[3], tableTop + rowHeight)
+                .stroke();
+
+            // Ajustar la posición 'y' después de la cabecera
+            let yPosition = tableTop + rowHeight + 5; // Fija la posición 'y' para la primera fila
+
+            // Dibujar cada fila de la tabla
+            details.forEach(detalle => {
+                const productYPosition = yPosition + (rowHeight - 12) / 2; // Centro verticalmente (12 es el tamaño de fuente)
+
+                // Dibujar los datos de la fila con centrado vertical y horizontal
+                doc.font('Helvetica')
+                    .text(detalle.producto, marginLeft, productYPosition, { width: tableWidths[0], align: 'center' })
+                    .text(detalle.cantidad, marginLeft + tableWidths[0], productYPosition, { width: tableWidths[1], align: 'center' })
+                    .text(`$${detalle.costoUnitario.toFixed(2)}`, marginLeft + tableWidths[0] + tableWidths[1], productYPosition, { width: tableWidths[2], align: 'right' })
+                    .text(`$${detalle.total.toFixed(2)}`, marginLeft + tableWidths[0] + tableWidths[1] + tableWidths[2], productYPosition, { width: tableWidths[3], align: 'right' });
+
+                // Mover la posición 'y' después de cada fila, considerando margen extra
+                yPosition += rowHeight + marginExtra;
+
+                // Dibujar una línea después de cada fila
+                doc.moveTo(marginLeft, yPosition)
+                    .lineTo(marginLeft + tableWidths[0] + tableWidths[1] + tableWidths[2] + tableWidths[3], yPosition)
+                    .stroke();
+            });
+
+            // Finalizar el documento y enviarlo como respuesta
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'attachment; filename=factura.pdf');
+
+
+            doc.pipe(res);
+            doc.end();
+
+            return res.status(200).json({
+                Invoice:{
+                    invoiceNumber,
+                    saleDate
+                }
+            })
+
+        } catch (err) {
+            console.error("Error general:", err);
+            res.status(500).json({ error: "Error al generar la factura." });
+        }
+    }
+
+    async getSales(req, res){
+        
     }
 }

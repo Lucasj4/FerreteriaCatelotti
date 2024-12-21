@@ -54,7 +54,8 @@ const ResetPassword = () => {
         });
       }
       const data = await response.json();
-
+      console.log("data" , data);
+      
       if (response.status === 200) {
         Swal.fire({
           title: "Contraseña reestablecida con exito",
@@ -68,10 +69,10 @@ const ResetPassword = () => {
           },
         });
 
-        // navigate('/cambiocontraseña');
+        navigate('/iniciosesion');
       } else {
         Swal.fire({
-          title: `${data.message}`,
+          title: `${data.error}`,
           icon: "warning",
           confirmButtonText: "Aceptar",
           customClass: {
