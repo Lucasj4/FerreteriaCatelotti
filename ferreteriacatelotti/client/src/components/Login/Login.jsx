@@ -2,19 +2,17 @@ import React, { useState } from "react";
 import PersonIcon from "@mui/icons-material/Person";
 import EnhancedEncryptionIcon from "@mui/icons-material/EnhancedEncryption";
 import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import "./Login.css";
 
 const Login = () => {
-  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
-
-    console.log(username);
-    console.log(password);
 
     try {
       const response = await fetch("http://localhost:8080/api/users/login", {
@@ -31,39 +29,61 @@ const Login = () => {
 
       const data = await response.json();
 
-      console.log("Response: ", response);
+      console.log("Response: ", data);
 
-      if (response.status === 200) {
-        // Si la respuesta es exitosa, redirigir al usuario o manejar el login
-        console.log(response);
-        console.log("docuement cokkie: ", document.cookie);
-        console.log(data);
+      switch (response.status) {
+        case 200:
+          navigate("/productos");
+          break;
 
-        navigate("/productos");
+        case 404:
+          Swal.fire({
+            title: "Error",
+            text: "Usuario no registrado",
+            icon: "error",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              overlay: "my-overlay-class",
+            },
+          });
+          break;
 
-        // Por ejemplo, podrías redirigir al usuario o hacer otras acciones
-        // window.location.href = "/dashboard"; // ejemplo de redirección
-      } else {
-        // Si la respuesta no es exitosa, mostrar el modal de error
-        setErrorModalVisible(true);
+        case 401:
+          Swal.fire({
+            title: "Error",
+            text: `${data.message}`,
+            icon: "error",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              overlay: "my-overlay-class",
+            },
+          });
+          break;
+        default:
+          break;
       }
+
+    
     } catch (error) {
-      // Manejar errores de red
+   
       console.error("Error al hacer la solicitud de login:", error);
-      setErrorModalVisible(true);
+     
     }
   };
 
-  const handleErrorModalClose = () => {
-    setErrorModalVisible(false);
-  };
+ 
 
   return (
     <div className="login__container">
       <div
-        className={` ${
-          errorModalVisible ? "container__login--modal" : "container__login"
-        }`}
+        className="container__login"
+        
       >
         <div className="login__information">
           <div className="login__texts">
@@ -101,14 +121,7 @@ const Login = () => {
         </div>
       </div>
 
-      {errorModalVisible && (
-        <div className="modal">
-          <div className="modal__content">
-            <p>Usuario o contraseña incorrecto.</p>
-            <button onClick={handleErrorModalClose}>Cerrar</button>
-          </div>
-        </div>
-      )}
+    
     </div>
   );
 };

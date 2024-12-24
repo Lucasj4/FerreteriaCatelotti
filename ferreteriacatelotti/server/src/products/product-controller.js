@@ -88,55 +88,53 @@ export class ProductController {
         }
     }
 
-    async updateProductStock(req, res) {
-        const { pid } = req.params;
-        const { quantity, operationType } = req.body;
+    async updateProductStocks(req, res) {
+        const { products } = req.body; 
     
-        req.logger.info("Desde updateProductStock");
-        req.logger.info(`Product ID: ${pid}, Quantity: ${quantity}, Operation Type: ${operationType}`);
-    
-        if (!mongoose.Types.ObjectId.isValid(pid)) {
-            return res.status(400).json({ success: false, message: "Invalid product ID" });
-        }
+        req.logger.info("Validando y actualizando stock para múltiples productos");
     
         try {
-            const product = await productService.getProductById(pid);
+            const updatedProducts = [];
+            
+            
+            for (const { pid, quantity, operationType } of products) {
+                if (!mongoose.Types.ObjectId.isValid(pid)) {
+                    return res.status(400).json({ success: false, message: `Invalid product ID: ${pid}` });
+                }
     
-            if (!product) {
-                return res.status(404).json({ success: false, message: "Product not found" });
-            }
+                const product = await productService.getProductById(pid);
     
-            let updatedStock;
+                if (!product) {
+                    return res.status(404).json({ success: false, message: `Product not found: ${pid}` });
+                }
     
-            if (operationType === 'decrease') {
-                if (product.productStock >= quantity) {
-                    updatedStock = product.productStock - quantity;
-                } else {
+                if (operationType === 'decrease' && product.productStock < quantity) {
                     return res.status(400).json({
                         success: false,
-                        message: `Not enough stock for product ${pid}. Current stock is ${product.productStock}.`,
+                        message: `No hay suficiente stock del producto ${product.productName}. El stock actual es ${product.productStock}.`,
                     });
                 }
-            } else if (operationType === 'increase') {
-                updatedStock = product.productStock + quantity;
-            } else {
-                return res.status(400).json({ success: false, message: "Invalid operation type" });
             }
     
-            const updatedProduct = await productService.updateProduct(pid, { productStock: updatedStock });
+            // Si todos los productos pasan la validación, actualizar stocks
+            for (const { pid, quantity, operationType } of products) {
+                const product = await productService.getProductById(pid);
+                const updatedStock = operationType === 'decrease' 
+                    ? product.productStock - quantity 
+                    : product.productStock + quantity;
     
-            if (updatedProduct) {
-                return res.status(200).json({
-                    success: true,
-                    message: 'Stock updated successfully',
-                    updatedProduct: updatedProduct,
-                });
-            } else {
-                return res.status(500).json({ success: false, message: "Error updating product stock" });
+                const updatedProduct = await productService.updateProduct(pid, { productStock: updatedStock });
+                updatedProducts.push(updatedProduct);
             }
+    
+            return res.status(200).json({
+                success: true,
+                message: "Stock actualizado con exito",
+                updatedProducts,
+            });
         } catch (error) {
-            console.error("Error updating product stock:", error);
-            res.status(500).json({ success: false, message: 'Internal server error' });
+            console.error("Error updating product stocks:", error);
+            return res.status(500).json({ success: false, message: "Internal server error" });
         }
     }
 

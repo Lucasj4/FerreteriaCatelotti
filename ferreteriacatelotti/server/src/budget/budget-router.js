@@ -17,5 +17,5 @@ budgetRouter.delete('/:idBudget', authMiddleware, checkUserRole(["Admin", "Emple
 budgetRouter.get('/budgetwithdetails/:pid', authMiddleware, checkUserRole(["Admin", "Empleado"]), budgetController.getBudgetWithDetail);
 budgetRouter.get("/:budgetId", authMiddleware, checkUserRole(["Admin", "Empleado"]), budgetController.getBudgetById);
 budgetRouter.put('/:pid', authMiddleware, checkUserRole(["Admin", "Empleado"]), budgetValidator, budgetController.updateBudget);
-budgetRouter.put('/updatestatus/:pid', authMiddleware, checkUserRole(["Admin", "Empleado"]), budgetController.updateBudgetStatus);
+budgetRouter.put('/updatestatusandamount/:pid', authMiddleware, checkUserRole(["Admin", "Empleado"]), budgetController.updateBudgetStatusAndAmount);
 

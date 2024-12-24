@@ -71,13 +71,18 @@ export class UserController {
     async loginUser(req, res) {
         const { userUsername, userPassword } = req.body;
 
+        req.logger.info("Usuario: " + userUsername);
+        req.logger.info("Contraseña: " + userPassword);
         try {
 
 
             const existingUser = await userService.getUserByUsername(userUsername);
 
-            if (!existingUser) {
-                return res.status(401).json({ message: "Usuario no válido" });
+
+            
+            
+            if (existingUser.length === 0) {
+                return res.status(404).json({ message: "Usuario no válido" });
             }
 
             const user = existingUser[0];
@@ -88,7 +93,7 @@ export class UserController {
             console.log(validUser);
             
             if (!validUser) {
-                return res.status(401).send("Contraseña incorrecta");
+                return res.status(401).json({ message: "Contraseña incorrecta" });;
             }
 
             const token = jwt.sign({ user: user }, "ferreteria", {

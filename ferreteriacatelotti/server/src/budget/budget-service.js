@@ -67,7 +67,7 @@ export class BudgetService {
     }
 
     async getBudgetWithDetail(budgetId) {
-        console.log("id presupuesto desde service: ", budgetId);
+      
 
         try {
             if (!mongoose.Types.ObjectId.isValid(budgetId)) {
@@ -93,6 +93,26 @@ export class BudgetService {
             return budget;
         } catch (error) {
             console.error(error);
+            throw error;
+        }
+    }
+
+    async updateBudgetStatusAndBudgetAmount(updateData, budgetId){
+        try {
+            const updatedBudget = await BudgetModel.findByIdAndUpdate(
+                budgetId,
+                { 
+                    $set: {
+                        budgetStatus: updateData.budgetStatus,
+                        budgetAmount: updateData.budgetAmount
+                    }
+                },
+                { new: true } 
+            );
+
+            return updatedBudget;
+        } catch (error) {
+            req.logger.info (error);
             throw error;
         }
     }

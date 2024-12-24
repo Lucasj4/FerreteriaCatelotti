@@ -14,8 +14,8 @@ export class PurchaseOrderController {
 
         const { purchaseOrderDate, purchaseOrderAmount, purchaseOrderStatus, supplierID } = req.body;
         const userId = req.user.user._id
-      
-        
+
+
 
         try {
 
@@ -151,35 +151,11 @@ export class PurchaseOrderController {
                 supplierID
             };
 
-
-
-            console.log("updateData: ", updateData);
-            console.log(" Detalle ids: ", detalleIds);
+            req.logger.info("updateData: ", updateData);
+            req.logger.info(" Detalle ids: ", detalleIds);
 
 
             const updatedOrder = await purchaseOrderService.updatePurchaseOrder(id, updateData);
-
-            if (purchaseOrderStatus === "Recibido") {
-                const detailOrders = detalleIds;
-
-                // Iterar sobre cada detalle y actualizar el stock del producto
-                for (const detail of detailOrders) {
-                    console.log(detail);
-
-                    const detailOrder = await detailOrderService.getDetailOrderById(detail)
-
-                    req.logger.info("detail order: " + detailOrder)
-                    const product = await productService.getProductById(detailOrder.productID);
-
-                    if (product && detailOrder) {
-                        product.productStock += detailOrder.detailOrderQuantity; // Sumar la cantidad al stock
-                        await productService.updateProductStock(product._id, product.productStock); // Guardar cambios
-                        console.log(`Stock actualizado para el producto ${product.name}: Nuevo stock ${product.stock}`);
-                    } else {
-                        console.warn(`Producto con ID ${detail.productID} no encontrado`);
-                    }
-                }
-            }
 
             if (updatedOrder) {
 
@@ -282,7 +258,7 @@ export class PurchaseOrderController {
     }
 
     async printPurchaseOrder(req, res) {
-        const { amount, date,  supplier, details } = req.body;
+        const { amount, date, supplier, details } = req.body;
 
 
 

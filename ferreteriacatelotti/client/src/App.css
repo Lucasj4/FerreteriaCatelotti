@@ -139,5 +139,21 @@ main {
   cursor: pointer;
 }
 
+/* Cambiar el fondo del popup */
+.my-popup-class {
+  background-color:#212121 !important;
+  color: #fff;
+  border-radius: 4px;
+}
+
+/* Personaliza el fondo del overlay */
+.swal2-overlay.my-overlay-class {
+  background-color: rgba(0, 0, 0, 0.5) !important; /* Cambia el color del overlay */
+}
+
+.my-confirm-button-class{
+  background-color: #f0320a;
+}
+
 
 

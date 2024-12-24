@@ -329,36 +329,54 @@ const BudgetDetail = () => {
 
     if (result.isConfirmed) {
       try {
-        for (const item of row) {
-          const productId = item.productID; // ID del producto
-          const quantity = item.budgetDetailQuantity; // Cantidad a descontar
+        // Paso 2: Actualizar el estado del presupuesto a "Facturado" solo una vez
 
-          const stockResponse = await fetch(
-            `http://localhost:8080/api/products/updateproductstock/${productId}`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              credentials: "include",
-              body: JSON.stringify({ quantity, operationType: "decrease" }),
-            }
-          );
+        const products = row.map((item) => ({
+          pid: item.productID,
+          quantity: item.budgetDetailQuantity,
+          operationType: "decrease",
+        }));
 
-          if (!stockResponse.ok) {
-            throw new Error(
-              `Error al actualizar el stock del producto ${productId}`
-            );
+        const stockResponse = await fetch(
+          `http://localhost:8080/api/products/updateproductstock`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ products }),
           }
+        );
+
+        const stockData = await stockResponse.json();
+
+        console.log(stockData);
+
+        if (stockResponse.status === 400 || stockResponse.status === 404) {
+          Swal.fire({
+            title: "Error",
+            text: stockData.message,
+            icon: "warning",
+            confirmButtonText: "Aceptar",
+            customClass: {
+              title: "my-title-class",
+              popup: "my-popup-class",
+              confirmButton: "my-confirm-button-class",
+              cancelButton: "my-cancel-button-class",
+              overlay: "my-overlay-class",
+            },
+          });
+          return; // Detener la ejecución si stockResponse es 400 o 404
         }
 
-        // Paso 2: Actualizar el estado del presupuesto a "Facturado" solo una vez
         const updateBudget = {
-          budgetStatus: "Facturado", // Cambiar el estado
+          budgetStatus: "Facturado",
+          budgetAmount: amount,
         };
 
         const updateBudgetResponse = await fetch(
-          `http://localhost:8080/api/budgets/updatestatus/${pid}`,
+          `http://localhost:8080/api/budgets/updatestatusandamount/${pid}`,
           {
             method: "PUT",
             headers: {
@@ -371,43 +389,30 @@ const BudgetDetail = () => {
 
         const data = await updateBudgetResponse.json();
 
+        console.log("data presupuesto: ", data);
+
         const budget = data.budget;
 
-
-        if (updateBudgetResponse.ok) {
-          Swal.fire({
-            title: "Presupuesto facturado con éxito",
-            icon: "success",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
-          });
-
+        if (updateBudgetResponse.status === 200) {
           const sale = {
             saleDate: budget.budgetDate,
             saleTotalAmount: budget.budgetAmount,
             clientId: budget.clientId,
             userId: budget.userId,
-
-
-          }
+          };
           try {
-            const response = await fetch('http://localhost:8080/api/sales', {
+            const response = await fetch("http://localhost:8080/api/sales", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
               credentials: "include",
               body: JSON.stringify(sale),
-            })
+            });
 
-            if(response.status === 201){
+            if (response.status === 201) {
               Swal.fire({
-                title: "Venta agregada",
+                title: "Presupuesto facturado. Venta agregada",
                 icon: "success",
                 confirmButtonText: "Aceptar",
                 customClass: {
@@ -417,7 +422,6 @@ const BudgetDetail = () => {
                   overlay: "my-overlay-class",
                 },
               });
-    
             }
           } catch (error) {
             console.error("Error en el proceso:", error);
@@ -426,7 +430,9 @@ const BudgetDetail = () => {
           // Redirigir a otra página si es necesario, por ejemplo:
           navigate(`/presupuesto/${pid}`);
         } else {
-          throw new Error("Error al facturar el presupuesto");
+          console.log(" status response: ", updateBudgetResponse.status);
+
+          throw new Error("Error al facturar el presupuesto: ");
         }
       } catch (error) {
         console.error("Error en el proceso:", error);
@@ -436,8 +442,6 @@ const BudgetDetail = () => {
           confirmButtonText: "Aceptar",
         });
       }
-
-      
     }
   };
   return (

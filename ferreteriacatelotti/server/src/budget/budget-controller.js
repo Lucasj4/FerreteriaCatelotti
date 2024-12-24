@@ -159,6 +159,7 @@ export class BudgetController {
         const { pid } = req.params;
 
         req.logger.info("Id budget: " + pid);
+        req.logger.info("Desde controlador actualizar presupuesto");
 
 
         const updateBudget = {
@@ -177,18 +178,7 @@ export class BudgetController {
 
             const budget = await budgetService.updateBudget(updateBudget, pid);
 
-            if (budgetStatus === "Facturado") {
-                const budgetDetails = await budgetDetailService.getBudgetDetailsByBudgetId(pid);
-
-                for (const budgetDetail of budgetDetails) {
-                    const product = await productService.getProductById(budgetDetail.productID);
-                    if (product)
-                        product.productStock -= budgetDetail.budgetDetailQuantity;
-                    await productService.updateProductStock(budgetDetail.productID, product.productStock)
-                    console.log(`Stock actualizado para el producto ${product.productName}: Nuevo stock ${product.productStock}`);
-                }
-            }
-
+    
             if (budget) {
                 res.status(200).json({ message: "Presupeusto actualizado con exito", budget })
             } else {
@@ -200,26 +190,26 @@ export class BudgetController {
         }
     }
 
-    async updateBudgetStatus(req, res) {
-        const { budgetStatus } = req.body;
+    async updateBudgetStatusAndAmount(req, res) {
+        const { budgetStatus, budgetAmount } = req.body;
         const { pid } = req.params;
 
         req.logger.info("Id budget: " + pid);
+        req.logger.info("BudgetAmount: " + budgetAmount);
 
-
-        const updateStatus = {
-            budgetStatus
+        const updateBudget = {
+            budgetStatus,
+            budgetAmount
         }
-
-        req.logger.info("update budget: " + updateStatus);
 
         try {
             if (!budgetStatus || !pid) {
                 return res.status(400).json({ message: "Datos insuficientes para actualizar el presupuesto." });
             }
 
-            const budget = await budgetService.updateBudget({ budgetStatus: budgetStatus }, pid);
+            const budget = await budgetService.updateBudgetStatusAndBudgetAmount(updateBudget, pid);
 
+            req.logger.info("Presupuesto actualizado: " + budget)
             if (budget) {
                 res.status(200).json({ message: "Presupeusto actualizado con exito", budget })
             } else {
