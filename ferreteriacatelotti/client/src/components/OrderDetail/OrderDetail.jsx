@@ -21,6 +21,23 @@ const OrderDetail = () => {
     { value: "recibido", label: "Recibido" },
   ];
 
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
   const tableHeaders = [
     { value: "detailOrderProduct", label: "Producto" },
     { value: "detailOrderQuantity", label: "Cantidad" },
@@ -81,17 +98,10 @@ const OrderDetail = () => {
     console.log("Proveedor: ", proveedorValue);
 
     if (!purchaseOrderDate || !purchaseOrderStatus || !proveedorValue) {
-      await Swal.fire({
+      await showAlert({
         title: "Campos incompletos",
         text: "Por favor, completa la fecha, selecciona un proveedor y el estado antes de agregar una línea de detalle al pedido de compra.",
         icon: "warning",
-        confirmButtonText: "Aceptar",
-        customClass: {
-          title: "my-title-class",
-          popup: "my-popup-class",
-          confirmButton: "my-confirm-button-class",
-          overlay: "my-overlay-class",
-        },
       });
       return;
     }
@@ -117,16 +127,10 @@ const OrderDetail = () => {
 
       if (response.status === 201) {
         setPurchaseOrderId(result.purchaseOrder._id);
-        await Swal.fire({
+        await showAlert({
           title: "Pedido de compra creado con éxito",
           icon: "success",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
+       
         });
         navigate("/pedido/agregardetalle");
       } else if (response.status === 400) {
@@ -135,32 +139,19 @@ const OrderDetail = () => {
             ? result.errorMessages[0]
             : "Error desconocido";
 
-        await Swal.fire({
+        await showAlert({
           title: "Error al crear presupuesto",
           text: errorMessages,
           icon: "error",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
+          
         });
       }
     } catch (error) {
       console.error("Error en la solicitud", error);
-      await Swal.fire({
+      await showAlert({
         title: "Error de conexión",
         text: "No se pudo conectar con el servidor",
         icon: "error",
-        confirmButtonText: "Aceptar",
-        customClass: {
-          title: "my-title-class",
-          popup: "my-popup-class",
-          confirmButton: "my-confirm-button-class",
-          overlay: "my-overlay-class",
-        },
       });
     }
   };

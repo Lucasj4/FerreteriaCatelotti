@@ -18,6 +18,24 @@ const ProductComponent = () => {
     { value: "unitID", label: "Unidad" },
   ];
 
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
+
   const getProductsWithLowStock = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/products/lowstock")
@@ -42,28 +60,15 @@ const ProductComponent = () => {
       );
 
       if (response.status === 404 && searchCriteria === 'name') {
-        Swal.fire({
+        showAlert({
           title: "Producto no encontrado",
           icon: "warning",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
         });
       }else if(response.status === 404 && searchCriteria === 'category'){
-        Swal.fire({
+        showAlert({
           title: "No hay productos con esa categoria",
           icon: "warning",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
+          
         });
       }
 
@@ -79,20 +84,11 @@ const ProductComponent = () => {
   };
 
   const handleDeleteProduct = async (productId) => {
-    const result = await Swal.fire({
+    const result = await showAlert({
       title: "¿Estás seguro?",
       text: "Una vez eliminado, no podrás recuperar este producto.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "No, cancelar",
-      customClass: {
-        title: "my-title-class",
-        popup: "my-popup-class",
-        confirmButton: "my-confirm-button-class",
-        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
-        overlay: "my-overlay-class",
-      },
     });
 
     // Si el usuario confirma la eliminación
@@ -111,44 +107,26 @@ const ProductComponent = () => {
 
         switch (response.status) {
           case 200:
-            Swal.fire({
+            showAlert({
               title: "Producto eliminado con éxito",
               icon: "success",
-              confirmButtonText: "Aceptar",
-              customClass: {
-                title: "my-title-class",
-                popup: "my-popup-class",
-                confirmButton: "my-confirm-button-class",
-                overlay: "my-overlay-class",
-              },
+              
             });
             setFilas(filas.filter((product) => product._id !== productId));
             break;
           case 404:
-            Swal.fire({
+            showAlert({
               title: "Producto no encontrado",
               icon: "warning",
-              confirmButtonText: "Aceptar",
-              customClass: {
-                title: "my-title-class",
-                popup: "my-popup-class",
-                confirmButton: "my-confirm-button-class",
-                overlay: "my-overlay-class",
-              },
+              
             });
             break;
           default:
-            Swal.fire({
+            showAlert({
               title: "Error inesperado",
               text: `Código de estado: ${response.status}`,
               icon: "error",
-              confirmButtonText: "Aceptar",
-              customClass: {
-                title: "my-title-class",
-                popup: "my-popup-class",
-                confirmButton: "my-confirm-button-class",
-                overlay: "my-overlay-class",
-              },
+             
             });
             console.error(`Estado inesperado: ${response.status}`, response);
             break;
@@ -158,16 +136,10 @@ const ProductComponent = () => {
       }
     } else {
       // Si el usuario cancela la acción
-      Swal.fire({
+      showAlert({
         title: "Eliminación cancelada",
         icon: "info",
-        confirmButtonText: "Aceptar",
-        customClass: {
-          title: "my-title-class",
-          popup: "my-popup-class",
-          confirmButton: "my-confirm-button-class",
-          overlay: "my-overlay-class",
-        },
+        
       });
     }
   };

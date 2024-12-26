@@ -12,6 +12,24 @@ const UserComponent = () => {
     { value: "userEmail", label: "Email" },
   ];
 
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
+
   useEffect(()=> {
 
     const fetchUsers = async () => {
@@ -36,20 +54,11 @@ const UserComponent = () => {
   }, [])
 
   const handleDeleteCell = async (id, index) => {
-    const result = await Swal.fire({
+    const result = await showAlert({
       title: "¿Estás seguro?",
       text: "Una vez eliminado, no podrás recuperar este presupuesto.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "No, cancelar",
-      customClass: {
-        title: "my-title-class",
-        popup: "my-popup-class",
-        confirmButton: "my-confirm-button-class",
-        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
-        overlay: "my-overlay-class",
-      },
     });
 
     if (result.isConfirmed) {
@@ -63,16 +72,10 @@ const UserComponent = () => {
         );
 
         if (response.status === 200) {
-          Swal.fire({
+         showAlert({
             title: "Presupuesto eliminado",
             icon: "success",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
+            
           });
           // Si la eliminación fue exitosa, eliminamos la fila visualmente
           const newRows = [...row];

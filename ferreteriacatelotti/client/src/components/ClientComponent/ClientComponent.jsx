@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import TableCustom from "../TableCustom/TableCustom";
 import "./ClientComponent.css";
 import { Link } from "react-router-dom";
-import ExportToExcel from "../ExportExcel/ExportExcel";
+
 import Swal from "sweetalert2";
 
 const ClientComponent = () => {
@@ -11,6 +11,7 @@ const ClientComponent = () => {
   const [searchCriteria, setSearchCriteria] = useState("clientLastName");
   const [clientLastName, setClientLastName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
+
   const tableHeaders = [
     { value: "clientFirstName", label: "Nombre" },
     { value: "clientLastName", label: "Apellido" },
@@ -18,13 +19,25 @@ const ClientComponent = () => {
     { value: "clientEmail", label: "Email" },
   ];
 
-  const columnMap = {
-    clientLastName: "Apellido",
-    clientFirstName: "Nombre",
-    clientEmail: "Correo Electrónico",
-    clientDni: "Dni",
-    // Agrega más campos si es necesario
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
   };
+
+  
 
   const handleSearchCriteriaChange = (e) => {
     setSearchCriteria(e.target.value);
@@ -53,28 +66,15 @@ const ClientComponent = () => {
       );
 
       if (response.status === 404 && searchCriteria === "clientLastName") {
-        Swal.fire({
+        showAlert({
           title: "Cliente no enconctrado con ese apellido",
           icon: "warning",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
+          
         });
       } else if (response.status === 404 && searchCriteria === "clientEmail") {
-        Swal.fire({
+        showAlert({
           title: "Cliente no encontrado con ese email",
           icon: "warning",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
         });
       }
 
@@ -141,11 +141,7 @@ const ClientComponent = () => {
             >
               Buscar
             </button>
-            <ExportToExcel
-              data={rows}
-              fileName={"Clientes"}
-              columnMap={columnMap}
-            />
+    
           </div>
           <TableCustom
             tableClassName="table"

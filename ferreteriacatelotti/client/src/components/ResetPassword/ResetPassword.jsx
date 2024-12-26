@@ -13,6 +13,23 @@ const ResetPassword = () => {
   const [userConfirmationPassword, setUserConfirmationPassword] = useState("");
   const [userToken, setUserToken] = useState("");
   
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
 
   const navigate = useNavigate();
 
@@ -41,46 +58,26 @@ const ResetPassword = () => {
    
 
       if (userPassword != userConfirmationPassword) {
-        return Swal.fire({
+        return showAlert({
           title: "No coinciden las contraseñas",
           icon: "warning",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
+         
         });
       }
       const data = await response.json();
       console.log("data" , data);
       
       if (response.status === 200) {
-        Swal.fire({
+        showAlert({
           title: "Contraseña reestablecida con exito",
           icon: "success",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
         });
 
         navigate('/iniciosesion');
       } else {
-        Swal.fire({
+        showAlert({
           title: `${data.error}`,
           icon: "warning",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
         });
       }
     } catch (error) {

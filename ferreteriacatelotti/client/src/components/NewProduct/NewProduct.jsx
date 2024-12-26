@@ -24,6 +24,24 @@ const NewProduct = () => {
     setProductCost("");
   };
 
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
+
   useEffect(() => {
     // Función asíncrona para obtener las categorías desde la API
     const fetchCategories = async () => {
@@ -104,16 +122,9 @@ const NewProduct = () => {
 
       switch (response.status) {
         case 201:
-          Swal.fire({
+          showAlert({
             title: "Producto creado con exito",
             icon: "success",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
           }).then(() => {
             resetForm();
           });
@@ -125,45 +136,26 @@ const NewProduct = () => {
               ? result.errorMessages[0] // Une los mensajes con saltos de línea
               : "Error desconocido";
 
-          Swal.fire({
+          showAlert({
             title: "Error al crear producto",
             text: errorMessages,
             icon: "error",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
           });
           break;
         case 409:
-          Swal.fire({
+          showAlert({
             title: `Error al crear producto: ${productName} ya existe`,
             icon: "warning",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
+      
           });
           break;
 
         default:
-          Swal.fire({
+          showAlert({
             title: "Error inesperado",
             text: `Código de estado: ${response.status}`,
             icon: "error",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
+            
           });
 
           // Registro en la consola para depuración adicional

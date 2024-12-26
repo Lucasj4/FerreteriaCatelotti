@@ -18,6 +18,24 @@ const EditProduct = () => {
   const [productsUnitsOptions, setProductsUnitsOptions] = useState([]);
   const { pid } = useParams();
 
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
+
   const resetForm = () => {
     setProductName("");
     setProductStock("");
@@ -149,20 +167,11 @@ const EditProduct = () => {
 
     console.log("Producto: ", productData);
 
-    const result = await Swal.fire({
+    const result = await showAlert({
       title: "¿Estás seguro?",
       text: "¿Confirmar modificacion de detalle?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, modificar",
-      cancelButtonText: "No, cancelar",
-      customClass: {
-        title: "my-title-class",
-        popup: "my-popup-class",
-        confirmButton: "my-confirm-button-class",
-        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
-        overlay: "my-overlay-class",
-      },
     });
 
     if (result.isConfirmed) {
@@ -183,16 +192,9 @@ const EditProduct = () => {
 
         switch (response.status) {
           case 200:
-            Swal.fire({
+            showAlert({
               title: "Producto modificado con exito",
               icon: "success",
-              confirmButtonText: "Aceptar",
-              customClass: {
-                title: "my-title-class",
-                popup: "my-popup-class",
-                confirmButton: "my-confirm-button-class",
-                overlay: "my-overlay-class",
-              },
             }).then(() => {
               resetForm();
             });
@@ -204,45 +206,26 @@ const EditProduct = () => {
                 ? result.errorMessages[0] // Une los mensajes con saltos de línea
                 : "Error desconocido";
 
-            Swal.fire({
+            showAlert({
               title: "Error al modificar producto",
               text: errorMessages,
               icon: "error",
-              confirmButtonText: "Aceptar",
-              customClass: {
-                title: "my-title-class",
-                popup: "my-popup-class",
-                confirmButton: "my-confirm-button-class",
-                overlay: "my-overlay-class",
-              },
+             
             });
             break;
           case 409:
-            Swal.fire({
+            showAlert({
               title: `Error al crear modificar: ${productName} ya existe`,
               icon: "warning",
-              confirmButtonText: "Aceptar",
-              customClass: {
-                title: "my-title-class",
-                popup: "my-popup-class",
-                confirmButton: "my-confirm-button-class",
-                overlay: "my-overlay-class",
-              },
+              
             });
             break;
 
           default:
-            Swal.fire({
+            showAlert({
               title: "Error inesperado",
               text: `Código de estado: ${response.status}`,
               icon: "error",
-              confirmButtonText: "Aceptar",
-              customClass: {
-                title: "my-title-class",
-                popup: "my-popup-class",
-                confirmButton: "my-confirm-button-class",
-                overlay: "my-overlay-class",
-              },
             });
 
             // Registro en la consola para depuración adicional

@@ -15,6 +15,24 @@ const NewEditDetailOrderLine = () => {
   const [unidad, setUnidad] = useState(option[0]);
   const { pid } = useParams();
 
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
+
   const handleQuantity = (e) => {
     setDetailOrderQuantity(e.target.value);
   };

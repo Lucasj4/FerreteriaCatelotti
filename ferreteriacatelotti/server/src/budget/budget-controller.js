@@ -80,14 +80,14 @@ export class BudgetController {
 
     async searchBudgets(req, res) {
         try {
-            const { clientId, budgetStatus } = req.query;
+            const { clientId, budgetStatus, startDate, endDate } = req.query;
 
             req.logger.info("Client id: " + clientId);
             req.logger.info("Status: " + budgetStatus);
             // Llama al servicio con los filtros recibidos
-            const budgets = await budgetService.searchBudgets(clientId, budgetStatus);
+            const budgets = await budgetService.searchBudgets(clientId, budgetStatus, startDate, endDate);
 
-            console.log("budgets filtrados: ", budgets);
+            req.logger.info("budgets filtrados: ", budgets);
 
             if (budgets.length === 0) {
                 return res.status(404).json({ message: "No se encuentran presupuestos con los datos establecidos" })
@@ -106,7 +106,7 @@ export class BudgetController {
                 };
             });
 
-            console.log("formateed: ", formattedBudgets);
+            req.logger.info("formateed: ", formattedBudgets);
 
 
 
@@ -371,7 +371,5 @@ export class BudgetController {
         }
     }
 
-    async getSales(req, res){
-        
-    }
+ 
 }

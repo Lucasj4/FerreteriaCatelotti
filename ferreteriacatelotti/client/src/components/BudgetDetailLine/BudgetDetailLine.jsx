@@ -19,6 +19,24 @@ const BudgetDetailLine = ({ isNewBudget }) => {
   console.log("¿Es un presupuesto nuevo?", isNewBudget);
   const { addDetailId, budgetId } = useContext(BudgetContext);
 
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -91,16 +109,9 @@ const BudgetDetailLine = ({ isNewBudget }) => {
       const result = await response.json();
 
       if (response.status === 201 || response.status === 200 ) {
-        Swal.fire({
+        showAlert({
           title: "Linea de detalle agregada con exito",
           icon: "success",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
         }).then(() => {
           resetForm();
         });
@@ -111,17 +122,10 @@ const BudgetDetailLine = ({ isNewBudget }) => {
             ? result.errorMessages[0] // Une los mensajes con saltos de línea
             : "Error desconocido";
 
-        Swal.fire({
+        showAlert({
           title: "Error al agregar linea de detalle",
           text: errorMessages,
           icon: "error",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
         });
       }
     } catch (error) {

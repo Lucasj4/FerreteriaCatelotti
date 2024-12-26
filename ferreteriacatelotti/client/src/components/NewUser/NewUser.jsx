@@ -15,6 +15,23 @@ const NewUser = () => {
     setUserName(""), setUserPassword(""), setUserEmail("");
   };
 
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -30,16 +47,10 @@ const NewUser = () => {
     console.log("Password: ", userPassword);
 
     if (userPassword !== userConfirmPassword) {
-      Swal.fire({
+      showAlert({
         title: "Las contraseñas no coinciden",
         icon: "warning",
-        confirmButtonText: "Aceptar",
-        customClass: {
-          title: "my-title-class",
-          popup: "my-popup-class",
-          confirmButton: "my-confirm-button-class",
-          overlay: "my-overlay-class",
-        },
+        
       });
       return;
     }
@@ -59,16 +70,10 @@ const NewUser = () => {
 
       switch (response.status) {
         case 201:
-          Swal.fire({
+          showAlert({
             title: "User creado con exito",
             icon: "success",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
+           
           }).then(() => {
             resetForm();
           });
@@ -80,60 +85,36 @@ const NewUser = () => {
               ? result.errorMessages[0] // Une los mensajes con saltos de línea
               : "Las contraseñas no coinciden";
 
-          Swal.fire({
+          showAlert({
             title: "Error al agregar usuario",
             text: errorMessages,
             icon: "error",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
+            
           });
           break;
 
         case 409:
-          Swal.fire({
+          showAlert({
             title: `El email ${userEmail} ya esta registrado`,
             icon: "success",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
+            
           });
           break;
 
         case 404:
-          Swal.fire({
+          showAlert({
             title: `${result.message}`,
             icon: "warning",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
+            
           });
           break;
 
         default:
-          Swal.fire({
+          showAlert({
             title: "Error inesperado",
             text: `Código de estado: ${response.status}`,
             icon: "error",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
+            
           });
 
           // Registro en la consola para depuración adicional

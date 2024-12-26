@@ -22,6 +22,25 @@ const EditPurchaseOrder = () => {
   const [productData, setProductData] = useState([]);
   const [proveedorValue, setProveedorValue] = useState("");
 
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
+  
+
   const tableHeaders = [
     { value: "detailOrderProduct", label: "Producto" },
     { value: "detailOrderQuantity", label: "Cantidad" },
@@ -132,20 +151,10 @@ const EditPurchaseOrder = () => {
   };
 
   const handleExit = async () => {
-    const result = await Swal.fire({
+    const result = await showAlert({
       title: "¿Estás seguro?",
       text: "Si no guardaste los cambios, estos se perderán. ¿Deseas salir?",
       icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, salir",
-      cancelButtonText: "Cancelar",
-      customClass: {
-        title: "my-title-class",
-        popup: "my-popup-class",
-        confirmButton: "my-confirm-button-class",
-        overlay: "my-overlay-class",
-        cancelButton: "my-confirm-button-class",
-      },
     });
 
     if (result.isConfirmed) {
@@ -167,30 +176,42 @@ const EditPurchaseOrder = () => {
     };
 
     if (purchaseOrderStatus === "Recibido") {
-      for (const item of rows) {
-        const productId = item.productID;
-        const quantity = item.detailOrderQuantity;
+      try {
+        const products = rows.map((product) => ({
+          pid: product.productID,
+          operationType: "increase",
+          quantity: product.detailOrderQuantity,
+        }));
 
-        console.log("Cantidad producto vendido: ", quantity);
+        
 
         // Actualizar el stock del producto
         const stockResponse = await fetch(
-          `http://localhost:8080/api/products/updateproductstock/${productId}`,
+          `http://localhost:8080/api/products/updateproductstock`,
           {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
             },
             credentials: "include",
-            body: JSON.stringify({ quantity, operationType: "increase" }),
+            body: JSON.stringify({ products }),
           }
         );
 
-        if (!stockResponse.ok) {
-          throw new Error(
-            `Error al actualizar el stock del producto ${productId}`
-          );
+        const stockData = await stockResponse.json()
+
+        if (stockResponse.status === 400 || stockResponse.status === 404) {
+
+          showAlert({
+            title: "Error",
+            text: stockData.message,
+            icon: "warning",
+          })
+          return; // Detener la ejecución si stockResponse es 400 o 404
         }
+      } catch (error) {
+        console.log(`Error al actualizar el stock del producto` , error);
+        
       }
     }
 
@@ -244,8 +265,6 @@ const EditPurchaseOrder = () => {
         },
       });
     }
-
-    
   };
 
   const handleDeleteCell = async (id, index) => {

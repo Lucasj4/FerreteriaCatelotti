@@ -13,17 +13,20 @@
     justify-content: center;
     align-items: center;
     background-color: var(--background2);
+
+    
 }
-.presupuesto__option{
+.budget__option{
     background-color: var(--background2);
     display: flex;
     align-items: center;
     justify-content: space-around;
-    height: 70px;
+    height: auto;
     color: #fff;
     width: 100%;
+    padding: 2px;
 }
-.presupuesto__option button{
+.budget__option button{
     padding:  10px;
     border-radius: 10px;
     margin: 10px 0;
@@ -34,12 +37,14 @@
     cursor: pointer;
     margin-left: 15px;
 }
-.presupuesto__option__item{
+.budget__option__item{
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 15px;
 }
-.presupuesto__input{
+.budget__input{
     background-color: var(--color-primary);
     padding: 10px;
     border-radius: 5px;
@@ -48,13 +53,13 @@
     color: #fff;
     font-size: 1rem;
 }
-.presupuesto__state{
+.budget__state{
     display: flex;
     gap: 1rem;   
     background-color: var(--grey);
     width: 100%;
 }
-.presupuesto__state__item{
+.budget__state__item{
     display: flex;
     gap: 1rem;
     color: var(--background2);
@@ -68,6 +73,7 @@
     color: #fff;
     padding: 1rem 0;
     width: 90%;
+    
 }
 .budget__table__header{
     width: 100px;
@@ -123,3 +129,4 @@
     font-size: 1rem;
     cursor: pointer;
 }
+

@@ -16,6 +16,24 @@ const BudgetDetail = () => {
   const { pid } = useParams();
   const navigate = useNavigate();
 
+  const showAlert = ({ title = "", text, icon, showCancelButton = false }) => {
+      return Swal.fire({
+        title,
+        text,
+        icon,
+        showCancelButton,
+        confirmButtonText: "Aceptar",
+        cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+        customClass: {
+          title: "my-title-class",
+          popup: "my-popup-class",
+          confirmButton: "my-confirm-button-class",
+          overlay: "my-overlay-class",
+          cancelButton: "my-cancel-button-class", 
+        },
+      });
+    };
+
   const tableHeaders = [
     { value: "budgetDetailItem", label: "Producto" },
     { value: "budgetDetailQuantity", label: "Cantidad" },
@@ -133,20 +151,11 @@ const BudgetDetail = () => {
   };
 
   const handleDeleteBudgetDetail = async (budgetDetailId, index) => {
-    const result = await Swal.fire({
+    const result = await showAlert({
       title: "¿Estás seguro?",
       text: "Una vez eliminado, no podrás recuperar este detalle.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "No, cancelar",
-      customClass: {
-        title: "my-title-class",
-        popup: "my-popup-class",
-        confirmButton: "my-confirm-button-class",
-        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
-        overlay: "my-overlay-class",
-      },
     });
 
     if (result.isConfirmed) {
@@ -197,30 +206,18 @@ const BudgetDetail = () => {
     const clientId = selectedOption[0]?.value || selectedOption[0]?._id;
 
     if (!budgetDate) {
-      Swal.fire({
+      showAlert({
         title: "Debes seleccionar una fecha",
         icon: "warning",
         confirmButtonText: "Aceptar",
-        customClass: {
-          title: "my-title-class",
-          popup: "my-popup-class",
-          confirmButton: "my-confirm-button-class",
-          overlay: "my-overlay-class",
-        },
-      });
+      })
     }
 
     if (!clientId) {
-      Swal.fire({
+      showAlert({
         title: "Debes seleccionar un cliente",
         icon: "warning",
         confirmButtonText: "Aceptar",
-        customClass: {
-          title: "my-title-class",
-          popup: "my-popup-class",
-          confirmButton: "my-confirm-button-class",
-          overlay: "my-overlay-class",
-        },
       });
     }
     const updateBudget = {
@@ -242,16 +239,10 @@ const BudgetDetail = () => {
       });
 
       if (response.status === 200) {
-        Swal.fire({
+        showAlert({
           title: "Presupuesto guardado con exito",
           icon: "success",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
+          confirmButtonText: "Aceptar", 
         });
       }
     } catch (error) {
@@ -259,19 +250,12 @@ const BudgetDetail = () => {
     }
   };
   const handleExit = () => {
-    Swal.fire({
+    showAlert({
       title: "¿Estás seguro de que quieres salir?",
       text: "Si no guardas los cambios, se perderán.",
       icon: "warning",
-      customClass: {
-        title: "my-title-class",
-        popup: "my-popup-class",
-        confirmButton: "my-confirm-button-class",
-        overlay: "my-overlay-class",
-      },
       showCancelButton: true,
-      confirmButtonText: "Sí, salir",
-      cancelButtonText: "No, cancelar",
+     
     }).then((result) => {
       if (result.isConfirmed) {
         navigate("/presupuesto");
@@ -291,18 +275,10 @@ const BudgetDetail = () => {
 
       if (budgetData.budget.budgetStatus === "Facturado") {
         // Si el presupuesto ya está facturado, mostrar un mensaje de error
-        Swal.fire({
+        showAlert({
           title: "Este presupuesto ya está facturado",
           text: "No se puede facturar nuevamente.",
           icon: "warning",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
-            overlay: "my-overlay-class",
-          },
         });
         return; // Detener la ejecución si ya está facturado
       }
@@ -311,20 +287,11 @@ const BudgetDetail = () => {
     }
 
     // Si no está facturado, pedir confirmación para facturar
-    const result = await Swal.fire({
+    const result = await showAlert({
       title: "¿Estás seguro?",
       text: "Una vez facturado, no podrás modificar el presupuesto.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, facturar",
-      cancelButtonText: "No, cancelar",
-      customClass: {
-        title: "my-title-class",
-        popup: "my-popup-class",
-        confirmButton: "my-confirm-button-class",
-        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
-        overlay: "my-overlay-class",
-      },
     });
 
     if (result.isConfirmed) {
@@ -354,18 +321,10 @@ const BudgetDetail = () => {
         console.log(stockData);
 
         if (stockResponse.status === 400 || stockResponse.status === 404) {
-          Swal.fire({
+          showAlert({
             title: "Error",
             text: stockData.message,
             icon: "warning",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              cancelButton: "my-cancel-button-class",
-              overlay: "my-overlay-class",
-            },
           });
           return; // Detener la ejecución si stockResponse es 400 o 404
         }
@@ -411,16 +370,10 @@ const BudgetDetail = () => {
             });
 
             if (response.status === 201) {
-              Swal.fire({
-                title: "Presupuesto facturado. Venta agregada",
+              showAlert({
+                text: "Presupuesto facturado. Venta agregada",
                 icon: "success",
-                confirmButtonText: "Aceptar",
-                customClass: {
-                  title: "my-title-class",
-                  popup: "my-popup-class",
-                  confirmButton: "my-confirm-button-class",
-                  overlay: "my-overlay-class",
-                },
+                
               });
             }
           } catch (error) {
@@ -436,10 +389,9 @@ const BudgetDetail = () => {
         }
       } catch (error) {
         console.error("Error en el proceso:", error);
-        Swal.fire({
-          title: error.message,
+        showAlert({
+          text: error.message,
           icon: "error",
-          confirmButtonText: "Aceptar",
         });
       }
     }

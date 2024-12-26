@@ -11,6 +11,25 @@ const NewClient = () => {
   const [clientDni, setClientDni] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const navigate = useNavigate();
+
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
+
   const resetForm = () => {
     setClientFirstName("");
     setClientLastName("");
@@ -22,19 +41,10 @@ const NewClient = () => {
     e.preventDefault();
 
     try {
-      const result = await Swal.fire({
+      const result = await showAlert({
         text: "¿Estas seguro que deseas salir?",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "Sí, salir",
-        cancelButtonText: "No, cancelar",
-        customClass: {
-          title: "my-title-class",
-          popup: "my-popup-class",
-          confirmButton: "my-confirm-button-class",
-          cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
-          overlay: "my-overlay-class",
-        },
       });
 
       if (result.isConfirmed) {
@@ -69,16 +79,9 @@ const NewClient = () => {
 
       switch (response.status) {
         case 201:
-          Swal.fire({
+          showAlert({
             title: "Cliente registrado con exito",
             icon: "success",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
           }).then(() => {
             resetForm();
           });
@@ -90,47 +93,27 @@ const NewClient = () => {
               ? result.errorMessages[0] // Une los mensajes con saltos de línea
               : "Error desconocido";
 
-          Swal.fire({
+          showAlert({
             title: "Error al crear producto",
             text: errorMessages,
             icon: "error",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
           });
           break;
         case 409:
           const error = result.error;
 
-          Swal.fire({
-            title: `${error}`,
+          showAlert({
+            text: `${error}`,
             icon: "warning",
             confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
           });
           break;
 
         default:
-          Swal.fire({
+          showAlert({
             title: "Error inesperado",
             text: `Código de estado: ${response.status}`,
             icon: "error",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
           });
 
           // Registro en la consola para depuración adicional

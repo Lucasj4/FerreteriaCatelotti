@@ -18,6 +18,24 @@ const EditDetailOrderLine = () => {
   const [unidad, setUnidad] = useState(option[0]);
   const { pid, rowid } = useParams();
 
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
+
   const handleQuantity = (e) => {
     setDetailOrderQuantity(e.target.value);
   };
@@ -117,20 +135,11 @@ const EditDetailOrderLine = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const result = await Swal.fire({
+    const result = await showAlert({
       title: "¿Estás seguro?",
       text: "¿Confirmar modificacion de detalle?",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, modificar",
-      cancelButtonText: "No, cancelar",
-      customClass: {
-        title: "my-title-class",
-        popup: "my-popup-class",
-        confirmButton: "my-confirm-button-class",
-        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
-        overlay: "my-overlay-class",
-      },
     });
 
     if (result.isConfirmed) {
@@ -167,16 +176,9 @@ const EditDetailOrderLine = () => {
         console.log("detalle", responseData);
 
         if (response.status === 200) {
-          Swal.fire({
+          showAlert({
             title: "Detalle modificado",
             icon: "success",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
           });
         }
         resetForm();

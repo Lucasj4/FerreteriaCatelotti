@@ -11,6 +11,24 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
+
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
 
@@ -37,43 +55,26 @@ const Login = () => {
           break;
 
         case 404:
-          Swal.fire({
+          showAlert({
             title: "Error",
             text: "Usuario no registrado",
             icon: "error",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
           });
           break;
 
         case 401:
-          Swal.fire({
+          showAlert({
             title: "Error",
             text: `${data.message}`,
             icon: "error",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
           });
           break;
         default:
           break;
       }
-
-    
     } catch (error) {
    
       console.error("Error al hacer la solicitud de login:", error);
-     
     }
   };
 

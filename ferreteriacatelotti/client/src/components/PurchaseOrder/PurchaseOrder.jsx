@@ -27,6 +27,24 @@ const PurchaseOrder = () => {
     { value: "purchaseOrderAmount", label: "Importe" },
   ];
 
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
+
   const [dateRange, setDateRange] = useState([
     {
       startDate: new Date(),
@@ -121,17 +139,11 @@ const PurchaseOrder = () => {
      const supplier = selectedSuppliers?.length > 0 ? selectedSuppliers[0]?.value : "";
     // Verificar si la fecha de inicio es mayor o igual que la fecha de fin
     if (startDate > endDate) {
-      Swal.fire({
+      showAlert({
         icon: "error",
         title: "Error de fechas",
         text: "La fecha de inicio no puede ser igual o mayor que la fecha de fin.",
-        confirmButtonText: "Entendido",
-        customClass: {
-          title: "my-title-class",
-          popup: "my-popup-class",
-          confirmButton: "my-confirm-button-class",
-          overlay: "my-overlay-class",
-        },
+        
       });
       return; // Terminar la ejecución si hay un error
     }
@@ -160,16 +172,10 @@ const PurchaseOrder = () => {
       const purchaseOrders = data.purchaseOrders;
 
       if (response.status === 404) {
-        Swal.fire({
+        showAlert({
           icon: "info",
           text: "No se encontro ningun pedido de compra con los parametros establecidos",
-          confirmButtonText: "Entendido",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
+      
         });
         return;
       }
@@ -213,20 +219,12 @@ const PurchaseOrder = () => {
   };
 
   const handleDeleteRow = async (purchaseOrderId, indice) => {
-    const result = await Swal.fire({
+    const result = await showAlert({
       title: "¿Estás seguro?",
       text: "Una vez eliminado, no podrás recuperar este presupuesto.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "No, cancelar",
-      customClass: {
-        title: "my-title-class",
-        popup: "my-popup-class",
-        confirmButton: "my-confirm-button-class",
-        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
-        overlay: "my-overlay-class",
-      },
+     
     });
     console.log("Id purhcase order");
 
@@ -244,17 +242,10 @@ const PurchaseOrder = () => {
           const nuevasFilas = [...filas];
           nuevasFilas.splice(indice, 1);
           setFilas(nuevasFilas);
-          Swal.fire({
+          showAlert({
             text: "Pedido de compra eliminado con exito",
             icon: "success",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
-              overlay: "my-overlay-class",
-            },
+            
           });
         }
       } catch (error) {

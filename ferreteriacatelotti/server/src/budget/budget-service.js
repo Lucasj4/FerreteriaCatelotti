@@ -18,7 +18,7 @@ export class BudgetService {
     async getBudgets() {
         try {
             const budgets = await BudgetModel.find().populate('clientId', 'clientLastName');
-            
+
             return budgets;
         } catch (error) {
             console.log(error);
@@ -41,21 +41,26 @@ export class BudgetService {
         }
     }
 
-    async searchBudgets(clientId, budgetStatus) {
+    async searchBudgets(clientId, budgetStatus, startDate, endDate) {
         try {
             const query = {};
 
             if (clientId && Array.isArray(clientId) && clientId.length > 0) {
                 query.clientId = { $in: clientId }; // Filtra por los IDs de cliente seleccionados
-              } else if (clientId) {
+            } else if (clientId) {
                 query.clientId = clientId; // Si solo hay un cliente, no es necesario el operador $in
-              }
+            }
 
-              console.log("Client id: ", clientId);
-              
 
             if (budgetStatus) {
                 query.budgetStatus = budgetStatus; // Filtra por el estado del presupuesto
+            }
+
+            if (startDate && endDate) {
+                query.budgetDate     = {
+                    $gte: new Date(startDate),
+                    $lte: new Date(endDate),
+                }; // Filtrar por rango de fechas
             }
 
             const budgets = await BudgetModel.find(query).populate('clientId', 'clientLastName').exec();
@@ -67,7 +72,7 @@ export class BudgetService {
     }
 
     async getBudgetWithDetail(budgetId) {
-      
+
 
         try {
             if (!mongoose.Types.ObjectId.isValid(budgetId)) {
@@ -97,22 +102,22 @@ export class BudgetService {
         }
     }
 
-    async updateBudgetStatusAndBudgetAmount(updateData, budgetId){
+    async updateBudgetStatusAndBudgetAmount(updateData, budgetId) {
         try {
             const updatedBudget = await BudgetModel.findByIdAndUpdate(
                 budgetId,
-                { 
+                {
                     $set: {
                         budgetStatus: updateData.budgetStatus,
                         budgetAmount: updateData.budgetAmount
                     }
                 },
-                { new: true } 
+                { new: true }
             );
 
             return updatedBudget;
         } catch (error) {
-            req.logger.info (error);
+            req.logger.info(error);
             throw error;
         }
     }

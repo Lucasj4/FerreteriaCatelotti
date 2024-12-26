@@ -17,6 +17,7 @@ const Table = ({
   data,
   handleDeleteCell,
   getEditPath,
+  scrollable
 }) => {
   // Función para enmascarar la contraseña
   const maskPassword = (password) => '*'.repeat(password.length);
@@ -33,7 +34,7 @@ const Table = ({
           <th className={thClassName}>Acciones</th>
         </tr>
       </thead>
-      <tbody className={tbodyClassName}>
+      <tbody  className={scrollable ? "budget__table__body scrollable" : "budget__table__body"}>
         {data.map((row, index) => (
           <tr key={row._id} className={trClassName}>
             {headers.map((header, colIndex) => (

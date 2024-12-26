@@ -12,6 +12,24 @@ const RequestResetPassword = () => {
 
   const navigate = useNavigate();
 
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class", 
+      },
+    });
+  };
+
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
 
@@ -34,44 +52,26 @@ const RequestResetPassword = () => {
       console.log("Email confirmacion: ", userConfirmationEmail);
 
       if (userEmail != userConfirmationEmail) {
-        return Swal.fire({
+        return showAlert({
           title: "No coinciden los emails",
           icon: "warning",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
+         
         });
       }
 
       if (response.status === 200) {
-        Swal.fire({
+        showAlert({
           title: "Email enviado",
           icon: "success",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
+          
         });
 
         navigate('/cambiarcontraseña');
       } else {
-        Swal.fire({
+        showAlert({
           title: "Error al enviar el email",
           icon: "warning",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
+          
         });
       }
     } catch (error) {

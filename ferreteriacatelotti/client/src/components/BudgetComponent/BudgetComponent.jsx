@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import "../../components/BudgetComponent/BudgetComponent.css";
+import "./BudgetComponent.css";
 import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import Checkbox from "@mui/material/Checkbox";
 import { Link, useParams } from "react-router-dom";
 import Table from "../TableCustom/TableCustom";
 import Swal from "sweetalert2";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
 
 const BudgetComponent = () => {
   const [filas, setFilas] = useState([]);
@@ -22,6 +24,32 @@ const BudgetComponent = () => {
     { value: "budgetStatus", label: "Estado" },
     { value: "budgetAmount", label: "Importe" },
   ];
+
+  const [dateRange, setDateRange] = useState([
+    {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: "selection",
+    },
+  ]);
+
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined,
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class",
+      },
+    });
+  };
 
   useEffect(() => {
     const fetchBudgets = async () => {
@@ -55,9 +83,9 @@ const BudgetComponent = () => {
         setFilas(budgets.budgets);
       }
     } catch (error) {
-      console.log("Error: ", error)
+      console.log("Error: ", error);
     }
-  }
+  };
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -103,9 +131,25 @@ const BudgetComponent = () => {
       ? "Facturado"
       : null;
 
+    const startDate = dateRange[0]?.startDate;
+    const endDate = dateRange[0]?.endDate;
+    console.log("start date: ", startDate);
+    console.log("end date: ", endDate);
+
+    if (startDate > endDate) {
+      showAlert({
+        icon: "error",
+        title: "Error de fechas",
+        text: "La fecha de inicio no puede ser igual o mayor que la fecha de fin.",
+      });
+      return; // Terminar la ejecución si hay un error
+    }
+
     const queryParams = new URLSearchParams();
 
     if (clientId) queryParams.append("clientId", clientId);
+    if (startDate) queryParams.append("startDate", startDate.toISOString());
+    if (endDate) queryParams.append("endDate", endDate.toISOString());
     if (budgetStatus) queryParams.append("budgetStatus", budgetStatus);
 
     try {
@@ -118,23 +162,16 @@ const BudgetComponent = () => {
 
       if (response.status === 200) {
         const result = await response.json();
-
+        console.log("Resultado: ", result.budgets);
+        
         setFilas(result.budgets); // Actualiza el estado de las filas con los presupuestos encontrados
-      }else if(response.status === 404){
+      } else if (response.status === 404) {
         const result = await response.json();
-        Swal.fire({
+        showAlert({
           title: result.message,
           icon: "warning",
-          confirmButtonText: "Aceptar",
-          customClass: {
-            title: "my-title-class",
-            popup: "my-popup-class",
-            confirmButton: "my-confirm-button-class",
-            overlay: "my-overlay-class",
-          },
         });
-      }
-       else {
+      } else {
         console.error("Error al obtener los presupuestos filtrados");
       }
     } catch (error) {
@@ -142,20 +179,11 @@ const BudgetComponent = () => {
     }
   };
   const handleDeleteCell = async (idBudget, index) => {
-    const result = await Swal.fire({
+    const result = await showAlert({
       title: "¿Estás seguro?",
       text: "Una vez eliminado, no podrás recuperar este presupuesto.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "No, cancelar",
-      customClass: {
-        title: "my-title-class",
-        popup: "my-popup-class",
-        confirmButton: "my-confirm-button-class",
-        cancelButton: "my-cancel-button-class", // Agrega clase para el botón de cancelar
-        overlay: "my-overlay-class",
-      },
     });
 
     if (result.isConfirmed) {
@@ -170,16 +198,9 @@ const BudgetComponent = () => {
         );
 
         if (response.status === 200) {
-          Swal.fire({
+          showAlert({
             title: "Presupuesto eliminado",
             icon: "success",
-            confirmButtonText: "Aceptar",
-            customClass: {
-              title: "my-title-class",
-              popup: "my-popup-class",
-              confirmButton: "my-confirm-button-class",
-              overlay: "my-overlay-class",
-            },
           });
           // Si la eliminación fue exitosa, eliminamos la fila visualmente
           const nuevasFilas = [...filas];
@@ -200,8 +221,54 @@ const BudgetComponent = () => {
     <>
       <div className="budget__container">
         <div className="budget__tablecontainer">
-          <div className="presupuesto__option">
-            <div className="presupuesto__option__item">
+          <div className="budget__option">
+            <div className="budget__option__item">
+              <p className="dateselector__title">Fecha</p>
+              <div className="dateselector__container">
+                <div className="dateselector__item">
+                  <p>Desde</p>
+                  <input
+                    type="date"
+                    id="startDate"
+                    className="dateselector__date"
+                    value={dateRange[0].startDate.toISOString().split("T")[0]}
+                    onChange={(e) => {
+                      const [year, month, day] = e.target.value.split("-");
+                      const newStartDate = new Date(year, month - 1, day); // Año, Mes (0-11), Día sin ajuste horario
+                      setDateRange([
+                        {
+                          startDate: newStartDate,
+                          endDate: dateRange[0].endDate,
+                          key: "selection",
+                        },
+                      ]);
+                    }}
+                  />
+                </div>
+                <div className="dateselector__item">
+                  <p>Hasta</p>
+                  <input
+                    type="date"
+                    id="endDate"
+                    className="dateselector__date"
+                    value={dateRange[0].endDate.toISOString().split("T")[0]}
+                    onChange={(e) => {
+                      const [year, month, day] = e.target.value.split("-");
+                      const newEndDate = new Date(year, month - 1, day); // Año, Mes (0-11), Día sin ajuste horario
+                      setDateRange([
+                        {
+                          startDate: dateRange[0].startDate,
+                          endDate: newEndDate,
+                          key: "selection",
+                        },
+                      ]);
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="budget__option__item">
               <MultiSelectOption
                 options={clients}
                 selectedProveedores={selectedClients} // Este prop podría renombrarse a selectedClients para mayor claridad
@@ -210,21 +277,17 @@ const BudgetComponent = () => {
                 labelKey="clientLastName"
               />
             </div>
-        
-           
-              
-       
           </div>
 
-          <div className="presupuesto__state">
-            <div className="presupuesto__state__item">
+          <div className="budget__state">
+            <div className="budget__state__item">
               <Checkbox
                 checked={showOnlyPendiente}
                 onChange={handleShowOnlyPendienteChange}
               />
               <p>Pendiente</p>
             </div>
-            <div className="presupuesto__state__item">
+            <div className="budget__state__item">
               <Checkbox
                 checked={showOnlySelected}
                 onChange={handleShowOnlySelectedChange}
@@ -246,6 +309,7 @@ const BudgetComponent = () => {
             deleteIconClassName="table__deleteIcon"
             editIconClassName="table__editIcon"
             getEditPath={(id) => `/presupuesto/${id}`}
+            scrollable
           />
 
           <div className="budget__actions">
@@ -253,8 +317,12 @@ const BudgetComponent = () => {
               <button className="budget__actions__button">Nuevo</button>
             </Link>
 
-            <button className="budget__actions__button" onClick={getAll}>Mostrar todos</button>
-            <button className="budget__actions__button" onClick={handleSearch}>Buscar</button>
+            <button className="budget__actions__button" onClick={getAll}>
+              Mostrar todos
+            </button>
+            <button className="budget__actions__button" onClick={handleSearch}>
+              Buscar
+            </button>
             <button className="budget__actions__button">Salir</button>
           </div>
         </div>

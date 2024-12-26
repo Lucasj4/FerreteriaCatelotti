@@ -1,8 +1,8 @@
 .table{
     color: #212121;
-    padding: 1rem 0;
+    padding: 2rem 0;
     width: 60%;
-  
+     
   }
   .table__header{
     width: 100px;
@@ -15,7 +15,7 @@
   .table__row{
     text-align: center;
     background-color: var(--text-color);
-    border: 3px solid #212121;
+    border: 1px solid #212121;
   }
   .table__cell{
     width: 100px;
@@ -36,3 +36,5 @@
     border: none;
     cursor: pointer;
   }
+
+  
