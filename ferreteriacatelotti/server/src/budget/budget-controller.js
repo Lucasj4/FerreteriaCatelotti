@@ -84,7 +84,7 @@ export class BudgetController {
 
             req.logger.info("Client id: " + clientId);
             req.logger.info("Status: " + budgetStatus);
-            // Llama al servicio con los filtros recibidos
+            req.logger.info("fecha inicio: ", startDate);
             const budgets = await budgetService.searchBudgets(clientId, budgetStatus, startDate, endDate);
 
             req.logger.info("budgets filtrados: ", budgets);

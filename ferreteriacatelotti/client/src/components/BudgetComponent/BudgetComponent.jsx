@@ -295,6 +295,7 @@ const BudgetComponent = () => {
               <p>Facturado</p>
             </div>
           </div>
+          <div className="budgettable__container">
           <Table
             headers={tableHeaders}
             data={filas}
@@ -311,6 +312,8 @@ const BudgetComponent = () => {
             getEditPath={(id) => `/presupuesto/${id}`}
             scrollable
           />
+          </div>
+          
 
           <div className="budget__actions">
             <Link to="/presupuesto/agregarpresupuesto">

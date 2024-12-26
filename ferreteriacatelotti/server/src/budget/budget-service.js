@@ -44,6 +44,7 @@ export class BudgetService {
     async searchBudgets(clientId, budgetStatus, startDate, endDate) {
         try {
             const query = {};
+            
 
             if (clientId && Array.isArray(clientId) && clientId.length > 0) {
                 query.clientId = { $in: clientId }; // Filtra por los IDs de cliente seleccionados

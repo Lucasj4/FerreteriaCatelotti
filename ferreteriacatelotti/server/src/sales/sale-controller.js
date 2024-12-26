@@ -130,7 +130,7 @@ export class SaleController {
     async getSales (req, res){
         try {
             const sales = await saleService.getSales();
-            req.logger.info('sales: ' + sales);
+           
             if(sales){
 
                 const formattedSales = sales.map(sale => {
@@ -155,5 +155,43 @@ export class SaleController {
             res.status(500).json({ error: "Error al generar la factura." });
         }
        
+    }
+
+    async getSalesByFilter(req, res){
+        const {userId, startDate, endDate, clientId} = req.query;
+
+        req.logger.info("fecha inicio desde controler: " + startDate);
+        req.logger.info("user: " + userId);
+        req.logger.info("fecha end desde controller: " + startDate);
+        req.logger.info("clientId: " + clientId);
+        
+        try {
+            const sales = await saleService.getSalesByFilter(clientId, userId, startDate, endDate);
+
+            console.log("sales: " , sales);
+            if(sales.length === 0){
+                return res.status(404).json({ message: "No se encuentran ventas con los datos establecidos" })
+            }
+
+            
+            
+            const formattedSales = sales.map(sale => {
+
+                const date = sale.saleDate ? new Date(sale.saleDate).toLocaleDateString('es-ES', { timeZone: 'UTC' }) : null;
+
+                return {
+                    ...sale._doc,
+                    saleDate: date,
+                    clientId: sale.clientId ? sale.clientId.clientLastName : null,
+                    userId: sale.userId ? sale.userId.userUsername : null
+                }
+
+            })
+
+            res.status(200).json({ sales: formattedSales });
+        } catch (error) {
+            console.error("Error al buscar presupuestos", error);
+            res.status(500).json({ error: "Error en el servidor" });
+        }
     }
 }

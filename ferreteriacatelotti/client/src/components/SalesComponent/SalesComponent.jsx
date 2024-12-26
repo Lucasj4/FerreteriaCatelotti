@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Table from "../TableCustom/TableCustom";
 import "./SalesComponent.css";
 import MultiSelectOption from "../MultipleSelect/MultipleSelect";
+import Swal from "sweetalert2";
 const SalesComponent = () => {
   const [rows, setRows] = useState([]);
   const [clients, setClients] = useState([]);
@@ -24,7 +25,24 @@ const SalesComponent = () => {
       key: "selection",
     },
   ]);
-
+  
+   const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+      return Swal.fire({
+        title,
+        text,
+        icon,
+        showCancelButton,
+        confirmButtonText: "Aceptar",
+        cancelButtonText: showCancelButton ? "Cancelar" : undefined,
+        customClass: {
+          title: "my-title-class",
+          popup: "my-popup-class",
+          confirmButton: "my-confirm-button-class",
+          overlay: "my-overlay-class",
+          cancelButton: "my-cancel-button-class",
+        },
+      });
+    };
   useEffect(() => {
     const fetchSales = async () => {
       try {
@@ -82,6 +100,72 @@ const SalesComponent = () => {
     };
     fetchUsers();
   }, []);
+
+  const handleSearch = async () => {
+    const clientId =
+      selectedClients.length > 0
+        ? selectedClients.map((client) => client.value)
+        : null; // Si no hay clientes seleccionados, se deja null
+
+    const startDate = dateRange[0]?.startDate;
+    const endDate = dateRange[0]?.endDate;
+
+    
+    const userId = selectedUsers.length > 0 ? selectedUsers.map((user) => user.value) : null;
+
+    if (startDate > endDate) {
+      showAlert({
+        icon: "error",
+        title: "Error de fechas",
+        text: "La fecha de inicio no puede ser igual o mayor que la fecha de fin.",
+      });
+      return; // Terminar la ejecución si hay un error
+    }
+
+    const queryParams = new URLSearchParams();
+
+    if (clientId) queryParams.append("clientId", clientId);
+    if (startDate) queryParams.append("startDate", startDate.toISOString());
+    if (endDate) queryParams.append("endDate", endDate.toISOString());
+    if (userId) queryParams.append("userId", userId);
+
+    console.log(clientId);
+    console.log("estar date desde front: " ,startDate);
+    console.log("end date desde front: " ,endDate);
+    console.log(userId);
+    
+    
+    
+    
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/sales/search?${queryParams.toString()}`,
+        {
+          credentials: "include",
+        }
+      );
+
+      if (response.status === 200) {
+        const result = await response.json();
+        console.log("Resultado: ", result.sales);
+        
+        setRows(result.sales); // Actualiza el estado de las filas con los presupuestos encontrados
+      } else if (response.status === 404) {
+        const result = await response.json();
+        showAlert({
+          title: result.message,
+          icon: "warning",
+        });
+      } else {
+        console.error("Error al obtener los ventas filtrados");
+      }
+    } catch (error) {
+      console.error("Error en la búsqueda de ventas", error);
+    }
+    
+  
+    
+  };
 
   const handleClientChange = (selectedOptions) => {
     setSelectedClients(selectedOptions);
@@ -178,12 +262,10 @@ const SalesComponent = () => {
           />
 
           <div className="sale__actions">
-                  <button>Mostrar todos</button>
-                  <button>Buscar</button>
+            <button>Mostrar todos</button>
+            <button  onClick={handleSearch}>Buscar</button>
           </div>
         </div>
-
-
       </div>
     </>
   );
