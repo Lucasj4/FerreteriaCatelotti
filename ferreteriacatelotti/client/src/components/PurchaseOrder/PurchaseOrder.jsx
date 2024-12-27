@@ -341,9 +341,10 @@ const PurchaseOrder = () => {
   return (
     <>
       <div className="purchaseOrder__container">
+      <div className="purchaseorder__title">Pedidos de compra</div>
         <div className="purchaseOrder__filter">
           <div className="dateselector">
-            <p className="dateselector__title">Fecha</p>
+            <h4>Fecha</h4>
             <div className="dateselector__container">
               <div className="dateselector__item">
                 <p>Desde</p>
@@ -389,7 +390,7 @@ const PurchaseOrder = () => {
             </div>
           </div>
           <div className="purchaseOrder__supplier">
-            <p>Proveedor</p>
+            <h4>Proveedor</h4>
             <MultiSelectOption
               options={suppliers}
               selectedOptions={selectedSuppliers}
@@ -431,6 +432,7 @@ const PurchaseOrder = () => {
             data={filas}
             handleDeleteCell={(id, index) => handleDeleteRow(id, index)}
             getEditPath={(id) => `/pedido/${id}`}
+            showActions={true}
           />
         </div>
 

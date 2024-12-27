@@ -7,14 +7,21 @@ const saleSchema = new mongoose.Schema({
     saleTotalAmount: { type: Number, required: true },
     clientId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'clients'
+        ref: 'clients',
+        required: true
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'users'
+        ref: 'users',
+        required: true
+    },
+    budgetId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'budgets',
+        required: true
     }
 })
 
 const SaleModel = mongoose.model('sales', saleSchema);
   
-export default SaleModel;;
+export default SaleModel;

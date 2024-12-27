@@ -5,7 +5,7 @@ export class SaleController {
 
     async addSale(req, res){
 
-        const {saleDate, saleTotalAmount,  invoiceType, clientId } = req.body;
+        const {saleDate, saleTotalAmount,  invoiceType, clientId, budgetId } = req.body;
         const userId = req.user.user._id;
 
         const invoiceNumber = generateInvoiceNumber();
@@ -17,7 +17,8 @@ export class SaleController {
                 saleTotalAmount,
                 invoiceType,
                 clientId,
-                userId
+                userId,
+                budgetId
             }
 
             const sale = await saleService.addSale(newSale);
@@ -190,7 +191,39 @@ export class SaleController {
 
             res.status(200).json({ sales: formattedSales });
         } catch (error) {
-            console.error("Error al buscar presupuestos", error);
+            console.error("Error al buscar venta", error);
+            res.status(500).json({ error: "Error en el servidor" });
+        }
+    }
+    
+    async getSalesById(req, res){
+        const {sid} = req.params
+
+        try {
+            const sale = await saleService.getSaleById(sid);
+
+            const formattedSale = (() => {
+                const date = sale.saleDate
+                    ? new Date(sale.saleDate).toLocaleDateString('es-ES', { timeZone: 'UTC' })
+                    : null;
+                
+                return {
+                    ...sale._doc,  // Asumimos que 'sale' es un documento de Mongoose y '_doc' es la forma de acceder a los datos.
+                    saleDate: date,
+                    clientId: sale.clientId ? sale.clientId.clientLastName : null,
+                    userId: sale.userId ? sale.userId.userUsername : null
+                };
+            })(); 
+
+            console.log("sale: " , formattedSale);
+
+            if(!sale){
+                return res.status(404).json({message: "Sale not found", sale})
+            }
+            
+            return res.status(200).json({message: "Sale", sale: formattedSale})
+        } catch (error) {
+            console.error("Error al buscar venta", error);
             res.status(500).json({ error: "Error en el servidor" });
         }
     }

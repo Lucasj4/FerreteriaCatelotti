@@ -1,8 +1,9 @@
 import React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { Link } from "react-router-dom";
-import './TableCustom.css'
+import './TableCustom.css';
 
 const Table = ({
   tableClassName,
@@ -13,11 +14,14 @@ const Table = ({
   tdClassName,
   deleteIconClassName,
   editIconClassName,
+  viewIconClassName,
   headers,
   data,
   handleDeleteCell,
   getEditPath,
-  scrollable
+  getViewPath,
+  scrollable,
+  showActions
 }) => {
   // Función para enmascarar la contraseña
   const maskPassword = (password) => '*'.repeat(password.length);
@@ -31,29 +35,41 @@ const Table = ({
               {header.label}
             </th>
           ))}
-          <th className={thClassName}>Acciones</th>
+          {showActions && <th className={thClassName}>Acciones</th>}
         </tr>
       </thead>
-      <tbody  className={scrollable ? "budget__table__body scrollable" : "budget__table__body"}>
+      <tbody className={scrollable ? "budget__table__body scrollable" : "budget__table__body"}>
         {data.map((row, index) => (
           <tr key={row._id} className={trClassName}>
             {headers.map((header, colIndex) => (
               <td key={colIndex} className={tdClassName}>
                 {header.value === "userPassword"
-                  ? maskPassword(row[header.value]) // Enmascarar contraseña
+                  ? maskPassword(row[header.value])
                   : row[header.value]}
               </td>
             ))}
-            <td className={tdClassName}>
-              <button className={deleteIconClassName}>
-                <DeleteIcon onClick={() => handleDeleteCell(row._id, index)} />
-              </button>
-              <Link to={getEditPath(row._id)}>
-                <button className={editIconClassName}>
-                  <EditIcon />
-                </button>
-              </Link>
-            </td>
+            {showActions && (
+              <td className={tdClassName}>
+                {typeof showActions === "function" && showActions(row) === "view" ? (
+                  <Link to={getViewPath(row._id)}>
+                    <button className={viewIconClassName}>
+                      <VisibilityIcon />
+                    </button>
+                  </Link>
+                ) : (
+                  <>
+                    <button className={deleteIconClassName}>
+                      <DeleteIcon onClick={() => handleDeleteCell(row._id, index)} />
+                    </button>
+                    <Link to={getEditPath(row._id)}>
+                      <button className={editIconClassName}>
+                        <EditIcon />
+                      </button>
+                    </Link>
+                  </>
+                )}
+              </td>
+            )}
           </tr>
         ))}
       </tbody>

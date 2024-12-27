@@ -24,6 +24,10 @@ body {
 
 main {
   width: 100%;
+  background-image: url('../public/ferreteria-nahue_0_1684765165.png');
+  background-size: cover; /* Ajusta la imagen para cubrir todo el contenedor */
+  background-position: center; /* Centra la imagen dentro del contenedor */
+  background-repeat: no-repeat; /* Evita que la imagen se repita */
 }
 .component__container {
   width: 100%;
@@ -32,6 +36,7 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  
 }
 .component__table__container {
   display: flex;
@@ -153,6 +158,62 @@ main {
 
 .my-confirm-button-class{
   background-color: #f0320a;
+}
+
+.dateselector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background2);
+  width: 50%;
+  flex-direction: column;
+  height: 100px;
+  color: var(--text-color);
+}
+
+.dateselector h4 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+.dateselector__container {
+  display: flex;
+  gap: 1rem;
+}
+.dateselector__item {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.dateselector__date {
+  padding: 0.5rem;
+  border: 1px solid var(--color-primary);
+  border-radius: 4px;
+  font-size: 1rem;
+  color: var(--text-color);
+  background-color: var(--color-primary);
+  outline: none;
+}
+
+.date-selector button {
+  background-color: var(--secondary);
+  outline: none;
+  border: 1px solid var(--secondary);
+  border-radius: 30px;
+  padding: 5px 10px;
+  color: #fff;
+}
+
+.dateselector__item__date {
+  background-color: var(--color-primary);
+  padding: 10px;
+  border-radius: 5px;
+  outline: none;
+  border: 1px solid var(--color-primary);
+  color: #fff;
+  font-size: 1rem;
+  display: flex;
 }
 
 

@@ -37,4 +37,12 @@
     cursor: pointer;
   }
 
+.view-button{
+  color: var(--color-primary);
+  background: none;
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+
   

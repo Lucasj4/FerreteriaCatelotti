@@ -29,6 +29,7 @@ import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import RequestResetPassword from "./components/RequestResetPassword/RequestResetPassword";
 import ResetPassword from "./components/ResetPassword/ResetPassword";
 import SalesComponent from "./components/SalesComponent/SalesComponent";
+import ViewSale from "./components/ViewSale/ViewSale";
 
 function App() {
   return (
@@ -249,12 +250,20 @@ function App() {
                         }
                       />
 
-
                       <Route
                         path="/ventas"
                         element={
                           <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
-                            <SalesComponent/>
+                            <SalesComponent />
+                          </ProtectedRoute>
+                        }
+                      />
+
+                      <Route
+                        path="/ventas/:sid"
+                        element={
+                          <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
+                            <ViewSale />
                           </ProtectedRoute>
                         }
                       />

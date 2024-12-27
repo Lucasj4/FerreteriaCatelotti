@@ -163,7 +163,7 @@ const BudgetComponent = () => {
       if (response.status === 200) {
         const result = await response.json();
         console.log("Resultado: ", result.budgets);
-        
+
         setFilas(result.budgets); // Actualiza el estado de las filas con los presupuestos encontrados
       } else if (response.status === 404) {
         const result = await response.json();
@@ -221,6 +221,7 @@ const BudgetComponent = () => {
     <>
       <div className="budget__container">
         <div className="budget__tablecontainer">
+          <div className="budget__title">Presupuestos</div>
           <div className="budget__option">
             <div className="budget__option__item">
               <p className="dateselector__title">Fecha</p>
@@ -296,24 +297,24 @@ const BudgetComponent = () => {
             </div>
           </div>
           <div className="budgettable__container">
-          <Table
-            headers={tableHeaders}
-            data={filas}
-            tableClassName="budget__table"
-            trClassName="budget__table__row"
-            thClassName="budget__table__header"
-            theadClassName="budget__table__thead"
-            tbodyClassName="budget__table__body"
-            tdClassName="table__cell"
-            actionEditClassName="budget__table__action--edit"
-            handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
-            deleteIconClassName="table__deleteIcon"
-            editIconClassName="table__editIcon"
-            getEditPath={(id) => `/presupuesto/${id}`}
-            scrollable
-          />
+            <Table
+              headers={tableHeaders}
+              data={filas}
+              tableClassName="budget__table"
+              trClassName="budget__table__row"
+              thClassName="budget__table__header"
+              theadClassName="budget__table__thead"
+              tbodyClassName="budget__table__body"
+              tdClassName="table__cell"
+              actionEditClassName="budget__table__action--edit"
+              handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
+              deleteIconClassName="table__deleteIcon"
+              editIconClassName="table__editIcon"
+              getEditPath={(id) => `/presupuesto/${id}`}
+              scrollable
+              showActions={true}
+            />
           </div>
-          
 
           <div className="budget__actions">
             <Link to="/presupuesto/agregarpresupuesto">

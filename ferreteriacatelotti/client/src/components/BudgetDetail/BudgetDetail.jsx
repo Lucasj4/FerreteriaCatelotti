@@ -358,6 +358,7 @@ const BudgetDetail = () => {
             saleTotalAmount: budget.budgetAmount,
             clientId: budget.clientId,
             userId: budget.userId,
+            budgetId: budget._id
           };
           try {
             const response = await fetch("http://localhost:8080/api/sales", {
@@ -400,6 +401,7 @@ const BudgetDetail = () => {
     <>
       <div className="budgetdetail__container">
         <div className="budgetdetail__tablecontainer">
+        <div className="budgetdetail__title">Detalle presupuesto</div>
           <div className="budgetdetail__option">
             <div className="budgetdetail__option__item">
               <p className="budgetdetail__option__item__title">Fecha</p>
@@ -449,6 +451,8 @@ const BudgetDetail = () => {
             deleteIconClassName="table__deleteIcon"
             editIconClassName="table__editIcon"
             getEditPath={(id) => `/presupuesto/${pid}/detalle/${id}`}
+            
+
           />
           <div className="budgetdetail__containeramount">
             <p className="budgetdetail__amount">Total: ${amount}</p>

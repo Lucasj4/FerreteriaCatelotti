@@ -135,6 +135,11 @@ export class BudgetController {
         req.logger.info("Id de presupuesto: " + pid);
         console.log("Info id: ", pid);
 
+        if (!mongoose.Types.ObjectId.isValid(pid)) {
+            return res.status(400).json({ error: "El ID proporcionado no es válido" });
+        }
+    
+
         try {
             const data = await budgetService.getBudgetWithDetail(pid);
 

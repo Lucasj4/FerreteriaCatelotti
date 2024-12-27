@@ -25,24 +25,24 @@ const SalesComponent = () => {
       key: "selection",
     },
   ]);
-  
-   const showAlert = ({ title, text, icon, showCancelButton = false }) => {
-      return Swal.fire({
-        title,
-        text,
-        icon,
-        showCancelButton,
-        confirmButtonText: "Aceptar",
-        cancelButtonText: showCancelButton ? "Cancelar" : undefined,
-        customClass: {
-          title: "my-title-class",
-          popup: "my-popup-class",
-          confirmButton: "my-confirm-button-class",
-          overlay: "my-overlay-class",
-          cancelButton: "my-cancel-button-class",
-        },
-      });
-    };
+
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined,
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class",
+      },
+    });
+  };
   useEffect(() => {
     const fetchSales = async () => {
       try {
@@ -110,8 +110,8 @@ const SalesComponent = () => {
     const startDate = dateRange[0]?.startDate;
     const endDate = dateRange[0]?.endDate;
 
-    
-    const userId = selectedUsers.length > 0 ? selectedUsers.map((user) => user.value) : null;
+    const userId =
+      selectedUsers.length > 0 ? selectedUsers.map((user) => user.value) : null;
 
     if (startDate > endDate) {
       showAlert({
@@ -130,13 +130,10 @@ const SalesComponent = () => {
     if (userId) queryParams.append("userId", userId);
 
     console.log(clientId);
-    console.log("estar date desde front: " ,startDate);
-    console.log("end date desde front: " ,endDate);
+    console.log("estar date desde front: ", startDate);
+    console.log("end date desde front: ", endDate);
     console.log(userId);
-    
-    
-    
-    
+
     try {
       const response = await fetch(
         `http://localhost:8080/api/sales/search?${queryParams.toString()}`,
@@ -148,7 +145,7 @@ const SalesComponent = () => {
       if (response.status === 200) {
         const result = await response.json();
         console.log("Resultado: ", result.sales);
-        
+
         setRows(result.sales); // Actualiza el estado de las filas con los presupuestos encontrados
       } else if (response.status === 404) {
         const result = await response.json();
@@ -162,9 +159,6 @@ const SalesComponent = () => {
     } catch (error) {
       console.error("Error en la búsqueda de ventas", error);
     }
-    
-  
-    
   };
 
   const handleClientChange = (selectedOptions) => {
@@ -178,9 +172,10 @@ const SalesComponent = () => {
   return (
     <>
       <div className="component__container">
+        <div className="sale__title">Ventas</div>
         <div className="sale__search">
           <div className="sale__search__item">
-            <p className="dateselector__title">Fecha</p>
+            <h4>Fecha</h4>
             <div className="dateselector__container">
               <div className="dateselector__item">
                 <p>Desde</p>
@@ -226,6 +221,7 @@ const SalesComponent = () => {
           </div>
 
           <div className="sale__search__item">
+            <h4>Usuario</h4>
             <MultiSelectOption
               options={users}
               selectedProveedores={selectedUsers} // Este prop podría renombrarse a selectedClients para mayor claridad
@@ -236,6 +232,7 @@ const SalesComponent = () => {
           </div>
 
           <div className="sale__search__item">
+            <h4>Cliente</h4>
             <MultiSelectOption
               options={clients}
               selectedProveedores={selectedClients} // Este prop podría renombrarse a selectedClients para mayor claridad
@@ -256,14 +253,17 @@ const SalesComponent = () => {
             deleteIconClassName="table__deleteIcon"
             editIconClassName="table__editIcon"
             headers={tableHeaders}
-            getEditPath={(id) => `/sales/${id}`}
+            // getEditPath={(id) => `/sales/${id}`}
+            getViewPath={(id) => `/ventas/${id}`}
             // handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
+            showActions={(row) => "view"}
             data={rows}
+            viewIconClassName="view-button"
           />
 
           <div className="sale__actions">
             <button>Mostrar todos</button>
-            <button  onClick={handleSearch}>Buscar</button>
+            <button onClick={handleSearch}>Buscar</button>
           </div>
         </div>
       </div>

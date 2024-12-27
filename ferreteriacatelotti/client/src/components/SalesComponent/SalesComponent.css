@@ -9,10 +9,22 @@
     padding: 2px;
 }
 
+.sale__title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-primary);
+  text-align: center;
+  padding: 10px;
+  background-color: var(--background2);
+  width: 60%;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .sale__search__item {
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100px;
   justify-content: center;
   gap: 15px;
 }
@@ -25,14 +37,13 @@
 }
 
 .sale__actions button{
-    padding:  10px;
-    border-radius: 10px;
-    margin: 10px 0;
-    background-color: var( --color-primary);
+    background-color: var(--color-primary);
+    margin-right: 10px;
+    background: none;
+    outline: none;
     border: 1px solid var(--color-primary);
-    color: #fff;
-    font-size: 1rem;
     cursor: pointer;
+    color: var(--text-color);
 }
 
 

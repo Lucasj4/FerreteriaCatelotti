@@ -59,4 +59,15 @@ export class SaleService {
         }
     }
 
+    async getSaleById(id){
+        try {
+            const sale = await SaleModel.findById(id).populate('clientId', 'clientLastName').populate('userId', 'userUsername').exec();
+            return sale;
+
+        } catch (error) {
+            console.error("Error en el servicio de ventas", error);
+            throw new Error("Error al buscar las ventas");
+        }
+    }
+
 }

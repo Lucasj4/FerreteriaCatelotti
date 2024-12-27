@@ -6,6 +6,16 @@
     height: 100vh;
     margin: 0 auto;
 }
+.budget__title{
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    text-align: center;
+    padding: 10px;
+    background-color: var(--grey);
+    width: 100%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
 .budget__tablecontainer{
     width: 1000px;
     display: flex;
@@ -43,6 +53,7 @@
     align-items: center;
     justify-content: center;
     gap: 15px;
+    padding: 1rem;
 }
 .budget__input{
     background-color: var(--color-primary);
