@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import Table from "../TableCustom/TableCustom";
 import "./ViewSale.css";
 
@@ -11,6 +11,7 @@ const ViewSale = () => {
   const [saleClient, setSaleClient] = useState(" ");
   const [budgetId, setBudgetId] = useState(" ");
   const [saleId, setSaleId] = useState(" ");
+  const [saleDetails, setSaleDetails] = useState([]);
   const { sid } = useParams();
 
   const tableHeaders = [
@@ -39,16 +40,17 @@ const ViewSale = () => {
         setSaleClient(data.sale.clientId);
         setBudgetId(data.sale.budgetId);
         setSaleId(data.sale._id);
+
+        // Fetch presupuesto después de establecer budgetId
+        if (data.sale.budgetId) {
+          fetchBudget(data.sale.budgetId);
+        }
       } catch (error) {
         console.error("Error en el proceso:", error);
       }
     };
 
-    fetchSale();
-  }, []);
-
-  useEffect(() => {
-    const fetchBudget = async () => {
+    const fetchBudget = async (budgetId) => {
       try {
         const response = await fetch(
           `http://localhost:8080/api/budgets/budgetwithdetails/${budgetId}`,
@@ -59,22 +61,86 @@ const ViewSale = () => {
 
         const data = await response.json();
         const budgetdetails = data.budgetDetailOrders;
-        console.log("detalles: ", budgetdetails);
-
+        console.log("Detalles: ", budgetdetails);
+        setSaleDetails(budgetdetails)
         setRows(budgetdetails);
       } catch (error) {
         console.error("Error en el proceso:", error);
       }
     };
 
-    fetchBudget();
-  }, []);
+    fetchSale();
+  }, [sid]);
+
+  const printInvoice = async () => {
+
+    console.log("sale details: ", saleDetails);
+    
+    const sale = {
+      saleTotalAmount: saleAmount,
+      saleDate,
+      client: saleClient,
+      invoiceNumber: saleInvoiceNumber,
+      details: saleDetails
+    }
+
+    console.log(sale);
+    
+    
+    const response = await fetch(
+      "http://localhost:8080/api/sales/printinvoice",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(sale),
+      }
+    );
+
+    if (response.ok) {
+      // const blob = await response.blob();
+      // const url = window.URL.createObjectURL(blob);
+    
+      // const a = document.createElement("a");
+      // a.href = url;
+      // a.download = "factura.pdf";
+      // document.body.appendChild(a);
+      // a.click();
+      // a.remove();
+    
+      // window.URL.revokeObjectURL(url);
+
+      const pdfBlob = await response.blob();
+
+      // Crea una URL para el Blob del PDF
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+
+      // Crear un enlace para descargar el PDF automáticamente o abrirlo
+      const link = document.createElement("a");
+      link.href = pdfUrl;
+      link.download = `factura.pdf`; // Aquí puedes elegir el nombre del archivo
+      document.body.appendChild(link);
+      link.click();
+
+      // También podrías abrirlo en una nueva ventana
+      // window.open(pdfUrl);
+
+      // Limpiar el objeto URL después de descargar o abrirlo
+      URL.revokeObjectURL(pdfUrl);
+    } else {
+      console.error("Error al generar la factura:", response.statusText);
+    }
+
+
+  };
   return (
     <>
       <div className="sale">
         <div className="sale__container">
-          <div className="sale__info">
           <div className="saledetail__title">Detalle de venta</div>
+          <div className="sale__info">
             <div className="sale__info__item">
               <p className="sale__info__item__label">
                 <strong>Fecha:</strong> {saleDate}
@@ -112,8 +178,10 @@ const ViewSale = () => {
           </div>
 
           <div className="sale__actions">
-            <button>Imprimir</button>
-            <button>Salir</button>
+            <button onClick={printInvoice}>Imprimir</button>
+            <Link to={"/ventas"}>
+              <button>Salir</button>
+            </Link>
           </div>
         </div>
       </div>

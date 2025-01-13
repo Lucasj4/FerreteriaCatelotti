@@ -8,6 +8,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import AccessibilityIcon from "@mui/icons-material/Accessibility";
 import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import "./Sidebar.css";
 
 const Sidebar = ({ children }) => {
@@ -70,6 +71,11 @@ const Sidebar = ({ children }) => {
       path: "/ventas", // Nueva sección para Ventas
       name: "Ventas",
       icon: <PointOfSaleIcon />, // Icono asociado
+    },
+    {
+      path: "/proveedores", // Nueva sección para Ventas
+      name: "Proveedores",
+      icon: <LocalShippingIcon/>, // Icono asociado
     },
   ];
 

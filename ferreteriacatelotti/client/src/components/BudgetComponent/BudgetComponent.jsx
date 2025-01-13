@@ -224,7 +224,7 @@ const BudgetComponent = () => {
           <div className="budget__title">Presupuestos</div>
           <div className="budget__option">
             <div className="budget__option__item">
-              <p className="dateselector__title">Fecha</p>
+              <h4>Fecha</h4>
               <div className="dateselector__container">
                 <div className="dateselector__item">
                   <p>Desde</p>
@@ -270,6 +270,7 @@ const BudgetComponent = () => {
             </div>
 
             <div className="budget__option__item">
+            <h4>Cliente</h4>
               <MultiSelectOption
                 options={clients}
                 selectedProveedores={selectedClients} // Este prop podría renombrarse a selectedClients para mayor claridad

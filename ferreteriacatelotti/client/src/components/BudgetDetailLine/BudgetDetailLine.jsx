@@ -106,28 +106,65 @@ const BudgetDetailLine = ({ isNewBudget }) => {
         body: JSON.stringify(budgetDetailLine),
       });
 
-      const result = await response.json();
+      
 
-      if (response.status === 201 || response.status === 200 ) {
-        showAlert({
-          title: "Linea de detalle agregada con exito",
-          icon: "success",
-        }).then(() => {
-          resetForm();
-        });
+      const data = await response.json();
+
+      switch (response.status) {
+        case 201:
+          showAlert({
+            title: "Detalle de presupuesto agregado con exito",
+            icon: "success",
+          });
+          break;
+
+        case 400:
+          const errorMessages =
+            data.errorMessages && data.errorMessages.length > 0
+              ? data.errorMessages[0]
+              : "Error desconocido";
+
+          await showAlert({
+            title: "Error al agregar linea de detalle del pedido de compra",
+            text: errorMessages,
+            icon: "error",
+          });
+          break;
         
-      } else if (response.status === 400) {
-        const errorMessages =
-          result.errorMessages && result.errorMessages.length > 0
-            ? result.errorMessages[0] // Une los mensajes con saltos de línea
-            : "Error desconocido";
-
+        case 409: 
         showAlert({
-          title: "Error al agregar linea de detalle",
-          text: errorMessages,
+          title: "Error",
+          text: data.message,
           icon: "error",
         });
+
+        break;
+
+        default:
+          break;
       }
+
+
+      // if (response.status === 201 || response.status === 200 ) {
+      //   showAlert({
+      //     title: "Linea de detalle agregada con exito",
+      //     icon: "success",
+      //   }).then(() => {
+      //     resetForm();
+      //   });
+        
+      // } else if (response.status === 400) {
+      //   const errorMessages =
+      //     result.errorMessages && result.errorMessages.length > 0
+      //       ? result.errorMessages[0] // Une los mensajes con saltos de línea
+      //       : "Error desconocido";
+
+      //   showAlert({
+      //     title: "Error al agregar linea de detalle",
+      //     text: errorMessages,
+      //     icon: "error",
+      //   });
+      // }
     } catch (error) {
       console.error("Error:", error.message);
     }

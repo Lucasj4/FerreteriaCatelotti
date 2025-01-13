@@ -7,11 +7,11 @@ export const productRouter = express.Router();
 const productController = new ProductController();
 
 productRouter.post("/addproduct", validateProduct, authMiddleware, checkUserRole(["Admin", "Dueño"]), productController.addProduct);
+productRouter.post("/lowstock",authMiddleware, checkUserRole(["Admin", "Dueño"]), productController.getProductsWithLowStock);
 productRouter.put("/updateproductstock", authMiddleware, checkUserRole(["Admin", "Dueño"]), productController.updateProductStocks);
 productRouter.put("/:pid", validateProduct, authMiddleware, checkUserRole(["Admin", "Dueño"]),  productController.updateProduct);
 productRouter.delete("/:pid", authMiddleware, checkUserRole(["Admin", "Dueño"]),  productController.deleteProduct);
 productRouter.get("/", authMiddleware, checkUserRole(["Admin", "Dueño"]), productController.getProducts);
-productRouter.get("/lowstock",/*authMiddleware, checkUserRole(["Admin", "Dueño"]),*/ productController.getProductsWithLowStock);
-productRouter.get("/search",/* authMiddleware, checkUserRole(["Admin", "Dueño"]),*/ productController.getProductsByFilter);
+productRouter.get("/search", authMiddleware, checkUserRole(["Admin", "Dueño"]), productController.getProductsByFilter);
 productRouter.get("/:pid", authMiddleware, checkUserRole(["Admin", "Dueño"]), productController.getProductById);
 

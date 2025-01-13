@@ -1,12 +1,23 @@
 import { DetailOrderService } from "./detailorder-service.js";
+import {ProductService} from '../products/product-service.js'
 
 const detailOrderService = new DetailOrderService();
+const productService = new ProductService();
 
 export class DetailOrderController {
 
     async createDetailOrder(req, res) {
         const { detailOrderProduct, detailOrderUnitCost, detailOrderQuantity, productID, purchaseOrderID  } = req.body;
 
+
+        const product = await productService.getProductById(productID);
+
+        if(product.productStock < detailOrderQuantity){
+            return res.status(409).json({
+                message: `Stock insuficiente de ${detailOrderProduct}`,
+                availableStock: product.productStock,
+            });
+        }
         const existinDetail = await detailOrderService.findByOrderIdandProductName(purchaseOrderID, detailOrderProduct);
 
         if(existinDetail){

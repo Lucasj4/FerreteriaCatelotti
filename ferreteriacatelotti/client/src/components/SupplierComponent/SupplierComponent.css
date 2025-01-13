@@ -1,0 +1,25 @@
+.suppliers__title p{
+    padding: 1rem;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+.suppliers__filter{
+    padding: 1rem;
+    background-color: var(--grey);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.supplier__filter__select{
+    outline: none;
+    padding: 10px 5px;
+    font-size: 16px;
+    border-radius: 4px;
+    background-color: var(--color-primary);
+    color: var(--text-color);
+}

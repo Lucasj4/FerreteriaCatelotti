@@ -8,6 +8,8 @@ import path from "path";
 const purchaseOrderService = new PurchaseOrderService();
 const detailOrderService = new DetailOrderService();
 const productService = new ProductService();
+
+
 export class PurchaseOrderController {
 
     async createPurchaseOrder(req, res) {
@@ -140,9 +142,13 @@ export class PurchaseOrderController {
 
         try {
 
-            console.log("Fecha: ", purchaseOrderDate);
+            const existingPurchaseOrder = await purchaseOrderService.getPurchaseOrderById(id);
 
-
+            if (existingPurchaseOrder.purchaseOrderStatus === "Recibido") {
+                return res.status(409).json({
+                    message: "No se puede modificar el pedido de compra porque ya se encuentra en estado 'Recibido'.",
+                });
+            }
 
             const updateData = {
                 purchaseOrderDate,
@@ -150,10 +156,6 @@ export class PurchaseOrderController {
                 purchaseOrderStatus,
                 supplierID
             };
-
-            req.logger.info("updateData: ", updateData);
-            req.logger.info(" Detalle ids: ", detalleIds);
-
 
             const updatedOrder = await purchaseOrderService.updatePurchaseOrder(id, updateData);
 
@@ -182,9 +184,9 @@ export class PurchaseOrderController {
 
 
             if (deletePurchaseOrder) {
-                res.status(200).json({ message: "Orden elimnada con exito", deletePurchaseOrder });
+                return res.status(200).json({ message: "Orden elimnada con exito", deletePurchaseOrder });
             } else {
-                res.status(404).json({ message: "Pedido de compra no encontrado" });
+                return res.status(404).json({ message: "Pedido de compra no encontrado" });
             }
         } catch (error) {
             console.error("Error al eliminar el presupuesto:", error);
@@ -253,6 +255,22 @@ export class PurchaseOrderController {
             });
         } catch (error) {
             console.error("Error al descargar el PDF:", error);
+            res.status(500).json({ error: "Error interno del servidor" });
+        }
+    }
+
+    async getPurchaseOrderById(req,res){
+        const {id} = req.params;
+        try {
+            const purchaseOrder = await purchaseOrderService.getPurchaseOrderById(id);
+
+            if(!purchaseOrder){
+                return res.status(404).json({ message: "Pedido de compra no encontrado" });
+            }
+
+            return res.status(200).json({ purchaseOrder });
+        } catch (error) {
+            console.error("Error:", error);
             res.status(500).json({ error: "Error interno del servidor" });
         }
     }

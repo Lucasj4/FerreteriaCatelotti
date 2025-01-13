@@ -128,8 +128,8 @@ main {
 .component__actions {
   width: 100%;
   display: flex;
-  justify-content: center;
-  gap: 10rem;
+  justify-content: space-around;
+  
   background-color: var(--grey);
 }
 
@@ -142,6 +142,12 @@ main {
   color: #fff;
   font-size: 1rem;
   cursor: pointer;
+}
+
+.component__actions__button:hover{
+  background-color: var(--background);
+  color: var(--text-color);
+  border: 1px solid var(--background);
 }
 
 /* Cambiar el fondo del popup */

@@ -26,18 +26,16 @@ const ClientComponent = () => {
       icon,
       showCancelButton,
       confirmButtonText: "Aceptar",
-      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined,
       customClass: {
         title: "my-title-class",
         popup: "my-popup-class",
         confirmButton: "my-confirm-button-class",
         overlay: "my-overlay-class",
-        cancelButton: "my-cancel-button-class", 
+        cancelButton: "my-cancel-button-class",
       },
     });
   };
-
-  
 
   const handleSearchCriteriaChange = (e) => {
     setSearchCriteria(e.target.value);
@@ -50,7 +48,20 @@ const ClientComponent = () => {
       setClientEmail(e.target.value);
     }
   };
+  const getAllClients = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/clients", {
+        credentials: "include",
+      });
 
+      if (response) {
+        const clients = await response.json();
+        setRows(clients.clients);
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
   const getClients = async () => {
     try {
       const queryParam =
@@ -69,7 +80,6 @@ const ClientComponent = () => {
         showAlert({
           title: "Cliente no enconctrado con ese apellido",
           icon: "warning",
-          
         });
       } else if (response.status === 404 && searchCriteria === "clientEmail") {
         showAlert({
@@ -95,7 +105,7 @@ const ClientComponent = () => {
     const fetchClientes = async () => {
       try {
         const response = await fetch("http://localhost:8080/api/clients", {
-          credentials: 'include',
+          credentials: "include",
         });
 
         if (response) {
@@ -109,10 +119,72 @@ const ClientComponent = () => {
     fetchClientes();
   }, []);
 
+
+  const handleDeleteClient = async (clientId) => {
+    const result = await showAlert({
+      title: "¿Estás seguro?",
+      text: "Una vez eliminado, no podrás recuperar este proveedor.",
+      icon: "warning",
+      showCancelButton: true,
+    });
+
+    // Si el usuario confirma la eliminación
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/clients/${clientId}`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          }
+        );
+        
+        
+        switch (response.status) {
+          case 200:
+            showAlert({
+              title: "Cliente eliminado con éxito",
+              icon: "success",
+            });
+            setRows(rows.filter((client) => client._id !== clientId));
+            break;
+          case 404:
+            showAlert({
+              title: "Cliente no encontrado",
+              icon: "warning",
+            });
+            break;
+          default:
+            showAlert({
+              title: "Error inesperado",
+              text: `Código de estado: ${response.status}`,
+              icon: "error",
+            });
+            console.error(`Estado inesperado: ${response.status}`, response);
+            break;
+        }
+      } catch (error) {
+        console.error("Error deleting client:", error);
+      }
+    } else {
+      // Si el usuario cancela la acción
+      showAlert({
+        title: "Eliminación cancelada",
+        icon: "info",
+      });
+    }
+  };
+
   return (
     <>
       <div className="clientcomponent__container">
         <div className="clientcomponent__table__container">
+          <div className="clientcomponent__title">
+            <p>Clientes</p>
+          </div>
           <div className="clientcomponent__search-container">
             <select
               className="component__search-select"
@@ -141,7 +213,6 @@ const ClientComponent = () => {
             >
               Buscar
             </button>
-    
           </div>
           <TableCustom
             tableClassName="table"
@@ -153,8 +224,10 @@ const ClientComponent = () => {
             deleteIconClassName="table__deleteIcon"
             editIconClassName="table__editIcon"
             getEditPath={(id) => `/clientes/${id}`}
+            handleDeleteCell={handleDeleteClient}
             headers={tableHeaders}
             data={rows}
+            showActions={true}
           />
           <div className="component__actions">
             <Link to={"/clientes/agregarcliente"}>
@@ -162,6 +235,7 @@ const ClientComponent = () => {
             </Link>
 
             <button className="component__actions__button">Guardar</button>
+            <button className="component__actions__button" onClick={getAllClients}>Mostrar todos</button>
             <button className="component__actions__button">Salir</button>
           </div>
         </div>

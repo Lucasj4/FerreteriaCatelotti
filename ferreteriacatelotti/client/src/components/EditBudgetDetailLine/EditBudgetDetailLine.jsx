@@ -117,6 +117,8 @@ const BudgetDetailLine = () => {
   const hundleSubtmit = async (e) => {
     e.preventDefault();
 
+    
+
     const result = await showAlert({
       title: "¿Estás seguro?",
       text: "¿Confirmar modificacion de detalle?",

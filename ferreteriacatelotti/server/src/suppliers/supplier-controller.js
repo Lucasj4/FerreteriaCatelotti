@@ -65,6 +65,72 @@ export class SupplierController {
             return res.status(500).json({ message: 'Error en el servidor', error });
         }
     }
+
+    async getSuppliersByFilter(req, res){
+        const {name, lastname} = req.query;
+
+        req.logger.info("Nombre: " + name);
+        req.logger.info("Apellido proveedor: " + lastname);
+
+        try {
+            const suppliers = await supplierService.getSuppliersByFilter(name, lastname);
+
+            console.log("Suppliers: ", suppliers);
+            
+            if(!suppliers.length){
+                return res.status(404).json({message: "Proveedores no encontrados"});
+            }
+
+            if(suppliers){
+                return res.status(200).json({suppliers});
+
+            }
+        } catch (error) {
+            return res.status(500).json({ message: 'Error en el servidor', error });
+        }
+    }
+
+    async updateSupplier(req, res){
+        const {id} = req.params;
+        const {supplierFirstName, supplierLastName, supplierDni, supplierEmail} = req.body;
+
+        req.logger.info("Supplier id: " + id);
+
+        const updateData = {
+            supplierFirstName,
+            supplierLastName,
+            supplierDni,
+            supplierEmail
+        }
+        try {
+
+            const supplier = await supplierService.getById(id);
+
+            if(!supplier){
+                return res.status(404).json({message: "Proveedor no encontrado"})
+            }
+
+            const updatedSupplier = await supplierService.updateSupplier(id, updateData);
+
+            return res.status(200).json({updatedSupplier});
+
+        
+        } catch (error) {
+            return res.status(500).json({ message: 'Error en el servidor', error });
+        }
+    }
+
+    async deleteSupplier(req, res){
+        const {id} = req.params;
+
+        try {
+            const deletedSupplier = await supplierService.deleteSupplierById(id);
+
+            return deletedSupplier;
+        } catch (error) {
+            return res.status(500).json({ message: 'Error en el servidor', error });
+        }
+    }
    
 
 }

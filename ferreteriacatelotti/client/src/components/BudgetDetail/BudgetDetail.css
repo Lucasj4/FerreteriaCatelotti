@@ -28,8 +28,8 @@
 .budgetdetail__table{
     width: 70%;
     color: #fff;
-    padding: 1rem 0;
-    background-color: var(--text-color);
+    padding: 1rem;
+  
 }
 .budgetdetail__table__header{
     width: 100px;
@@ -81,8 +81,9 @@
     gap: 1rem;
 }
 .budgetdetail__option__item__title{
-    font-size: 2rem;
+    font-size: 1.5rem;
     color: var(--background2);
+    font-weight: bold;
 }
 .budgetdetail__option__item__input{
     padding: 0.5rem;
@@ -105,16 +106,13 @@
     margin-left: 15px;
 }
 .budgetdetail__containeramount{
-    background-color: var(--dark-blue);
-    text-align: right;
-    width: 100%;
-    border-bottom: 1px solid var(--dark-blue);
-    padding: 1rem 0;
+   width: 95%;
 }
 .budgetdetail__amount{
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     color: #fff;
-    margin-right: 15rem;
+    text-align: right;
+    padding: 1rem 0 0 0;
     
 }
 
@@ -147,6 +145,7 @@
 }
 
 .budgetdetail__option__status{
-    font-size: 2rem;
+    font-size: 1.5rem;
     color: var(--background2);
+    font-weight: bold;
 }

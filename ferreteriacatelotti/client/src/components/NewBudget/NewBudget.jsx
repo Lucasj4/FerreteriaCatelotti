@@ -30,13 +30,13 @@ const NewBudget = () => {
       icon,
       showCancelButton,
       confirmButtonText: "Aceptar",
-      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined,
       customClass: {
         title: "my-title-class",
         popup: "my-popup-class",
         confirmButton: "my-confirm-button-class",
         overlay: "my-overlay-class",
-        cancelButton: "my-cancel-button-class", 
+        cancelButton: "my-cancel-button-class",
       },
     });
   };
@@ -173,7 +173,6 @@ const NewBudget = () => {
         },
         credentials: "include",
         body: JSON.stringify(newBudget),
-        
       });
 
       const result = await response.json();
@@ -237,6 +236,7 @@ const NewBudget = () => {
     <>
       <div className="budgetdetail__container">
         <div className="budgetdetail__tablecontainer">
+          <div className="budgetdetail__title">Agregar presupuesto</div>
           <div className="budgetdetail__option">
             <div className="budgetdetail__option__item">
               <p className="budgetdetail__option__item__title">Fecha</p>
@@ -270,6 +270,7 @@ const NewBudget = () => {
               </select>
             </div>
           </div>
+          <div className="budgetdetail__table">
           <Table
             headers={tableHeaders}
             data={row}
@@ -289,6 +290,7 @@ const NewBudget = () => {
           />
           <div className="budgetdetail__containeramount">
             <p className="budgetdetail__amount">Total: ${amount}</p>
+          </div>
           </div>
 
           <div className="budgetdetail__buttoncontainer">

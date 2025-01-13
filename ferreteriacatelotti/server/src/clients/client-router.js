@@ -7,5 +7,6 @@ export const clientRouter = express.Router();
 clientRouter.post('/', validateClient, clientController.addCliente);
 clientRouter.get('/', clientController.getClients);
 clientRouter.get('/search' , clientController.getClientByFilter);
+clientRouter.delete('/:id', clientController.deleteClient);
 clientRouter.put('/:cid',validateClient, clientController.updateClient);
 clientRouter.get('/:cid', clientController.getClientById);

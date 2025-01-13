@@ -125,8 +125,8 @@ const SalesComponent = () => {
     const queryParams = new URLSearchParams();
 
     if (clientId) queryParams.append("clientId", clientId);
-    if (startDate) queryParams.append("startDate", startDate.toISOString());
-    if (endDate) queryParams.append("endDate", endDate.toISOString());
+    if (startDate) queryParams.append("startDate", startDate.toISOString().split(".")[0]);
+    if (endDate) queryParams.append("endDate", endDate.toISOString().split(".")[0]);
     if (userId) queryParams.append("userId", userId);
 
     console.log(clientId);
@@ -262,7 +262,7 @@ const SalesComponent = () => {
           />
 
           <div className="sale__actions">
-            <button>Mostrar todos</button>
+            <button>Mostrar todas</button>
             <button onClick={handleSearch}>Buscar</button>
           </div>
         </div>

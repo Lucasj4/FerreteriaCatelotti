@@ -133,4 +133,16 @@ export class ClientController {
             return res.status(500).json({ error: 'Error interno del servidor' });
         }
     }
+
+     async deleteClient(req, res){
+        const {id} = req.params;
+        try {
+            const elimantedClient = await clientService.deleteClient(id);
+            return res.status(200).json({ message: 'Cliente eliminado con éxito', elimantedClient });
+        } catch (error) {
+            return res.status(500).json({ error: 'Error interno del servidor' });
+        }
+    }
+
+
 }

@@ -36,7 +36,7 @@ export const validateProduct = (req, res, next) => {
             "string.base": "La categoría del producto debe ser una cadena",
             "any.required": "La categoría del producto es obligatoria"
         }),
-        productCost: Joi.number().required().messages({
+        productCost: Joi.number().min(0).required().messages({
             "number.base": "El costo del producto debe ser un número",
             "any.required": "El costo del producto es obligatorio"
         })

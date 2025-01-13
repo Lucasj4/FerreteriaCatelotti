@@ -21,6 +21,15 @@ export class PurchaseOrderService {
         }
     }
 
+    async getPurchaseOrderById(id){
+        try {
+            const purchaseOrder = await PurchaseOrderModel.findById(id);
+            return purchaseOrder
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async getPurchaseOrderWithDetails(purchaseOrderId) {
         try {
             // Primero, consulta el pedido de compra para verificar que existe
@@ -49,9 +58,15 @@ export class PurchaseOrderService {
         }
 
         if (startDate && endDate) {
+            const parsedStartDate = new Date(startDate);
+            parsedStartDate.setUTCHours(0, 0, 0, 0); // Comienza el día en UTC 00:00:00
+        
+            const parsedEndDate = new Date(endDate);
+            parsedEndDate.setUTCHours(23, 59, 59, 999); 
+            
             query.purchaseOrderDate = {
-                $gte: new Date(startDate),
-                $lte: new Date(endDate),
+                $gte: parsedStartDate,
+                $lte: parsedEndDate,
             }; // Filtrar por rango de fechas
         }
 

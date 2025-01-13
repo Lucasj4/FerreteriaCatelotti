@@ -59,3 +59,10 @@
     font-size: 1rem;
     cursor: pointer;
 }
+
+.clientcomponent__title{
+    font-size: 2rem;
+    padding: 1rem;
+    color: var(--color-primary);
+    font-weight: bold;
+}

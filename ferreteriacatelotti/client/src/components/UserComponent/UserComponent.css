@@ -9,3 +9,15 @@
 .clientecomponent__search-button{
     background-color: var(--color-primary);
 }
+
+.user__title{
+    font-size: 1rem;
+
+}
+
+.user__title{
+    padding: 1rem;
+    font-size: 2rem;
+    color: var(--color-primary);
+    font-weight: bold;
+}

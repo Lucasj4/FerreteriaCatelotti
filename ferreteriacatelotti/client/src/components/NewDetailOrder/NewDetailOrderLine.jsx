@@ -26,13 +26,13 @@ const NewDetailOrderLine = () => {
       icon,
       showCancelButton,
       confirmButtonText: "Aceptar",
-      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined,
       customClass: {
         title: "my-title-class",
         popup: "my-popup-class",
         confirmButton: "my-confirm-button-class",
         overlay: "my-overlay-class",
-        cancelButton: "my-cancel-button-class", 
+        cancelButton: "my-cancel-button-class",
       },
     });
   };
@@ -119,28 +119,44 @@ const NewDetailOrderLine = () => {
         body: JSON.stringify(orderDetailOrderLine),
       });
 
-      if (!response.ok) {
-        throw new Error("Error al enviar los datos al servidor");
-      }
+    
+      const data = await response.json();
 
-      if (response.status === 201) {
-        await showAlert({
-          title: "Detalle de presupuesto agregado con exito",
-          icon: "success",
-        });
-      } else if (response.status === 400) {
-        const errorMessages =
-          result.errorMessages && result.errorMessages.length > 0
-            ? result.errorMessages[0]
-            : "Error desconocido";
+      switch (response.status) {
+        case 201:
+          showAlert({
+            title: "Detalle de presupuesto agregado con exito",
+            icon: "success",
+          });
+          break;
 
-        await showAlert({
-          title: "Error al agregar linea de detalle del pedido de compra",
-          text: errorMessages,
+        case 400:
+          const errorMessages =
+            result.errorMessages && result.errorMessages.length > 0
+              ? result.errorMessages[0]
+              : "Error desconocido";
+
+          await showAlert({
+            title: "Error al agregar linea de detalle del pedido de compra",
+            text: errorMessages,
+            icon: "error",
+          });
+          break;
+        
+        case 409: 
+        showAlert({
+          title: "Error",
+          text: data.message,
           icon: "error",
-         
         });
+
+        break;
+
+        default:
+          break;
       }
+
+      
       resetForm();
     } catch (error) {
       console.error("Error:", error.message);
@@ -205,7 +221,7 @@ const NewDetailOrderLine = () => {
             <Link to={`/pedido/${purchaseOrderId}`}>
               <button className="newPurchaseOrder__form__button">Salir</button>
             </Link>
-            <Link to={"/detallepedido"}>
+            <Link to={"/pedido/${purchaseOrderId}"}>
               <button
                 className="newPurchaseOrder__form__button"
                 onClick={handleSubmit}

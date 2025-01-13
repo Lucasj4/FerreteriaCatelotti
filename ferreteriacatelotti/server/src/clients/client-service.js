@@ -61,16 +61,25 @@ export class ClientService {
             const query = {};
 
             if(clientEmail){
-                query.clientEmail = clientEmail;
+                query.clientEmail = {$regex: clientEmail, $options: 'i' };
             }
 
             if(clientLastName){
-                query.clientLastName = clientLastName
+                query.clientLastName = {$regex: clientLastName, $options: 'i' };
             }
 
             return await ClientModel.find(query).exec();
         } catch (error) {
             console.error(error);
+            throw error; 
+        }
+    }
+
+    async deleteClient(id){
+        try {
+            const elimantedClient = await ClientModel.findByIdAndDelete(id);
+            return elimantedClient;
+        } catch (error) {
             throw error; 
         }
     }

@@ -71,9 +71,11 @@ const UserComponent = () => {
           }
         );
 
+        const data = await response.json();
+
         if (response.status === 200) {
          showAlert({
-            title: "Presupuesto eliminado",
+            title: "Usuario eliminado",
             icon: "success",
             
           });
@@ -82,6 +84,11 @@ const UserComponent = () => {
           newRows.splice(index, 1);
           setRows(newRows);
         } else {
+          showAlert({
+            title: data.message,
+            icon: "warning",
+            
+          });
           console.error("Error al eliminar el presupuesto en la base de datos");
         }
       } catch (error) {
@@ -94,6 +101,9 @@ const UserComponent = () => {
     <>
         <div className="clientcomponent__container">
         <div className="clientcomponent__table__container">
+        <div className="user__title">
+          <p>Usuarios</p>
+        </div>
           <div className="clientcomponent__search-container">
             <input
               type="text"
@@ -115,6 +125,7 @@ const UserComponent = () => {
             getEditPath={(id) =>`/users/${id}`}
             handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
             data={row}
+            showActions={true}
           />
           <div className="clientecomponent__actions">
         

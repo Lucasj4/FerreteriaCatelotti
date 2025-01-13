@@ -251,11 +251,13 @@ export class ProductController {
     }
 
     async getProductsWithLowStock(req, res) {
+        const {stockThreshold} = req.body;
+        req.logger.info("Stock bajo: ", stockThreshold)
         try {
-            console.log("Desde low stock");
+           
 
-            const maxStock = 10; // You can adjust this value if needed
-            const lowStockProducts = await productService.getProductsWithLowStock(maxStock);
+            
+            const lowStockProducts = await productService.getProductsWithLowStock(stockThreshold);
             console.log("productos con bajo stock: " + lowStockProducts);
             if (!lowStockProducts.length) {
                 return res.status(404).json({ message: "No se encontraron productos con bajo stock" });

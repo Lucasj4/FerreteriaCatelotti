@@ -135,6 +135,35 @@ const EditDetailOrderLine = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/purchaseorders/purchaseorderswithdetails/${pid}`,
+        {
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al obtener el pedido de compra");
+      }
+      const data = await response.json();
+      const purchaseOrder = data.purchaseOrder;
+
+      console.log("Purchase order: ", purchaseOrder);
+      
+      if(purchaseOrder.purchaseOrderStatus === 'Recibido'){
+        showAlert({
+          title: "Error",
+          text: "No se puede modificar el detalle de un pedido de compra recibido",
+          icon: "warning",
+          
+        });
+        return;
+      }
+    } catch (error) {
+      console.error(error)
+    }
+
     const result = await showAlert({
       title: "¿Estás seguro?",
       text: "¿Confirmar modificacion de detalle?",

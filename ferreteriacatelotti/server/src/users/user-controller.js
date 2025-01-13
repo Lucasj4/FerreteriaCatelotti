@@ -182,6 +182,12 @@ export class UserController {
         const { id } = req.params
 
         try {
+
+            const user = await userService.getUserById(id);
+
+            if(user.userRole === "Admin"){
+                return res.status(400).json({message: "No se puede eliminar al administrador"})
+            }
             const userDelete = await userService.deleteUser(id);
 
             if (userDelete) {

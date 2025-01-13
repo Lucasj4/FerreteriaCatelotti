@@ -23,7 +23,7 @@ export class SupplierService{
     async getById(id){
         try {
             const supplier = await SupplierModel.findOne({_id: id});
-            return supplier.supplierLastName; 
+            return supplier; 
         } catch (error) {
             throw error;
         }
@@ -33,6 +33,45 @@ export class SupplierService{
         try {
             const suppliers = await SupplierModel.find();
             return suppliers;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getSuppliersByFilter(supplierName, supplierLastName){
+        try {
+            const query = {};
+
+            if(supplierName){
+                query.supplierFirstName = { $regex: supplierName, $options: 'i' };
+            };
+
+            if(supplierLastName){
+                query.supplierLastName = { $regex: supplierLastName, $options: 'i' };
+            };
+
+            const suppliers = await SupplierModel.find(query).exec();
+
+            return suppliers;
+
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async updateSupplier(supplierId, updateData){
+        try {
+            const updatedSupplier = await SupplierModel.findByIdAndUpdate(supplierId, updateData);
+            return updatedSupplier;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async deleteSupplierById(id){
+        try {
+            const deletedSupplier = await SupplierModel.findByIdAndDelete(id);
+            return deletedSupplier;
         } catch (error) {
             throw error;
         }

@@ -58,9 +58,16 @@ export class BudgetService {
             }
 
             if (startDate && endDate) {
+
+                const parsedStartDate = new Date(startDate);
+                parsedStartDate.setUTCHours(0, 0, 0, 0); // Comienza el día en UTC 00:00:00
+            
+                const parsedEndDate = new Date(endDate);
+                parsedEndDate.setUTCHours(23, 59, 59, 999); 
+
                 query.budgetDate     = {
-                    $gte: new Date(startDate),
-                    $lte: new Date(endDate),
+                    $gte: parsedStartDate,
+                    $lte: parsedEndDate,
                 }; // Filtrar por rango de fechas
             }
 

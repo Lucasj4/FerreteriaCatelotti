@@ -164,6 +164,27 @@ const EditPurchaseOrder = () => {
   };
 
   const handleUpdateOrder = async () => {
+
+    const response = await fetch(
+      `http://localhost:8080/api/purchaseorders/${pid}`,
+      {
+        credentials: "include",
+      }
+    );
+
+    const data = await response.json();
+
+    const purchaseOrder = data.purchaseOrder;
+    
+    if (purchaseOrder.purchaseOrderStatus === "Recibido") {
+      showAlert({
+        title: "Error",
+        text: "No se puede modificar un pedido que ya ha sido recibido",
+        icon: "warning",
+      });
+      return; 
+    }
+
     const proveedorValue =
       selectedSuppliers.length > 0 ? selectedSuppliers[0].value : "";
 
@@ -182,8 +203,6 @@ const EditPurchaseOrder = () => {
           operationType: "increase",
           quantity: product.detailOrderQuantity,
         }));
-
-        
 
         // Actualizar el stock del producto
         const stockResponse = await fetch(
@@ -268,7 +287,14 @@ const EditPurchaseOrder = () => {
   };
 
   const handleDeleteCell = async (id, index) => {
-    console.log("id del detalle: ", id);
+    if (purchaseOrderStatus === "Recibido") {
+      showAlert({
+        title: "Error",
+        text: "No se puede modificar un pedido que ya ha sido recibido",
+        icon: "warning",
+      });
+      return; 
+    }
 
     const result = await Swal.fire({
       title: "¿Estás seguro?",
@@ -329,7 +355,7 @@ const EditPurchaseOrder = () => {
     }
   };
 
-  const generateFactura = async (e) => {
+  const printPurchaseOrder = async (e) => {
     e.preventDefault();
 
     const proveedorValue =
@@ -372,7 +398,7 @@ const EditPurchaseOrder = () => {
         // Crear un enlace para descargar el PDF automáticamente o abrirlo
         const link = document.createElement("a");
         link.href = pdfUrl;
-        link.download = `Peidodecompra.pdf`; // Aquí puedes elegir el nombre del archivo
+        link.download = `Pedidodecompra.pdf`; // Aquí puedes elegir el nombre del archivo
         document.body.appendChild(link);
         link.click();
 
@@ -399,6 +425,9 @@ const EditPurchaseOrder = () => {
     <>
       <div className="orderdetail__container">
         <div className="orderdetail__table-container">
+          <div className="orderdetail__title">
+            <p>Detalle de pedido de compra</p>
+          </div>
           <div className="date-selector">
             <div className="date-selector__item">
               <p>Fecha</p>
@@ -446,6 +475,7 @@ const EditPurchaseOrder = () => {
               handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
               linkPrefix="/detallepedido/editarpedido/"
               getEditPath={(id) => `/pedido/${pid}/detalle/${id}`}
+              showActions={true}
             />
           </div>
           <div className="orderdetail__total">
@@ -458,7 +488,7 @@ const EditPurchaseOrder = () => {
 
             <button onClick={handleUpdateOrder}>Guardar</button>
 
-            <button onClick={generateFactura}>Imprimir</button>
+            <button onClick={printPurchaseOrder}>Imprimir</button>
             <button onClick={handleExit}>Salir</button>
           </div>
         </div>

@@ -54,7 +54,6 @@ const ResetPassword = () => {
         }
       );
 
-      console.log("Email: ", userEmail);
    
 
       if (userPassword != userConfirmationPassword) {

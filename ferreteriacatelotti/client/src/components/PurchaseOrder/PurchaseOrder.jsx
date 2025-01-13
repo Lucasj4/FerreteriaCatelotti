@@ -34,13 +34,13 @@ const PurchaseOrder = () => {
       icon,
       showCancelButton,
       confirmButtonText: "Aceptar",
-      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined,
       customClass: {
         title: "my-title-class",
         popup: "my-popup-class",
         confirmButton: "my-confirm-button-class",
         overlay: "my-overlay-class",
-        cancelButton: "my-cancel-button-class", 
+        cancelButton: "my-cancel-button-class",
       },
     });
   };
@@ -84,12 +84,14 @@ const PurchaseOrder = () => {
     const fetchPurchaseOrders = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/purchaseorders"
+          "http://localhost:8080/api/purchaseorders", {
+            credentials: "include",
+          }
         );
         const data = await response.json();
         const purchaseOrders = data.purchaseOrders;
 
-        console.log(purchaseOrders);
+        
 
         // Mapear cada orden y obtener detalles del proveedor por supplierID
         const ordersWithSuppliers = await Promise.all(
@@ -107,7 +109,7 @@ const PurchaseOrder = () => {
               // Formatear la orden con el apellido del proveedor
               return {
                 ...order,
-                proveedor: supplierData.supplier, // Obtener el lastName del proveedor
+                proveedor: supplierData.supplier.supplierLastName, // Obtener el lastName del proveedor
               };
             } catch (supplierError) {
               console.error(
@@ -136,14 +138,14 @@ const PurchaseOrder = () => {
     console.log("start date: ", startDate);
     console.log("end date: ", endDate);
 
-     const supplier = selectedSuppliers?.length > 0 ? selectedSuppliers[0]?.value : "";
+    const supplier =
+      selectedSuppliers?.length > 0 ? selectedSuppliers[0]?.value : "";
     // Verificar si la fecha de inicio es mayor o igual que la fecha de fin
     if (startDate > endDate) {
       showAlert({
         icon: "error",
         title: "Error de fechas",
         text: "La fecha de inicio no puede ser igual o mayor que la fecha de fin.",
-        
       });
       return; // Terminar la ejecución si hay un error
     }
@@ -173,9 +175,8 @@ const PurchaseOrder = () => {
 
       if (response.status === 404) {
         showAlert({
-          icon: "info",
+          icon: "warning",
           text: "No se encontro ningun pedido de compra con los parametros establecidos",
-      
         });
         return;
       }
@@ -196,7 +197,7 @@ const PurchaseOrder = () => {
             // Formatear la orden con el apellido del proveedor
             return {
               ...order,
-              proveedor: supplierData.supplier, // Obtener el lastName del proveedor
+              proveedor: supplierData.supplier.supplierLastName, // Obtener el lastName del proveedor
             };
           } catch (supplierError) {
             console.error(
@@ -224,7 +225,6 @@ const PurchaseOrder = () => {
       text: "Una vez eliminado, no podrás recuperar este presupuesto.",
       icon: "warning",
       showCancelButton: true,
-     
     });
     console.log("Id purhcase order");
 
@@ -245,7 +245,6 @@ const PurchaseOrder = () => {
           showAlert({
             text: "Pedido de compra eliminado con exito",
             icon: "success",
-            
           });
         }
       } catch (error) {
@@ -254,94 +253,53 @@ const PurchaseOrder = () => {
     }
   };
 
-  const handleSave = async (e) => {
-    e.preventDefault();
-
-    const proveedorValue =
-      selectedSuppliers.length > 0 ? selectedSuppliers[0].value : "";
-
-    // Guarda los datos en el contexto
-    saveData(fecha, proveedorValue, estado);
-
-    let purchaseOrderIdToUse = purchaseOrderId;
-
-    // Si no existe el purchaseOrderId, crear uno nuevo
-    if (!purchaseOrderId) {
-      const newPurchaseOrder = {
-        purchaseOrderDate: fecha,
-        purchaseOrderStatus: estado,
-        supplierID: proveedorValue,
-      };
-
-      try {
-        const response = await fetch(
-          "http://localhost:8080/api/purchaseorders",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newPurchaseOrder),
-          }
-        );
-
-        const data = await response.json();
-        console.log("data: ", data);
-
-        if (data.purchaseOrder && data.purchaseOrder._id) {
-          // Guarda el nuevo purchaseOrderId
-          purchaseOrderIdToUse = data.purchaseOrder._id;
-          console.log("PurchaseOrder creado con ID: ", purchaseOrderIdToUse);
-        } else {
-          console.error(
-            "Error: No se devolvió un purchaseOrderId del servidor"
-          );
-          return;
-        }
-      } catch (error) {
-        console.error("Error:", error.message);
-        return;
-      }
-    } else {
-      console.log("Usando el existing purchaseOrderId: ", purchaseOrderId);
-    }
-
-    // Una vez que tenemos el purchaseOrderIdToUse, actualizamos los detailOrders
+  const getAllProducts = async () => {
     try {
-      const updateDetailOrdersResponse = await fetch(
-        "http://localhost:8080/api/detailsorder/update-multiple",
-        {
-          method: "PUT", // Usamos PUT para actualizar registros
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            detalleIds, // Array de IDs de detalle
-            purchaseOrderId: purchaseOrderIdToUse, // El ID del purchaseOrder (nuevo o existente)
-          }),
-        }
+      const response = await fetch("http://localhost:8080/api/purchaseorders", {
+        credentials: "include",
+      });
+      const data = await response.json();
+      const purchaseOrders = data.purchaseOrders;
+
+      console.log(purchaseOrders);
+
+      // Mapear cada orden y obtener detalles del proveedor por supplierID
+      const ordersWithSuppliers = await Promise.all(
+        purchaseOrders.map(async (order) => {
+          try {
+            // Hacer fetch de proveedor por supplierID
+            const supplierResponse = await fetch(
+              `http://localhost:8080/api/suppliers/${order.supplierID}`,
+              {
+                credentials: "include",
+              }
+            );
+            const supplierData = await supplierResponse.json();
+
+            // Formatear la orden con el apellido del proveedor
+            return {
+              ...order,
+              proveedor: supplierData.supplier.supplierLastName, // Obtener el lastName del proveedor
+            };
+          } catch (supplierError) {
+            console.error(
+              "Error obteniendo detalles del proveedor:",
+              supplierError
+            );
+            return { ...order, proveedor: "Proveedor desconocido" }; // Fallback si la búsqueda falla
+          }
+        })
       );
 
-      const updateResponseData = await updateDetailOrdersResponse.json();
-
-      if (updateDetailOrdersResponse.ok) {
-        console.log("DetailOrders actualizados con éxito");
-      } else {
-        console.error(
-          "Error actualizando los DetailOrders",
-          updateResponseData
-        );
-      }
+      setFilas(ordersWithSuppliers);
     } catch (error) {
-      console.error("Error al actualizar los DetailOrders:", error.message);
+      console.error(error);
     }
-
-    // Aquí puedes agregar la lógica para redirigir a otra página o hacer otra acción
   };
   return (
     <>
       <div className="purchaseOrder__container">
-      <div className="purchaseorder__title">Pedidos de compra</div>
+        <div className="purchaseorder__title">Pedidos de compra</div>
         <div className="purchaseOrder__filter">
           <div className="dateselector">
             <h4>Fecha</h4>
@@ -384,7 +342,6 @@ const PurchaseOrder = () => {
                       },
                     ]);
                   }}
-                 
                 />
               </div>
             </div>
@@ -443,7 +400,7 @@ const PurchaseOrder = () => {
           <Link to={`/pedido/agregarpedido`}>
             <button className="actions__button">Nuevo</button>
           </Link>
-          <button className="actions__button">Imprimir</button>
+          <button className="actions__button" onClick={getAllProducts}>Mostrar todos</button>
           <button className="actions__button">Salir</button>
         </div>
       </div>

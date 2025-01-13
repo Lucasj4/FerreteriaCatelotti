@@ -10,6 +10,9 @@ const ProductComponent = () => {
   const [productCategory, setProductCategory] = useState("");
   const [searchCriteria, setSearchCriteria] = useState("name");
   const [filas, setFilas] = useState([]);
+  const [showModal, setShowModal] = useState(false); // Para mostrar/ocultar el modal
+  const [stockThreshold, setStockThreshold] = useState(""); // Para el valor de quiebre de stock
+  const [alarmStock, setAlarmStock] = useState(""); // Para el valor de alarma de stock
   const tableHeaders = [
     { value: "productName", label: "Producto" },
     { value: "productStock", label: "Stock" },
@@ -18,6 +21,54 @@ const ProductComponent = () => {
     { value: "unitID", label: "Unidad" },
   ];
 
+  const handleOpenModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+
+  const handleSaveSettings = () => {
+    // Puedes agregar lógica aquí para guardar las configuraciones, como por ejemplo hacer un fetch a un API
+    console.log("Configuraciones guardadas:", { stockThreshold});
+    handleCloseModal();
+  };
+  useEffect(() => {
+ 
+
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/products", {
+          credentials: "include",
+        });
+
+        if (response) {
+          const products = await response.json();
+
+          setFilas(products.products);
+        } else {
+          throw new Error("Error al obtener los productos");
+        }
+      } catch (error) {
+        throw error;
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const getAllProducts = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/products", {
+        credentials: "include",
+      });
+
+      if (response.status === 200) {
+        const products = await response.json();
+
+        console.log("Productos: ", products);
+
+        setFilas(products.products);
+      }
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  };
   const showAlert = ({ title, text, icon, showCancelButton = false }) => {
     return Swal.fire({
       title,
@@ -25,50 +76,65 @@ const ProductComponent = () => {
       icon,
       showCancelButton,
       confirmButtonText: "Aceptar",
-      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined,
       customClass: {
         title: "my-title-class",
         popup: "my-popup-class",
         confirmButton: "my-confirm-button-class",
         overlay: "my-overlay-class",
-        cancelButton: "my-cancel-button-class", 
+        cancelButton: "my-cancel-button-class",
       },
     });
   };
 
   const getProductsWithLowStock = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/products/lowstock")
-      if(response.status === 200){
+      const response = await fetch(
+        "http://localhost:8080/api/products/lowstock",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          credentials: "include",
+
+          body: JSON.stringify({stockThreshold}),
+        }
+      );
+      if (response.status === 200) {
         const products = await response.json();
-        setFilas(products.products)
+        setFilas(products.products);
       }
     } catch (error) {
       throw error;
     }
-  }
-  
+  };
+
   const getProducts = async () => {
     try {
       const queryParam =
         searchCriteria === "name"
           ? `name=${productName}`
           : `category=${productCategory}`;
-          
-          const response = await fetch(
-        `http://localhost:8080/api/products/search?${queryParam}`
+
+      console.log("producto: ", queryParam);
+      
+      const response = await fetch(
+        `http://localhost:8080/api/products/search?${queryParam}`, {
+          credentials: 'include',
+        }
       );
 
-      if (response.status === 404 && searchCriteria === 'name') {
+      if (response.status === 404 && searchCriteria === "name") {
         showAlert({
           title: "Producto no encontrado",
           icon: "warning",
         });
-      }else if(response.status === 404 && searchCriteria === 'category'){
+      } else if (response.status === 404 && searchCriteria === "category") {
         showAlert({
           title: "No hay productos con esa categoria",
           icon: "warning",
-          
         });
       }
 
@@ -101,7 +167,7 @@ const ProductComponent = () => {
             headers: {
               "Content-Type": "application/json",
             },
-            credentials: "include"
+            credentials: "include",
           }
         );
 
@@ -110,7 +176,6 @@ const ProductComponent = () => {
             showAlert({
               title: "Producto eliminado con éxito",
               icon: "success",
-              
             });
             setFilas(filas.filter((product) => product._id !== productId));
             break;
@@ -118,7 +183,6 @@ const ProductComponent = () => {
             showAlert({
               title: "Producto no encontrado",
               icon: "warning",
-              
             });
             break;
           default:
@@ -126,7 +190,6 @@ const ProductComponent = () => {
               title: "Error inesperado",
               text: `Código de estado: ${response.status}`,
               icon: "error",
-             
             });
             console.error(`Estado inesperado: ${response.status}`, response);
             break;
@@ -139,7 +202,6 @@ const ProductComponent = () => {
       showAlert({
         title: "Eliminación cancelada",
         icon: "info",
-        
       });
     }
   };
@@ -156,34 +218,13 @@ const ProductComponent = () => {
     setSearchCriteria(e.target.value);
   };
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      console.log("codercookie: ", document.cookie);
-      
-      try {
-        const response = await fetch("http://localhost:8080/api/products" ,{
-          credentials: 'include',
-        }
-        );
-
-        if (response) {
-          const products = await response.json();
-
-          setFilas(products.products);
-        } else {
-          throw new Error("Error al obtener los productos");
-        }
-      } catch (error) {
-        throw error;
-      }
-    };
-    fetchProducts();
-  }, []);
-
   return (
     <>
       <div className="component__container">
         <div className="component__table__container">
+          <div className="products__titlecontainer">
+            <h2>Productos</h2>
+          </div>
           <div className="component__search__container">
             <select
               className="component__search-select"
@@ -218,18 +259,66 @@ const ProductComponent = () => {
             handleDeleteCell={handleDeleteProduct}
             headers={tableHeaders}
             data={filas}
-            getEditPath={(id) =>`/productos/${id}`}
+            getEditPath={(id) => `/productos/${id}`}
+            showActions={true}
           />
           <div className="component__actions">
             <Link to={"/productos/agregarproducto"}>
               <button className="component__actions__button">Nuevo</button>
             </Link>
-            <button className="component__actions__button" onClick={getProductsWithLowStock}>
+            <button
+              className="component__actions__button"
+              onClick={getProductsWithLowStock}
+            >
               Quiebre Stock
             </button>
-            
+            <button
+              className="component__actions__button"
+              onClick={getAllProducts}
+            >
+              Mostrar todos
+            </button>
+            <button
+              className="component__actions__button"
+              onClick={handleOpenModal}
+            >
+              Configuraciones
+            </button>
+
             <button className="component__actions__button">Salir</button>
           </div>
+
+          {showModal && (
+            <div className="modal">
+              <div className="modal__content">
+                <h3>Configuraciones de Stock</h3>
+                <div className="modal__input">
+                  <label>Quiebre de stock:</label>
+                  <input
+                    type="number"
+                    value={stockThreshold}
+                    onChange={(e) => setStockThreshold(e.target.value)}
+                  />
+                </div>
+                {/* <div className="modal__input">
+                  <label>Alarma de stock:</label>
+                  <input
+                    type="number"
+                    value={alarmStock}
+                    onChange={(e) => setAlarmStock(e.target.value)}
+                  />
+                </div> */}
+                <div className="modal__buttons">
+                  <button className="modal__close" onClick={handleCloseModal}>
+                    Cerrar
+                  </button>
+                  <button className="modal__save" onClick={handleSaveSettings}>
+                    Guardar
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

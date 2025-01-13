@@ -160,6 +160,9 @@ const OrderDetail = () => {
     <>
       <div className="orderdetail__container">
         <div className="orderdetail__table-container">
+          <div className="orderdetail__title">
+            <h2>Agregar pedido</h2>
+          </div>
           <div className="date-selector">
             <div className="date-selector__item">
               <p>Fecha</p>

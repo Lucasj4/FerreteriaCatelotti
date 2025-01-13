@@ -17,22 +17,22 @@ const BudgetDetail = () => {
   const navigate = useNavigate();
 
   const showAlert = ({ title = "", text, icon, showCancelButton = false }) => {
-      return Swal.fire({
-        title,
-        text,
-        icon,
-        showCancelButton,
-        confirmButtonText: "Aceptar",
-        cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
-        customClass: {
-          title: "my-title-class",
-          popup: "my-popup-class",
-          confirmButton: "my-confirm-button-class",
-          overlay: "my-overlay-class",
-          cancelButton: "my-cancel-button-class", 
-        },
-      });
-    };
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined,
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class",
+      },
+    });
+  };
 
   const tableHeaders = [
     { value: "budgetDetailItem", label: "Producto" },
@@ -210,7 +210,7 @@ const BudgetDetail = () => {
         title: "Debes seleccionar una fecha",
         icon: "warning",
         confirmButtonText: "Aceptar",
-      })
+      });
     }
 
     if (!clientId) {
@@ -226,7 +226,25 @@ const BudgetDetail = () => {
       budgetStatus,
       clientId,
     };
-    console.log("updateBudget: ", budgetStatus);
+
+    const response = await fetch(`http://localhost:8080/api/budgets/${pid}`, {
+      credentials: "include",
+    });
+
+    const data = await response.json();
+
+    const budget = data.budget;
+
+    console.log("dATA: ", data);
+
+    if (budget.budgetStatus === "Facturado") {
+      showAlert({
+        title: "Error",
+        text: "No se puede modificar un presupuesto que ya ha sido facturado",
+        icon: "warning",
+      });
+      return;
+    }
 
     try {
       const response = await fetch(`http://localhost:8080/api/budgets/${pid}`, {
@@ -242,7 +260,7 @@ const BudgetDetail = () => {
         showAlert({
           title: "Presupuesto guardado con exito",
           icon: "success",
-          confirmButtonText: "Aceptar", 
+          confirmButtonText: "Aceptar",
         });
       }
     } catch (error) {
@@ -255,7 +273,6 @@ const BudgetDetail = () => {
       text: "Si no guardas los cambios, se perderán.",
       icon: "warning",
       showCancelButton: true,
-     
     }).then((result) => {
       if (result.isConfirmed) {
         navigate("/presupuesto");
@@ -358,7 +375,7 @@ const BudgetDetail = () => {
             saleTotalAmount: budget.budgetAmount,
             clientId: budget.clientId,
             userId: budget.userId,
-            budgetId: budget._id
+            budgetId: budget._id,
           };
           try {
             const response = await fetch("http://localhost:8080/api/sales", {
@@ -374,7 +391,6 @@ const BudgetDetail = () => {
               showAlert({
                 text: "Presupuesto facturado. Venta agregada",
                 icon: "success",
-                
               });
             }
           } catch (error) {
@@ -401,7 +417,7 @@ const BudgetDetail = () => {
     <>
       <div className="budgetdetail__container">
         <div className="budgetdetail__tablecontainer">
-        <div className="budgetdetail__title">Detalle presupuesto</div>
+          <div className="budgetdetail__title">Detalle presupuesto</div>
           <div className="budgetdetail__option">
             <div className="budgetdetail__option__item">
               <p className="budgetdetail__option__item__title">Fecha</p>
@@ -435,27 +451,29 @@ const BudgetDetail = () => {
               </select>
             </div>
           </div>
-          <Table
-            headers={tableHeaders}
-            data={row}
-            tableClassName="budget__table"
-            trClassName="budget__table__row"
-            thClassName="budget__table__header"
-            theadClassName="budget__table__thead"
-            tbodyClassName="budget__table__body"
-            tdClassName="budget__table__cell"
-            actionEditClassName="budget__table__action--edit"
-            handleDeleteCell={(id, index) =>
-              handleDeleteBudgetDetail(id, index)
-            }
-            deleteIconClassName="table__deleteIcon"
-            editIconClassName="table__editIcon"
-            getEditPath={(id) => `/presupuesto/${pid}/detalle/${id}`}
-            
 
-          />
-          <div className="budgetdetail__containeramount">
-            <p className="budgetdetail__amount">Total: ${amount}</p>
+          <div className="budgetdetail__table">
+            <Table
+              headers={tableHeaders}
+              data={row}
+              tableClassName="budget__table"
+              trClassName="budget__table__row"
+              thClassName="budget__table__header"
+              theadClassName="budget__table__thead"
+              tbodyClassName="budget__table__body"
+              tdClassName="budget__table__cell"
+              actionEditClassName="budget__table__action--edit"
+              handleDeleteCell={(id, index) =>
+                handleDeleteBudgetDetail(id, index)
+              }
+              deleteIconClassName="table__deleteIcon"
+              editIconClassName="table__editIcon"
+              getEditPath={(id) => `/presupuesto/${pid}/detalle/${id}`}
+              showActions={true}
+            />
+            <div className="budgetdetail__containeramount">
+              <p className="budgetdetail__amount">Total: ${amount}</p>
+            </div>
           </div>
 
           <div className="budgetdetail__buttoncontainer">

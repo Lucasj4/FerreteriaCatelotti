@@ -1,6 +1,8 @@
 import { BudgetDetaiLService } from "./budgetdetail-service.js";
+import {ProductService} from '../products/product-service.js'
 
 const budgetDetailService = new BudgetDetaiLService();
+const productService = new ProductService();
 
 export default class BudgetDetaiLController{
     
@@ -12,7 +14,15 @@ export default class BudgetDetaiLController{
 
         const existingDetail = await  budgetDetailService.findDetailByPurchaseOrderAndProductName(budgetID, budgetDetailItem);
 
-        console.log("Existing Detail: ", existingDetail);
+        const product = await productService.getProductById(productID);
+        
+        if(product.productStock < budgetDetailQuantity){
+          return res.status(409).json({
+              message: `Stock insuficiente de ${budgetDetailItem}`,
+              availableStock: product.productStock,
+          });
+      }
+        
         
         if(existingDetail){
           console.log(typeof(existingDetail.budgetDetailQuantity ));
@@ -43,6 +53,8 @@ export default class BudgetDetaiLController{
         return res.status(201).json({message: "Detalle de presupuesto", budgetDetail});
     } catch (error) {
         req.logger.error(error);
+        console.error("ERROR: ", error);
+        
         res.status(500).json({ error: 'Error interno del servidor' });
     }
   }

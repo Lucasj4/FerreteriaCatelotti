@@ -1,13 +1,92 @@
 import { useState } from "react";
 import FormItem from "../FormItem/FormItem";
 import { Link } from "react-router-dom";
+import Swal from "sweetalert2";
 import "./NewSupplier.css";
 
 const NewSupplier = () => {
   const [supplierName, setSupplierName] = useState("");
   const [supplierLastName, setSupplierLastName] = useState("");
-  const [supplierPhone, setSupplierPhone] = useState("");
+  const [supplierDni, setSupplierDni] = useState("");
   const [supplierEmail, setSupplierEmail] = useState("");
+
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined,
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class",
+      },
+    });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const newSupplier = {
+      supplierFirstName: supplierName,
+      supplierLastName,
+      supplierEmail,
+      supplierDni,
+    };
+
+    try {
+      const response = await fetch("http://localhost:8080/api/suppliers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(newSupplier),
+      });
+
+      const data = await response.json();
+
+      switch (response.status) {
+        case 200:
+          showAlert({
+            text: "Proveedor agregado con exito",
+            icon: "success",
+          });
+          break;
+        case 400:
+          const errorMessages =
+            data.errorMessages && data.errorMessages.length > 0
+              ? data.errorMessages[0] // Une los mensajes con saltos de línea
+              : "Error desconocido";
+          showAlert({
+            title: "Error",
+            text: errorMessages,
+            icon: "error",
+          });
+          break;
+        case 409:
+          showAlert({
+            title: "Error",
+            text: data.message,
+            icon: "error",
+          });
+          break;
+        default:
+          showAlert({
+            title: "Error inesperado",
+            text: `Código de estado: ${response.status}`,
+            icon: "error",
+          });
+          break;
+      }
+    } catch (error) {
+      console.error("Error en la solicitud", error);
+    }
+  };
   return (
     <>
       <div className="component__container">
@@ -36,13 +115,13 @@ const NewSupplier = () => {
             />
             <FormItem
               formItemClassName="form__item"
-              id="supplierPhone"
+              id="supplierDni"
               typeInput="text"
-              label="Telefono"
+              label="Dni"
               labelClassname="form__label"
               inputClassname="form__input"
-              value={supplierPhone}
-              onChange={(e) => setSupplierPhone(e.target.value)}
+              value={supplierDni}
+              onChange={(e) => setSupplierDni(e.target.value)}
             />
             <FormItem
               formItemClassName="form__item"
@@ -57,7 +136,7 @@ const NewSupplier = () => {
           </form>
 
           <div className="form__containerbuttons">
-            <button type="button" className="form__button">
+            <button type="button" className="form__button" onClick={handleSubmit}>
               Guardar
             </button>
             <Link to={"/proveedores"}>

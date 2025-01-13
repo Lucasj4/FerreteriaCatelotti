@@ -169,7 +169,7 @@ const NewProduct = () => {
     }
   };
 
-  const options = ["Metros"];
+  
 
   return (
     <>
