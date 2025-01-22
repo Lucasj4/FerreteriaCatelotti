@@ -204,7 +204,7 @@ function App() {
                       />
 
                       <Route
-                        path="/users/:id"
+                        path="/usuarios/:id"
                         element={
                           <ProtectedRoute allowedRoles={["Admin"]}>
                             <EditUser />

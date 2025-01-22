@@ -17,6 +17,7 @@ const ProductComponent = () => {
     { value: "productName", label: "Producto" },
     { value: "productStock", label: "Stock" },
     { value: "productPrice", label: "Precio venta" },
+    { value: "productCost", label: "Costo" },
     { value: "categoryID", label: "Categoria" },
     { value: "unitID", label: "Unidad" },
   ];

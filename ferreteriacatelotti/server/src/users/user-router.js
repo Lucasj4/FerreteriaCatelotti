@@ -6,12 +6,14 @@ import { checkUserRole } from '../middlewares/checkrole.js';
 export const userRouter = express.Router();
 const userController = new UserController();
 
-userRouter.post("/",/* authMiddleware, checkUserRole(["Admin"]), */ userController.createUser );
+userRouter.post("/", userValidator, authMiddleware, checkUserRole(["Admin"]),  userController.createUser );
 userRouter.post("/login",  userController.loginUser );
 userRouter.post('/logout', userController.logoutUser);
 userRouter.post('/requestresetpassword', userController.requestPasswordReset);
 userRouter.post('/resetpassword', userController.resetPassword);
 userRouter.get("/", authMiddleware, checkUserRole(["Admin"]), userController.getUsers);
 userRouter.get("/rol",  userController.getUserRole);
-userRouter.delete('/:id', authMiddleware, checkUserRole(["Admin"]), userController.deleteUser)
+userRouter.get("/:id", authMiddleware, checkUserRole(["Admin"]),  userController.getUserById);
+userRouter.put('/:id', userValidator, authMiddleware, checkUserRole(["Admin"]), userController.updateUser);
+userRouter.delete('/:id', authMiddleware, checkUserRole(["Admin"]), userController.deleteUser);
  

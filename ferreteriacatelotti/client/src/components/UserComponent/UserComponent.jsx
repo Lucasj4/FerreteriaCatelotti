@@ -122,7 +122,7 @@ const UserComponent = () => {
             deleteIconClassName="table__deleteIcon"
             editIconClassName="table__editIcon"
             headers={tableHeaders}
-            getEditPath={(id) =>`/users/${id}`}
+            getEditPath={(id) =>`/usuarios/${id}`}
             handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
             data={row}
             showActions={true}

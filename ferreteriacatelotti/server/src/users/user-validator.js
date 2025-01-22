@@ -1,38 +1,71 @@
-import Joi from 'joi';
-import CustomError from '../errors/custom-error.js';
-import { Errors } from '../errors/enum-error.js';
+import Joi from "joi";
 
-export const userValidator = (req,res,next) => {
-    
+export const userValidator = (req, res, next) => {
+    // Determina si es un método PUT (actualización)
+    const isUpdate = req.method === "PUT";
+
+    // Esquema de validación
     const schema = Joi.object({
-        userUsername: Joi.string().trim().pattern(/^[A-Za-z0-9]+$/).required().messages({
-            "string.empty": "El username del usuario es obligatorio",
-            "any.required": "El username del usuario es obligatorio",
-            "string.base": "El username debe contener solo letras y números",
-            "string.pattern.base": "El username debe contener solo letras y números, sin espacios"
-        }),
-        userEmail:Joi.string().regex(/@(gmail\.com|hotmail\.com)$/).email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required().messages({
-            "string.empty": "El email es obligatorio",
-            "any.required": "El email es obligatorio",
-            "string.email": "El email debe ser una dirección de correo electrónico válida",
-            "string.pattern.base": "El email debe ser una dirección de correo electrónico válida de Gmail o Hotmail"
-        }),
-        userPassword: Joi.string().min(8).max(30).pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_.])[A-Za-z\d@$!%*?&_.]+$/).required().messages({
-            "string.empty": "La contraseña es obligatoria",
-            "any.required": "La contraseña es obligatoria",
-            "string.min": "La contraseña debe tener al menos 8 caracteres",
-            "string.max": "La contraseña no debe exceder los 30 caracteres",
-            "string.pattern.base": "La contraseña debe incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial (como @ $ ! % * ? & _ . )"
+        userUsername: Joi.string()
+            .trim()
+            .pattern(/^[A-Za-z0-9._]+$/)
+            .required()
+            .messages({
+                "string.base": "El username debe contener solo letras, números, guiones bajos o puntos",
+                "string.empty": "El username es obligatorio",
+                "string.pattern.base": "El username solo puede contener letras, números, guión bajo (_) o punto (.), sin espacios ni otros caracteres especiales",
+            }),
+        userEmail: Joi.string()
+            .email({ minDomainSegments: 2, tlds: { allow: false } }) // Permitir todos los dominios
+            .required()
+            .messages({
+                "string.email": "El email debe ser una dirección de correo válida",
+                "string.empty": "El email es obligatorio",
+            }),
+        userRole: Joi.string()
+            .trim()
+            .optional()
+            .messages({
+                "string.empty": "El rol no puede estar vacío",
+            }),
+        userPassword: Joi.alternatives().conditional(Joi.ref('$isUpdate'), {
+            is: true, // Cuando es un PUT, la contraseña es opcional
+            then: Joi.string()
+                .min(8)
+                .max(30)
+                .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&_.]+$/)
+                .optional()
+                .messages({
+                    "string.min": "La contraseña debe tener al menos 8 caracteres",
+                    "string.max": "La contraseña no debe exceder los 30 caracteres",
+                    "string.pattern.base": "La contraseña debe incluir al menos una letra mayúscula, una letra minúscula y un número",
+                }),
+            otherwise: Joi.string()
+                .min(8)
+                .max(30)
+                .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&_.]+$/)
+                .required()
+                .messages({
+                    "string.empty": "La contraseña es obligatoria",
+                    "any.required": "La contraseña es obligatoria para registros",
+                    "string.min": "La contraseña debe tener al menos 8 caracteres",
+                    "string.max": "La contraseña no debe exceder los 30 caracteres",
+                    "string.pattern.base": "La contraseña debe incluir al menos una letra mayúscula, una letra minúscula y un número",
+                }),
         }),
     }).unknown();
 
-    const { error } = schema.validate(req.body, { abortEarly: false });
+    // Validar con contexto
+    const { error } = schema.validate(req.body, { 
+        abortEarly: false, 
+        context: { isUpdate }
+    });
 
+    // Manejo de errores de validación
     if (error) {
-        const errorMessages = error.details.map(detail => detail.message);
-        console.log(errorMessages);
-        
+        const errorMessages = error.details.map((detail) => detail.message);
         return res.status(400).json({ errorMessages });
     }
+
     next();
-}
+};

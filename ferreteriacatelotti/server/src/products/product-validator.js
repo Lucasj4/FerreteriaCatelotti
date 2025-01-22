@@ -23,10 +23,16 @@ export const validateProduct = (req, res, next) => {
             "number.precision": "El precio debe tener como máximo dos decimales",
         }),
 
-        productStock: Joi.number().min(0).required().messages({
+        productStock: Joi.number().min(0).required().custom((value, helpers) => {
+            if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+                return helpers.error("number.precision");
+            }
+            return value;
+        }).messages({
             "number.base": "El stock del producto debe ser un número",
             "any.required": "El stock del producto es obligatorio",
-            "number.min": "El valor minimo es 0 para el stock del producto"
+            "number.min": "El valor mínimo es 0 para el stock del producto",
+            "number.precision": "El stock solo puede tener hasta dos decimales"
         }),
         productUnit: Joi.string().required().messages({
             "string.base": "La unidad del producto debe ser una cadena",
@@ -36,9 +42,16 @@ export const validateProduct = (req, res, next) => {
             "string.base": "La categoría del producto debe ser una cadena",
             "any.required": "La categoría del producto es obligatoria"
         }),
-        productCost: Joi.number().min(0).required().messages({
+        productCost: Joi.number().min(0).required().custom((value, helpers) => {
+            if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+                return helpers.error("number.precision");
+            }
+            return value;
+        }).messages({
             "number.base": "El costo del producto debe ser un número",
-            "any.required": "El costo del producto es obligatorio"
+            "number.min": "El costo del producto debe ser mayor o igual a 0",
+            "any.required": "El costo del producto es obligatorio",
+            "number.precision": "El costo del producto solo puede tener hasta dos decimales"
         })
     }).unknown();
 

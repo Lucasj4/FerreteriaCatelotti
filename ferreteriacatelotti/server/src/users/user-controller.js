@@ -68,6 +68,27 @@ export class UserController {
         }
     }
 
+    async getUserById(req, res){
+        const {id} = req.params;
+
+        console.log(id);
+        
+        try {
+            const user = await userService.getUserById(id);
+
+            if(!user){
+                return res.status(404).json({message: "Usuario no encontrado"});
+            }
+
+            req.logger.info("Usuario: " + user);
+
+            return res.status(200).json({user});
+        } catch (error) {
+            req.logger.error(error);
+            res.status(500).json({ error: 'Error interno del servidor' });
+        }
+    }
+
     async loginUser(req, res) {
         const { userUsername, userPassword } = req.body;
 
@@ -177,6 +198,30 @@ export class UserController {
         }
     }
 
+    async updateUser(req, res){
+        const {userUsername,  userEmail, userRole} = req.body;
+        const{ id } = req.params;
+
+        try {
+            
+            const updateData = {
+                userUsername,
+                userEmail,
+                userRole
+            }
+
+            const updatedUer = await userService.updateUser(id, updateData);
+
+          
+            return res.status(200).json({updatedUer});
+           
+
+        } catch (error) {
+             console.log("Error: ", error);
+             
+             return res.status(500).json({ message: 'Error en el servidor', error });
+        } 
+    }
     async deleteUser(req, res) {
 
         const { id } = req.params

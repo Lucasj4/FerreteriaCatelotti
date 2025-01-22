@@ -15,22 +15,23 @@ export const ValidateSupplier = (req, res, next) => {
             "string.base": "El apellido debe contener solo letras",
             "string.pattern.base": "El apellido debe contener solo letras y espacios, sin números"
         }),
-        supplierEmail: Joi.string().regex(/@(gmail\.com|hotmail\.com)$/).email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required().messages({
+        supplierEmail: Joi.string().email({ minDomainSegments: 2, tlds: { allow: false } }) // Permite todos los TLD
+        .required()
+        .messages({
             "string.empty": "El email es obligatorio",
             "any.required": "El email es obligatorio",
-            "string.email": "El email debe ser una dirección de correo electrónico válida",
-            "string.pattern.base": "El email debe ser una dirección de correo electrónico válida de Gmail o Hotmail"
+            "string.email": "El email debe ser una dirección de correo electrónico válida"
         }),
         supplierDni: Joi.number()
             .integer()
-            .min(10000000)  // Mínimo valor para asegurar al menos 8 dígitos
+            .min(1000000)  // Mínimo valor para asegurar al menos 7 dígitos
             .max(99999999)  // Máximo valor para asegurar no más de 8 dígitos
             .required()
             .messages({
                 "number.base": "El DNI debe ser un número",
                 "number.empty": "El DNI es obligatorio",
                 "any.required": "El DNI es obligatorio",
-                "number.min": "El DNI debe contener al menos 8 dígitos",
+                "number.min": "El DNI debe contener al menos 7 dígitos",
                 "number.max": "El DNI debe contener no más de 8 dígitos",
                 "number.integer": "El DNI debe ser un número entero"
             }),
