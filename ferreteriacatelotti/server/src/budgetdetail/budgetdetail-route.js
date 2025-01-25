@@ -7,7 +7,7 @@ export const budgetDetailRouter = express.Router();
 budgetDetailRouter.post('/', ValidateBudgetDetail, budgetDetailController.addBudgetDetail);
 budgetDetailRouter.get('/:rowid', budgetDetailController.getBudgetDetailById);
 budgetDetailRouter.post('/details-by-ids', budgetDetailController.getBudgetDetailsByIds);
-budgetDetailRouter.put('/:rowid', budgetDetailController.updateBudgetDetail);
+budgetDetailRouter.put('/:rowid', ValidateBudgetDetail, budgetDetailController.updateBudgetDetail);
 budgetDetailRouter.delete('/:rowid', budgetDetailController.deleteBudgetDetail)
 
 

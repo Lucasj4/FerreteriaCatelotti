@@ -159,9 +159,11 @@ const BudgetDetailLine = () => {
             resetForm();
           });
         } else if (response.status === 400) {
+
+          const data = await response.json();
           const errorMessages =
-            result.errorMessages && result.errorMessages.length > 0
-              ? result.errorMessages[0] // Une los mensajes con saltos de línea
+            data.errorMessages && data.errorMessages.length > 0
+              ? data.errorMessages[0] // Une los mensajes con saltos de línea
               : "Error desconocido";
 
           showAlert({

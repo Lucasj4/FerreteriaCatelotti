@@ -37,22 +37,20 @@ export class SaleController {
     }
 
     async printInvoiceSale(req, res) {
-        const { saleTotalAmount, saleDate, client, details, invoiceNumber } = req.body;
-
-
+        const { saleTotalAmount, saleDate, client, details, invoiceNumber} = req.body;
+    
         req.logger.info('total: ' + saleTotalAmount);
         req.logger.info('fecha: ' + saleDate);
         req.logger.info('cliente: ' + client);
         req.logger.info('detalles: ', details);
-
-
+    
         if (!client || !saleTotalAmount || !saleDate || !invoiceNumber) {
             return res.status(400).json({ error: "Faltan datos necesarios" });
         }
-
+    
         try {
             const doc = new PDFDocument();
-
+    
             // Establecer headers para la respuesta antes de enviar el contenido PDF
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `attachment; filename=factura_${invoiceNumber}.pdf`);
@@ -61,19 +59,53 @@ export class SaleController {
             doc.pipe(res);
     
             // Cabecera del PDF
-            doc.fontSize(14).text(`Factura de venta No. ${invoiceNumber}`, { align: 'right' });
-            doc.fontSize(14).text(`Fecha: ${saleDate}`, { align: 'left' }).moveDown(0.5);
-            doc.text(`Cliente: ${client}`, { align: 'left' }).moveDown(0.5);
-            doc.text(`Total: $${saleTotalAmount}`, { align: 'left' }).moveDown(1.5);
+            const leftColumnX = 50; // Coordenada X para el lado izquierdo
+            const rightColumnX = 400; // Coordenada X para el lado derecho
+            let y = 50; // Coordenada Y inicial
     
-            // Configuración de la tabla
-            const tableHeaders = ["Producto", "Cantidad", "Costo Unitario", "Subtotald"];
+            // Columna izquierda
+            doc.fontSize(14).text(`Ferreteria Catelotti`, leftColumnX, y);
+            y += 20; 
+            doc.text(`Alvear 701, E3202 Concordia, Entre Ríos`, leftColumnX, y);
+            y += 20; 
+            doc.text(`0345 422-6439`, leftColumnX, y);
+    
+            // Columna derecha
+            y = 50; 
+            doc.fontSize(14).text(`Factura No. ${invoiceNumber}`, rightColumnX, y, { align: 'right' });
+            y += 35; 
+            doc.text(`Fecha: ${saleDate}`, rightColumnX, y, { align: 'right' });
+    
+            // Espacio entre las secciones
+            y += 60;
+    
+            // Sección "Facturar a" y "Enviar a"
+            const sectionSpacing = 100;
+            doc.font('Helvetica-Bold');
+            doc.text('Facturar a:', leftColumnX, y);
+            doc.text('Enviar a:', rightColumnX, y, { align: 'right' });
+    
+            y += 20;
+            doc.font('Helvetica');
+            doc.text('Ferreteria Catelotti', leftColumnX, y); // Datos de "Facturar a"
+            doc.text('Alvear 701, E3202 Concordia, Entre Ríos', leftColumnX, y + 15);
+            doc.text('0345 422-6439', leftColumnX, y + 30);
+    
+            doc.text(`${client}`, rightColumnX, y, { align: 'right' }); // Datos de "Enviar a"
+            // doc.text(shippingInfo.address, rightColumnX, y + 15, { align: 'right' });
+            // doc.text(shippingInfo.city, rightColumnX, y + 30, { align: 'right' });
+    
+            // Espacio para la tabla
+            y += sectionSpacing;
+    
+            // Configuración de la tabla (igual que antes)
+            const tableHeaders = ["Producto", "Cantidad", "Costo Unitario", "Subtotal"];
             const tableWidths = [150, 100, 120, 120];
             const tableHeight = 30;
             const pageWidth = 595;
             const tableWidth = tableWidths.reduce((a, b) => a + b, 0);
             const marginLeft = (pageWidth - tableWidth) / 2;
-            let yPosition = doc.y + 10;
+            let yPosition = y;
     
             // Dibujar encabezados de la tabla con bordes
             doc.font('Helvetica-Bold');
@@ -84,30 +116,42 @@ export class SaleController {
             });
             yPosition += tableHeight;
     
-            // Dibujar filas de la tabla con bordes
+            const totalRows = 9;
+            const emptyRows = Math.max(0, totalRows - details.length);
+    
+            // Detalles y filas vacías
             doc.font('Helvetica');
-            details.forEach(detalle => {
-                const row = [
-                    detalle.budgetDetailItem,
-                    detalle.budgetDetailQuantity,
-                    `$${detalle.budgetDetailUnitCost.toFixed(2)}`,
-                    `$${(detalle.budgetDetailQuantity * detalle.budgetDetailUnitCost).toFixed(2)}`
-                ];
+            [...details, ...Array(emptyRows).fill({ budgetDetailItem: "", budgetDetailQuantity: "", budgetDetailUnitCost: "", budgetDetailSubtotal: "" })]
+                .slice(0, totalRows) // Asegurar máximo de filas
+                .forEach(detalle => {
+                    const row = [
+                        detalle.budgetDetailItem || "", // Si no hay item, queda vacío
+                        detalle.budgetDetailQuantity || "", // Si no hay cantidad, queda vacío
+                        detalle.budgetDetailUnitCost !== '' 
+                            ? `$${detalle.budgetDetailUnitCost}`
+                            : "", // Si no hay costo unitario, queda vacío
+                        detalle.budgetDetailQuantity && detalle.budgetDetailUnitCost
+                            ? `$${(detalle.budgetDetailQuantity * detalle.budgetDetailUnitCost)}`
+                            : "" // Si no hay cantidad o costo unitario, queda vacío
+                    ];
     
-                row.forEach((cell, index) => {
-                    const xPosition = marginLeft + tableWidths.slice(0, index).reduce((a, b) => a + b, 0);
-                    doc.text(cell, xPosition + 5, yPosition + 5, { width: tableWidths[index] - 10, align: 'center' });
-                    doc.rect(xPosition, yPosition, tableWidths[index], tableHeight).stroke();
+                    row.forEach((cell, index) => {
+                        const xPosition = marginLeft + tableWidths.slice(0, index).reduce((a, b) => a + b, 0);
+                        doc.text(cell, xPosition + 5, yPosition + 5, { width: tableWidths[index] - 10, align: 'center' });
+                        doc.rect(xPosition, yPosition, tableWidths[index], tableHeight).stroke();
+                    });
+    
+                    yPosition += tableHeight;
+                   
+                    if (yPosition > doc.page.height - 100) { // Espacio adicional para el total
+                        doc.addPage();
+                        yPosition = 50; // Reiniciar posición en nueva página
+                    }
                 });
-    
-                yPosition += tableHeight;
-    
-                // Mover a nueva página si se desborda
-                if (yPosition > doc.page.height - 50) {
-                    doc.addPage();
-                    yPosition = 50; // Reset position en nueva página
-                }
-            });
+                
+                yPosition += 20; // Cambia este valor para reducir o aumentar el espacio
+                const totalTextX = 400; // Posición X del total
+                doc.font('Helvetica-Bold').fontSize(12).text(`Total: $${saleTotalAmount.toFixed(2)}`, totalTextX, yPosition, { align: 'right' });
     
             // Finalizar el documento
             doc.end();
@@ -116,6 +160,7 @@ export class SaleController {
             res.status(500).json({ error: "Error al generar la factura." });
         }
     }
+    
 
     async getSales(req, res) {
         try {
