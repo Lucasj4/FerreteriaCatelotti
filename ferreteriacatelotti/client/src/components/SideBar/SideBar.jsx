@@ -68,14 +68,14 @@ const Sidebar = ({ children }) => {
       icon: <PeopleIcon />,
     },
     {
-      path: "/ventas", // Nueva sección para Ventas
+      path: "/ventas",
       name: "Ventas",
-      icon: <PointOfSaleIcon />, // Icono asociado
+      icon: <PointOfSaleIcon />,
     },
     {
-      path: "/proveedores", // Nueva sección para Ventas
+      path: "/proveedores", 
       name: "Proveedores",
-      icon: <LocalShippingIcon/>, // Icono asociado
+      icon: <LocalShippingIcon/>, 
     },
   ];
 
@@ -93,14 +93,18 @@ const Sidebar = ({ children }) => {
   return (
     <div className="container">
       <div className={sidebarClasses}>
-        <div className={topSectionClass}>
-          <h2 className={h2Classes}>Ferretería Catelotti</h2>
-          <div className="bars">
-            <FaBars onClick={toggle} />
-          </div>
-        </div>
+  <div className={topSectionClass}>
+    {isOpen && (
+      <h2 className="sidebar-title" onClick={() => navigate("/")}>
+        Ferretería Catelotti
+      </h2>
+    )}
+    <div className="bars" onClick={toggle}>
+      <FaBars />
+    </div>
+  </div>
 
-        {/* Renderizar los ítems del menú */}
+
         {menuItems.map((item, index) => (
           <NavLink
             to={item.path}
@@ -113,7 +117,6 @@ const Sidebar = ({ children }) => {
           </NavLink>
         ))}
 
-        {/* Ítem de "Cerrar Sesión" */}
         <div className="logout link" onClick={handlelogout}>
           <div className="icon">
             <FaHome />

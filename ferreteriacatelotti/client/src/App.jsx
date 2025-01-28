@@ -33,6 +33,7 @@ import ViewSale from "./components/ViewSale/ViewSale";
 import SupplierComponent from "./components/SupplierComponent/SupplierComponent";
 import EditSupplier from "./components/EditSupplier/EditSupplier";
 import EditUser from './components/EditUser/EditUser'
+import HomeComponent from "./components/HomeComponent/HomeComponent";
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
                           </ProtectedRoute>
                         }
                       />
+                      <Route path="/" element={<HomeComponent />} /> 
                       <Route
                         path="/presupuesto/agregarpresupuesto"
                         element={

@@ -1,0 +1,87 @@
+.home-container {
+  padding: 2rem;
+  text-align: center;
+  background: #f7f4f1;
+  min-height: 100vh;
+  color: #333;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.title-container {
+  margin-bottom: 3rem;
+}
+
+.title-background {
+  background: linear-gradient(135deg, #f8f4e1, #e0d4b7);
+  display: inline-block;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  animation: fadeInTitle 1s ease-out;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #6c5b7b;
+  letter-spacing: 1.5px;
+  font-family: 'Playfair Display', serif;
+}
+
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e4dccc;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-align: left;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #f8b400;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #6c5b7b;
+}
+
+.card-description {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #7d7d7d; 
+}
+
+@keyframes fadeInTitle {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
