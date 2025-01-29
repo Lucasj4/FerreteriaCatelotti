@@ -24,6 +24,17 @@ export class BudgetController {
         const userId = req.user.user._id;
 
         try {
+
+            const currentDate = new Date(); 
+            const inputDate = new Date(budgetDate); 
+
+           
+            if (inputDate.setUTCHours(0, 0, 0, 0) < currentDate.setUTCHours(0, 0, 0, 0)) {
+                return res.status(400).json({
+                    error: "La fecha del presupuesto no puede ser anterior al día de hoy."
+                });
+            };
+
             const newBudget = {
                 userId,
                 clientId,

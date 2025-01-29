@@ -75,6 +75,7 @@
 }
 .date-selector__item p{
     color: var(--background2);
+    font-size: 1.5rem;
 }
 .date-selector__item__date{
     background-color: var(--color-primary);

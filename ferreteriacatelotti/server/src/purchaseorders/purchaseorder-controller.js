@@ -20,6 +20,16 @@ export class PurchaseOrderController {
 
 
         try {
+            
+            const currentDate = new Date(); 
+            const inputDate = new Date(purchaseOrderDate); 
+
+           
+            if (inputDate.setUTCHours(0, 0, 0, 0) < currentDate.setUTCHours(0, 0, 0, 0)) {
+                return res.status(400).json({
+                    error: "La fecha del pedido no puede ser anterior al día de hoy."
+                });
+            }
 
             const newPurchaseOrder = {
                 purchaseOrderDate,
@@ -259,12 +269,12 @@ export class PurchaseOrderController {
         }
     }
 
-    async getPurchaseOrderById(req,res){
-        const {id} = req.params;
+    async getPurchaseOrderById(req, res) {
+        const { id } = req.params;
         try {
             const purchaseOrder = await purchaseOrderService.getPurchaseOrderById(id);
 
-            if(!purchaseOrder){
+            if (!purchaseOrder) {
                 return res.status(404).json({ message: "Pedido de compra no encontrado" });
             }
 

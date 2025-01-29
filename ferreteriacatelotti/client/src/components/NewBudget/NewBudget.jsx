@@ -188,7 +188,7 @@ const NewBudget = () => {
         const errorMessages =
           result.errorMessages && result.errorMessages.length > 0
             ? result.errorMessages[0]
-            : "Error desconocido";
+            : result.error;
 
         await showAlert({
           title: "Error al crear presupuesto",

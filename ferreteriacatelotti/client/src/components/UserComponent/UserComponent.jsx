@@ -132,7 +132,6 @@ const UserComponent = () => {
             <Link to={"/usuarios/agregarusuario"}>
               <button className="clientecomponent__actions__button">Nuevo</button>
             </Link>
-            <button className="clientecomponent__actions__button">Guardar</button>
             <button className="clientecomponent__actions__button">Salir</button>
           </div>
         </div>

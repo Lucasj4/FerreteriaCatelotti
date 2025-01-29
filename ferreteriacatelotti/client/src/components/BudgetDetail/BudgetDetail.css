@@ -83,7 +83,7 @@
 .budgetdetail__option__item__title{
     font-size: 1.5rem;
     color: var(--background2);
-    font-weight: bold;
+    
 }
 .budgetdetail__option__item__input{
     padding: 0.5rem;

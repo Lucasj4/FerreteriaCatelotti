@@ -10,14 +10,9 @@ export class DetailOrderController {
         const { detailOrderProduct, detailOrderUnitCost, detailOrderQuantity, productID, purchaseOrderID  } = req.body;
 
 
-        const product = await productService.getProductById(productID);
+        
 
-        if(product.productStock < detailOrderQuantity){
-            return res.status(409).json({
-                message: `Stock insuficiente de ${detailOrderProduct}`,
-                availableStock: product.productStock,
-            });
-        }
+       
         const existinDetail = await detailOrderService.findByOrderIdandProductName(purchaseOrderID, detailOrderProduct);
 
         if(existinDetail){
