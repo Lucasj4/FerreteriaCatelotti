@@ -47,7 +47,7 @@ function App() {
             element={<RequestResetPassword />}
           />
           <Route path="/cambiarcontraseña" element={<ResetPassword />} />
-
+          <Route path="/" element={<HomeComponent />} /> 
           {/* Rutas protegidas que necesitan el SideBar */}
           <Route
             path="/*"
@@ -65,7 +65,7 @@ function App() {
                           </ProtectedRoute>
                         }
                       />
-                      <Route path="/" element={<HomeComponent />} /> 
+                      
                       <Route
                         path="/presupuesto/agregarpresupuesto"
                         element={
