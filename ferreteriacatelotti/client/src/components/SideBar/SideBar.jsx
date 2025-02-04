@@ -32,7 +32,7 @@ const Sidebar = ({ children }) => {
 
       if (response.status === 200) {
         console.log("Logout exitoso");
-        navigate("/iniciosesion");
+        navigate("/");
       } else {
         console.error("Logout fallido", response.status);
       }

@@ -31,27 +31,14 @@ export const validateDetailOrder = (req, res, next) => {
             "string.empty": "El ID del producto es obligatorio",
             "any.required": "El ID del producto es obligatorio",
         })
-    })
+    }).unknown();
 
     const { error } = schema.validate(req.body, { abortEarly: false });
 
+   
     if (error) {
-        const errorMessages = error.details.map(detail => detail.message); // Array of error messages in Spanish
-        const cause = `Errores de validación en los campos: ${error.details.map(detail => detail.path.join(".")).join(", ")}`;
-        
-        // // Return the custom error for the backend processing
-        // next(CustomError.createError({
-        //     name: "ValidationError",
-        //     cause: cause,
-        //     message: errorMessages.join(", "), // Joined error messages for logging purposes
-        //     code: Errors.VALIDATION_ERROR,
-        // }));
-        
-        // Also send the error messages to the frontend in the response
-        return res.status(400).json({
-            errorMessages: errorMessages // Send the array of error messages to be displayed in SweetAlert
-        });
+        const errorMessages = error.details.map(detail => detail.message);
+        return res.status(400).json({ errorMessages }); // Enviar array de mensajes de error
     }
-    
     next();
 }

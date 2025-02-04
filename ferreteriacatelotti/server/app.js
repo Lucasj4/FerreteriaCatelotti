@@ -18,7 +18,9 @@ import cookieParser from 'cookie-parser';
 import { initializePassport } from "./src/config/passport.config.js";
 import {authMiddleware} from './src/middlewares/authmiddleware.js';
 import { saleRouter } from './src/sales/sale-router.js';
+import dotenv from 'dotenv';
 
+dotenv.config();
 
 const app = express();
 
@@ -54,6 +56,9 @@ app.use(errorHandler);
 initializePassport();
 
 
-app.listen(8080, () => {
-    console.log(`Servidor en ejecución en http://localhost:8080`);
-})
+const port = process.env.PORT || 8080; 
+
+
+app.listen(port, () => {
+    console.log(`Servidor en ejecución en http://localhost:${port}`);
+});

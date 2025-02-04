@@ -222,34 +222,58 @@ const PurchaseOrder = () => {
   const handleDeleteRow = async (purchaseOrderId, indice) => {
     const result = await showAlert({
       title: "¿Estás seguro?",
-      text: "Una vez eliminado, no podrás recuperar este presupuesto.",
+      text: "Una vez eliminado, no podrás recuperar este pedido de compra.",
       icon: "warning",
       showCancelButton: true,
     });
-    console.log("Id purhcase order");
-
-    if (result.isConfirmed) {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/api/purchaseorders/${purchaseOrderId}`,
-          {
-            method: "DELETE",
-            credentials: "include",
-          }
-        );
-
-        if (response.status === 200) {
-          const nuevasFilas = [...filas];
-          nuevasFilas.splice(indice, 1);
-          setFilas(nuevasFilas);
-          showAlert({
-            text: "Pedido de compra eliminado con exito",
-            icon: "success",
-          });
-        }
-      } catch (error) {
-        console.error(error);
+  
+    if (!result.isConfirmed) return;
+  
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/purchaseorders/${purchaseOrderId}`,
+        { credentials: "include" }
+      );
+  
+      if (!response.ok) throw new Error("Error al obtener el pedido");
+  
+      const { purchaseOrder } = await response.json();
+  
+      if (purchaseOrder.purchaseOrderStatus === "Recibido") {
+        showAlert({
+          title: "No se puede eliminar un pedido de compra ya recibido",
+          icon: "error",
+        });
+        return;
       }
+  
+      const deleteResponse = await fetch(
+        `http://localhost:8080/api/purchaseorders/${purchaseOrderId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+  
+      if (deleteResponse.status === 200) {
+        const nuevasFilas = [...filas];
+        nuevasFilas.splice(indice, 1);
+        setFilas(nuevasFilas);
+  
+        showAlert({
+          text: "Pedido de compra eliminado con éxito",
+          icon: "success",
+        });
+      } else {
+        throw new Error("Error al eliminar el pedido");
+      }
+    } catch (error) {
+      console.error(error);
+      showAlert({
+        title: "Error",
+        text: "Hubo un problema al eliminar el pedido",
+        icon: "error",
+      });
     }
   };
 

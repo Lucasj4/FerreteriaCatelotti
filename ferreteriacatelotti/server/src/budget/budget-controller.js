@@ -2,7 +2,7 @@ import { BudgetService } from "./budget-service.js";
 import BudgetDetaiLModel from '../budgetdetail/budgetdetail-model.js'
 import { ProductService } from "../products/product-service.js";
 import { BudgetDetaiLService } from '../budgetdetail/budgetdetail-service.js'
-import {generateInvoiceNumber} from '../utils/geneteinvoicenumber.js'
+import { generateInvoiceNumber } from '../utils/geneteinvoicenumber.js'
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
@@ -15,20 +15,20 @@ export class BudgetController {
 
     async addBudget(req, res) {
         const { clientId, budgetDate, budgetAmount, budgetStatus, detailIds } = req.body;
-       
-        
+
+
         if (!req.user || !req.user.user || !req.user.user._id) {
             return res.status(401).json({ error: 'Usuario no autenticado' });
-          }
-       
+        }
+
         const userId = req.user.user._id;
 
         try {
 
-            const currentDate = new Date(); 
-            const inputDate = new Date(budgetDate); 
+            const currentDate = new Date();
+            const inputDate = new Date(budgetDate);
 
-           
+
             if (inputDate.setUTCHours(0, 0, 0, 0) < currentDate.setUTCHours(0, 0, 0, 0)) {
                 return res.status(400).json({
                     error: "La fecha del presupuesto no puede ser anterior al día de hoy."
@@ -150,10 +150,17 @@ export class BudgetController {
                 return res.status(404).json({ message: data.error });
             }
 
+            const formattedBudget = {
+                ...data.budget._doc, // Mantener los demás campos
+                budgetDate: data.budget.budgetDate
+                    ? new Date(data.budget.budgetDate).toLocaleDateString('es-ES', { timeZone: 'UTC' })
+                    : null // Formato español día/mes/año
+            };
+
             console.log(data.budget);
 
             res.status(200).json({
-                budget: data.budget,
+                budget: formattedBudget,
                 budgetDetailOrders: data.budgetDetails
             });
         } catch (error) {
@@ -184,9 +191,23 @@ export class BudgetController {
                 return res.status(400).json({ message: "Datos insuficientes para actualizar el presupuesto." });
             }
 
+            const existingBudget = await budgetService.getBudgetById(pid);
+            const createdAt = new Date(existingBudget.budgetDate); // Convertimos a objeto Date
+            const now = new Date();
+            const timeDiff = now - createdAt; // Diferencia en milisegundos
+
+            const hoursPassed = timeDiff / (1000 * 60 * 60); // Convertimos a horas
+           
+            
+            req.logger.info("Horas desde que se facturo: " + hoursPassed);
+
+            if (hoursPassed > 24) {
+                return res.status(403).json({ message: "No puedes modificar este presupuesto después de 24 horas." });
+            }
+
             const budget = await budgetService.updateBudget(updateBudget, pid);
 
-    
+
             if (budget) {
                 res.status(200).json({ message: "Presupeusto actualizado con exito", budget })
             } else {
@@ -214,6 +235,20 @@ export class BudgetController {
             if (!budgetStatus || !pid) {
                 return res.status(400).json({ message: "Datos insuficientes para actualizar el presupuesto." });
             }
+
+            // const existingBudget = await budgetService.getBudgetById(pid);
+            // const createdAt = new Date(existingBudget.budgetDate); // Convertimos a objeto Date
+            // const now = new Date();
+            // const timeDiff = now - createdAt; // Diferencia en milisegundos
+
+            // const hoursPassed = timeDiff / (1000 * 60 * 60); // Convertimos a horas
+
+            
+            // if (hoursPassed > 24) {
+            //     return res.status(403).json({ message: "No puedes modificar este presupuesto después de 24 horas." });
+            // }
+            
+            // req.logger.info("Horas desde que se facturo: ", hoursPassed);
 
             const budget = await budgetService.updateBudgetStatusAndBudgetAmount(updateBudget, pid);
 
@@ -367,7 +402,7 @@ export class BudgetController {
             doc.end();
 
             return res.status(200).json({
-                Invoice:{
+                Invoice: {
                     invoiceNumber,
                     saleDate
                 }
@@ -379,5 +414,5 @@ export class BudgetController {
         }
     }
 
- 
+
 }

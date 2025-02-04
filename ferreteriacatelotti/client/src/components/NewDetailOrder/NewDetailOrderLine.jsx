@@ -132,8 +132,8 @@ const NewDetailOrderLine = () => {
 
         case 400:
           const errorMessages =
-            result.errorMessages && result.errorMessages.length > 0
-              ? result.errorMessages[0]
+            data.errorMessages && data.errorMessages.length > 0
+              ? data.errorMessages[0]
               : "Error desconocido";
 
           await showAlert({

@@ -98,8 +98,9 @@ export default class BudgetDetaiLController{
   }
 
   async updateBudgetDetail(req, res){
-    const updateBudget = req.body
-    const {rowid} = req.params
+    const updateBudget = req.body;
+    const {budgetID, budgetDetailQuantity, budgetDetailItem, productID} = req.body;
+    const {rowid} = req.params;
    
     
     try {
@@ -108,6 +109,19 @@ export default class BudgetDetaiLController{
       if(!existingBudget){
         return res.status(404).json({success: false, message: "Detalle no encontrado"})
       }
+
+      
+
+        const product = await productService.getProductById(productID);
+        
+        if(product.productStock < budgetDetailQuantity){
+          return res.status(409).json({
+              message: `Stock insuficiente de ${budgetDetailItem}`,
+              availableStock: product.productStock,
+          });
+      }
+
+     
 
       const budget = await budgetDetailService.updateBudgetDetail(rowid, updateBudget);
       console.log("Budget actualizado: ", budget);

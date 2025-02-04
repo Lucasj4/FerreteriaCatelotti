@@ -51,6 +51,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  overflow-y: scroll;
+  max-height: 500px;
   background-color: var(--background2);
 }
 .purchaseOrder__supplier {
@@ -85,6 +87,8 @@
   color: #fff;
   padding: 1rem 0;
   width: 60%;
+  overflow-y: scroll;
+  max-height: 500px;
 }
 .purchaseOrder__table__header {
   width: 100px;

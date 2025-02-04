@@ -1,5 +1,10 @@
 import mongoose from "mongoose";
+import dotenv from 'dotenv';
 
-mongoose.connect("mongodb+srv://lucasfjulia:Lebronjames23@cluster0.k62q89m.mongodb.net/ferreteriacatelotti?retryWrites=true&w=majority")
-    .then(()=> { console.log("Conexion exitosa")})
-    .catch((error)=> console.log(`Error: ${error}`));
+dotenv.config();
+const MONGO_URI = process.env.MONGO_URI;  // Usamos la variable de entorno
+
+
+mongoose.connect(MONGO_URI)
+    .then(() => { console.log("Conexión exitosa") })
+    .catch((error) => console.log(`Error: ${error}`));

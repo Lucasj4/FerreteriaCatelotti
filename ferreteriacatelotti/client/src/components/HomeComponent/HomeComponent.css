@@ -26,13 +26,19 @@
   font-size: 1rem;
   cursor: pointer;
   padding: 5px 10px;
+  background-color: var(--color-primary);
+  border-radius: 4px;
 }
+
+
 
 .login-icon {
   margin-right: 8px;
   font-size: 1.2rem;
   color: var(--text-color);
 }
+
+
 .home-container {
   text-align: center;
   background: #f7f4f1;

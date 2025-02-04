@@ -133,26 +133,15 @@
     background-color: var(--grey);
 }
 
-.budget__actions__button{
-    padding:  10px;
-    border-radius: 10px;
-    margin: 10px 0;
-    background-color: var( --color-primary);
-    border: 1px solid var(--color-primary);
-    color: #fff;
-    font-size: 1rem;
-    cursor: pointer;
-}
+
 .budgettable__container{
     width: 90%;
-    overflow-y: scroll;
     height: auto;
+    overflow-y: scroll;
     max-height: 500px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    
-    
     margin: 30px;
     padding-bottom: 20px;
 }

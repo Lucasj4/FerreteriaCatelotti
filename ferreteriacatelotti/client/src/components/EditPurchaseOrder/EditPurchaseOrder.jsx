@@ -92,8 +92,10 @@ const EditPurchaseOrder = () => {
         setAmount(total);
 
         setRows(detailOrders);
-
-        console.log("status: ", purchaseOrder.purchaseOrderStatus);
+        
+        console.log(purchaseOrder.purchaseOrderDate);
+        
+       
         const formattedDate = purchaseOrder.purchaseOrderDate
           ? purchaseOrder.purchaseOrderDate
               .split("/")
@@ -102,6 +104,8 @@ const EditPurchaseOrder = () => {
               .join("-")
           : "";
 
+        console.log("FORMATED FECHA: ", formattedDate);
+        
         setOrderDate(formattedDate);
 
         setPurchaseOrderStatus(purchaseOrder.purchaseOrderStatus);

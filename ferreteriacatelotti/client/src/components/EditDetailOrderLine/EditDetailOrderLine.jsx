@@ -54,7 +54,7 @@ const EditDetailOrderLine = () => {
       setDetailOrderUnitCost("");
   };
   useEffect(() => {
-    console.log("pid: ", pid);
+    
     const fetchProducts = async () => {
       try {
         const response = await fetch(`http://localhost:8080/api/products`, {
@@ -73,7 +73,7 @@ const EditDetailOrderLine = () => {
           unitPrice: product.productPrice,
         }));
 
-        console.log("Product Options: ", productOptions);
+        
 
         setProductsOption(productOptions);
       } catch (error) {
@@ -134,7 +134,7 @@ const EditDetailOrderLine = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch(
         `http://localhost:8080/api/purchaseorders/purchaseorderswithdetails/${pid}`,
@@ -142,80 +142,123 @@ const EditDetailOrderLine = () => {
           credentials: "include",
         }
       );
-
+  
       if (!response.ok) {
         throw new Error("Error al obtener el pedido de compra");
       }
+  
       const data = await response.json();
       const purchaseOrder = data.purchaseOrder;
-
-      console.log("Purchase order: ", purchaseOrder);
+      const detailsOrder = data.detailOrders;
       
-      if(purchaseOrder.purchaseOrderStatus === 'Recibido'){
+     
+      
+      // Validar si el pedido de compra está "Recibido"
+      if (purchaseOrder.purchaseOrderStatus === "Recibido") {
         showAlert({
           title: "Error",
           text: "No se puede modificar el detalle de un pedido de compra recibido",
           icon: "warning",
-          
+        });
+        return;
+      }
+  
+      // Buscar el detalle original antes de la edición
+      const originalDetail = detailsOrder.find((detail) => detail._id === rowid);
+  
+      if (!originalDetail) {
+        showAlert({
+          title: "Error",
+          text: "No se encontró el detalle del pedido.",
+          icon: "error",
+        });
+        return;
+      }
+  
+      // Verificar si el usuario intentó modificar el costo unitario
+      if (originalDetail.detailOrderUnitCost !== detailOrderUnitCost) {
+        showAlert({
+          title: "Error",
+          text: "No puedes modificar el costo unitario desde aquí. Debes hacerlo desde la edición de productos.",
+          icon: "warning",
         });
         return;
       }
     } catch (error) {
-      console.error(error)
+      console.error("Error al obtener la orden de compra:", error.message);
+      showAlert({
+        title: "Error",
+        text: "No se pudo cargar la orden de compra.",
+        icon: "error",
+      });
+      return;
     }
-
+  
+    // Confirmación antes de proceder con la actualización
     const result = await showAlert({
       title: "¿Estás seguro?",
-      text: "¿Confirmar modificacion de detalle?",
+      text: "¿Confirmar modificación de detalle?",
       icon: "warning",
       showCancelButton: true,
     });
-
-    if (result.isConfirmed) {
-      const orderDetailOrderLine = {
-        detailOrderProduct: detailOrderProduct.name, // Nombre del producto
-        detailOrderQuantity,
-        detailOrderUnitCost,
-        productID: detailOrderProduct.id, // ID del producto
-        purchaseOrderID: pid,
-      };
-
-      console.log("orderDetailOrderLine: ", orderDetailOrderLine);
-      console.log("Row id: ", rowid);
-
-      try {
-        const response = await fetch(
-          `http://localhost:8080/api/detailsorder/${rowid}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify(orderDetailOrderLine),
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Error al enviar los datos al servidor");
+  
+    if (!result.isConfirmed) return;
+  
+    const orderDetailOrderLine = {
+      detailOrderProduct: detailOrderProduct.name, // Nombre del producto
+      detailOrderQuantity,
+      detailOrderUnitCost,
+      productID: detailOrderProduct.id, // ID del producto
+      purchaseOrderID: pid,
+    };
+  
+    console.log(":", orderDetailOrderLine);
+  
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/detailsorder/${rowid}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(orderDetailOrderLine),
         }
-
-        // Puedes hacer algo con la respuesta si es necesario
-        const responseData = await response.json();
-        console.log("detalle", responseData);
-
-        if (response.status === 200) {
-          showAlert({
-            title: "Detalle modificado",
-            icon: "success",
-          });
-        }
-        resetForm();
-      } catch (error) {
-        console.error("Error:", error.message);
+      );
+  
+      const responseData = await response.json(); // Convertimos la respuesta a JSON
+  
+      if (response.status === 400) {
+        const errorMessages =
+          responseData.errorMessages && responseData.errorMessages.length > 0
+            ? responseData.errorMessages[0] // Obtiene el primer mensaje de error
+            : "Error desconocido";
+        showAlert({
+          title: "Error",
+          text: errorMessages,
+          icon: "error",
+        });
+        return;
       }
+  
+      showAlert({
+        title: "Detalle modificado",
+        icon: "success",
+      });
+  
+      resetForm();
+    } catch (error) {
+      console.error("Error al enviar los datos:", error.message);
+      showAlert({
+        title: "Error",
+        text: "No se pudo actualizar el detalle del pedido.",
+        icon: "error",
+      });
     }
   };
+  
+  
   return (
     <>
       <div className="newPurchaseOrder__container">

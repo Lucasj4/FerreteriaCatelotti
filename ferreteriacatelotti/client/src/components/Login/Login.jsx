@@ -51,7 +51,7 @@ const Login = () => {
 
       switch (response.status) {
         case 200:
-          navigate("/");
+          navigate("/pedido");
           break;
 
         case 404:

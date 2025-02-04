@@ -192,12 +192,31 @@ const BudgetComponent = () => {
         const response = await fetch(
           `http://localhost:8080/api/budgets/${idBudget}`,
           {
-            method: "DELETE",
+            
+            credentials: "include",
+          }
+        );
+        const data = await response.json();
+        const budget = data.budget;
+
+        if(budget.budgetStatus === "Facturado" ){
+          showAlert({
+            text: "No se puede eliminar un presupuesto facturado",
+            icon: "error"
+
+          });
+          return;
+        }
+
+        const deleteResponse = await fetch(
+          `http://localhost:8080/api/budgets/${idBudget}`,
+          {
+            method: "Delete",
             credentials: "include",
           }
         );
 
-        if (response.status === 200) {
+        if (deleteResponse.status === 200) {
           showAlert({
             title: "Presupuesto eliminado",
             icon: "success",
@@ -319,16 +338,16 @@ const BudgetComponent = () => {
 
           <div className="budget__actions">
             <Link to="/presupuesto/agregarpresupuesto">
-              <button className="budget__actions__button">Nuevo</button>
+              <button className="component__actions__button">Nuevo</button>
             </Link>
 
-            <button className="budget__actions__button" onClick={getAll}>
+            <button className="component__actions__button" onClick={getAll}>
               Mostrar todos
             </button>
-            <button className="budget__actions__button" onClick={handleSearch}>
+            <button className="component__actions__button" onClick={handleSearch}>
               Buscar
             </button>
-            <button className="budget__actions__button">Salir</button>
+            <button className="component__actions__button">Salir</button>
           </div>
         </div>
       </div>

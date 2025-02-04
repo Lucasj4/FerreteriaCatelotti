@@ -117,7 +117,23 @@ const BudgetDetailLine = () => {
   const hundleSubtmit = async (e) => {
     e.preventDefault();
 
+    const response = await fetch(`http://localhost:8080/api/budgets/${pid}`, {
+      credentials: "include",
+    });
+
     
+    const data = await response.json();
+
+    const budget = data.budget;
+
+    if (budget.budgetStatus === "Facturado") {
+      showAlert({
+        title: "Error",
+        text: "No se puede modificar un presupuesto que ya ha sido facturado",
+        icon: "warning",
+      });
+      return;
+    }
 
     const result = await showAlert({
       title: "¿Estás seguro?",
@@ -150,6 +166,7 @@ const BudgetDetailLine = () => {
           }
         );
 
+        const data = await response.json()
         console.log("Response: ", response);
         if (response.status === 200) {
           showAlert({
@@ -171,6 +188,11 @@ const BudgetDetailLine = () => {
             text: errorMessages,
             icon: "error",
           });
+        }else {
+          showAlert({
+            title: data.message ,
+            icon: "error",
+          })
         }
       } catch (error) {
         console.error("Error:", error.message);

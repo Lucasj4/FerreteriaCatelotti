@@ -5,6 +5,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import BudgetContext from "../context/BudgetContext";
+import { Logger } from "sass";
 const BudgetDetail = () => {
   const [selectedOption, setSelectedOption] = useState([]);
   const [row, setRow] = useState([]);
@@ -50,18 +51,25 @@ const BudgetDetail = () => {
             credentials: "include",
           }
         );
-
+  
         if (response.ok) {
           const data = await response.json();
           const budgetdetails = data.budgetDetailOrders;
-          console.log(budgetdetails);
-
+          const formatDate = (dateString) => {
+            const [day, month, year] = dateString.split("/"); // Separa el string en partes
+            return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`; // Devuelve la fecha en el formato correcto
+          };
+          
+          const formattedDate = data.budget.budgetDate ? formatDate(data.budget.budgetDate) : "";
+          setBudgetDate(formattedDate);
+          
+          
+        
+  
           const total = budgetdetails.reduce((acc, order) => {
-            return (
-              acc + order.budgetDetailQuantity * order.budgetDetailUnitCost
-            );
+            return acc + order.budgetDetailQuantity * order.budgetDetailUnitCost;
           }, 0);
-
+  
           setAmount(total);
           setRow(budgetdetails);
         } else if (response.status === 404) {
@@ -73,7 +81,7 @@ const BudgetDetail = () => {
         console.error("Error al obtener los datos:", error);
       }
     };
-
+  
     const fetchBudget = async () => {
       try {
         const response = await fetch(
@@ -82,30 +90,27 @@ const BudgetDetail = () => {
             credentials: "include",
           }
         );
-
+  
         if (response.ok) {
           const data = await response.json();
           const budget = data.budget;
-
-          // Formatear la fecha de DD/MM/YYYY a YYYY-MM-DD
+  
           const formattedDate = budget.budgetDate
             ? budget.budgetDate.split("/").reverse().join("-")
             : "";
-
-          // Buscar cliente en la lista si ya está cargada
+  
           const clientOption = clients.find(
             (client) => client.clientLastName === budget.clientId
           );
-
-          // Actualizar estados
-          setBudgetDate(formattedDate); // Asigna la fecha formateada
+  
+          // setBudgetDate(formattedDate); // Actualiza la fecha aquí
           setBudgetStatus(budget.budgetStatus);
           setSelectedOption(
             clientOption
               ? [
                   {
-                    label: clientOption.clientLastName, // Campo que se mostrará en el MultiSelect
-                    value: clientOption._id, // ID del cliente
+                    label: clientOption.clientLastName,
+                    value: clientOption._id,
                   },
                 ]
               : []
@@ -117,28 +122,27 @@ const BudgetDetail = () => {
         console.error("Error al obtener el presupuesto:", error);
       }
     };
-
+  
     fetchData();
     fetchBudget();
-  }, [pid, clients]);
-
+  }, [pid, clients]);  // Asegúrate de que los clientes están cargados
+  
   useEffect(() => {
     const fetchClients = async () => {
       try {
         const response = await fetch("http://localhost:8080/api/clients", {
           credentials: "include",
         });
-
+  
         const data = await response.json();
-
         setClients(data.clients);
       } catch (error) {
         console.error("Error fetching clients: ", error);
       }
     };
-
+  
     fetchClients();
-  }, []);
+  }, []); // Este effect solo carga los clientes
 
   const handleOptions = (selectedOptions) => {
     setSelectedOption(selectedOptions);
@@ -197,7 +201,9 @@ const BudgetDetail = () => {
 
   const handleDateChange = (e) => {
     const selectedDate = e.target.value; // Toma el valor directamente del input sin modificarlo
-    setBudgetDate(selectedDate);
+    // Asegúrate de que el valor esté en el formato correcto antes de setearlo
+    const formattedDate = new Date(selectedDate).toISOString().split('T')[0]; 
+    setBudgetDate(formattedDate);
   };
 
   const handleSubmit = async (e) => {
@@ -256,10 +262,18 @@ const BudgetDetail = () => {
         body: JSON.stringify(updateBudget),
       });
 
+      const data = await response.json();
+
       if (response.status === 200) {
         showAlert({
           title: "Presupuesto guardado con exito",
           icon: "success",
+          confirmButtonText: "Aceptar",
+        });
+      } else if (response.status === 403) {
+        showAlert({
+          title: data.message,
+          icon: "error",
           confirmButtonText: "Aceptar",
         });
       }
