@@ -96,6 +96,19 @@ const NewDetailOrderLine = () => {
     }
   };
 
+  const handleDetailOrderUnitCost = async (e) => {
+    e.preventDefault();
+    
+    showAlert({
+      title: "Error",
+      text: "El costo unitario solo puede ser modificado desde los productos.",
+      icon: "warning",
+    }).then(() => {
+      // Restablecer el valor del campo a su valor original
+      setDetailOrderUnitCost(detailOrderUnitCost); // Asumiendo que tienes un estado para el costo original
+    });
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -195,7 +208,7 @@ const NewDetailOrderLine = () => {
               label="Costo Unitario"
               labelClassname="newPurchaseOrder__form__label"
               value={detailOrderUnitCost}
-              onChange={handleUnitCost}
+              onChange={handleDetailOrderUnitCost }
             />
             {/* <div className="newPurchaseOrder__form__item">
               <label htmlFor="unidad" className="newPurchaseOrder__form__label">

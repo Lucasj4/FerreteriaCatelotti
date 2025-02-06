@@ -21,7 +21,7 @@ export class UserController {
                 return res.status(409).json({ error: `El email ${userEmail} ya esta registrado` });
             }
 
-            if(userPassword != userConfirmPassword){
+            if (userPassword != userConfirmPassword) {
                 return res.status(400).json({ message: "La contraseña y la confirmación no coinciden" });
             }
             const hashedPassword = createHash(userPassword);
@@ -35,7 +35,7 @@ export class UserController {
 
             console.log("Username: ", userUsername);
             console.log("Email: ", userEmail);
-            
+
 
             try {
                 await emailController.sendEmailNewUser(userUsername, userEmail);
@@ -56,8 +56,9 @@ export class UserController {
     async getUsers(req, res) {
         try {
             const users = await userService.getUsers();
+            console.log("Usuarios encontrados:", users);  
 
-            if (users) {
+            if (users.length > 0) {
                 return res.status(200).json({ message: "Usuarios", users })
             } else {
                 return res.status(404).json({ message: "Usuarios no encontrados" })
@@ -68,21 +69,21 @@ export class UserController {
         }
     }
 
-    async getUserById(req, res){
-        const {id} = req.params;
+    async getUserById(req, res) {
+        const { id } = req.params;
 
         console.log(id);
-        
+
         try {
             const user = await userService.getUserById(id);
 
-            if(!user){
-                return res.status(404).json({message: "Usuario no encontrado"});
+            if (!user) {
+                return res.status(404).json({ message: "Usuario no encontrado" });
             }
 
             req.logger.info("Usuario: " + user);
 
-            return res.status(200).json({user});
+            return res.status(200).json({ user });
         } catch (error) {
             req.logger.error(error);
             res.status(500).json({ error: 'Error interno del servidor' });
@@ -100,8 +101,8 @@ export class UserController {
             const existingUser = await userService.getUserByUsername(userUsername);
 
 
-            
-            
+
+
             if (existingUser.length === 0) {
                 return res.status(404).json({ message: "Usuario no válido" });
             }
@@ -112,7 +113,7 @@ export class UserController {
 
 
             console.log(validUser);
-            
+
             if (!validUser) {
                 return res.status(401).json({ message: "Contraseña incorrecta" });;
             }
@@ -141,6 +142,26 @@ export class UserController {
             res.status(500).json({ message: "Error interno del servidor" });
         }
 
+    }
+
+    async getUserByFilter(req, res) {
+        const { userUsername } = req.query;
+        console.log("Query Parameter:", req.query); // Agregar log para ver todos los parámetros recibidos
+        req.logger.info("User: " + userUsername);
+        try {
+            const users = await userService.getUserByFilter(userUsername);
+
+            if (users.length > 0) {
+                return res.status(200).json({ message: "Usuarios", users })
+            } else {
+                return res.status(404).json({ message: "Usuarios no encontrados" })
+            }
+
+            return res.status(200).json({ user });
+        } catch (error) {
+            req.logger.error("ERROR : ", error);
+            res.status(500).json({ message: "Error interno del servidor" });
+        }
     }
 
     async getUserRole(req, res) {
@@ -198,12 +219,12 @@ export class UserController {
         }
     }
 
-    async updateUser(req, res){
-        const {userUsername,  userEmail, userRole} = req.body;
-        const{ id } = req.params;
+    async updateUser(req, res) {
+        const { userUsername, userEmail, userRole } = req.body;
+        const { id } = req.params;
 
         try {
-            
+
             const updateData = {
                 userUsername,
                 userEmail,
@@ -212,15 +233,15 @@ export class UserController {
 
             const updatedUer = await userService.updateUser(id, updateData);
 
-          
-            return res.status(200).json({updatedUer});
-           
+
+            return res.status(200).json({ updatedUer });
+
 
         } catch (error) {
-             console.log("Error: ", error);
-             
-             return res.status(500).json({ message: 'Error en el servidor', error });
-        } 
+            console.log("Error: ", error);
+
+            return res.status(500).json({ message: 'Error en el servidor', error });
+        }
     }
     async deleteUser(req, res) {
 
@@ -230,8 +251,8 @@ export class UserController {
 
             const user = await userService.getUserById(id);
 
-            if(user.userRole === "Admin"){
-                return res.status(400).json({message: "No se puede eliminar al administrador"})
+            if (user.userRole === "Admin") {
+                return res.status(400).json({ message: "No se puede eliminar al administrador" })
             }
             const userDelete = await userService.deleteUser(id);
 
@@ -246,19 +267,19 @@ export class UserController {
         }
     }
 
-    async requestPasswordReset(req,res){
-        const {email} = req.body
+    async requestPasswordReset(req, res) {
+        const { email } = req.body
 
         try {
             const user = await userService.findUserByEmail(email);
 
             if (!user) {
-                return res.status(404).json({message: "Usuario no encontrado"});
+                return res.status(404).json({ message: "Usuario no encontrado" });
             }
 
             const token = generateResetToken();
 
-            user.userResetToken= {
+            user.userResetToken = {
                 token: token,
                 expiresAt: new Date(Date.now() + 3600000) // 1 hora de duración
             };
@@ -269,7 +290,7 @@ export class UserController {
 
             await emailController.sendRestorationEmail(email, user.userUsername, token);
 
-            return res.status(200).json({message: "Email enviado"})
+            return res.status(200).json({ message: "Email enviado" })
 
         } catch (error) {
             req.logger.error(error);
@@ -299,7 +320,7 @@ export class UserController {
             req.logger.info("Token: " + userToken);
 
             if (!resetToken || resetToken.token !== userToken) {
-                return res.status(400).json({message: "El token de restablecimiento de contraseña es inválido"});
+                return res.status(400).json({ message: "El token de restablecimiento de contraseña es inválido" });
 
             }
 
@@ -307,12 +328,12 @@ export class UserController {
             const now = new Date();
             if (now > resetToken.expiresAt) {
                 // Redirigir a la página de generación de nuevo correo de restablecimiento
-                return res.status(400).json({message: "Expiro el token para reestablecer"});
+                return res.status(400).json({ message: "Expiro el token para reestablecer" });
             }
 
             // Verificar si la nueva contraseña es igual a la anterior
             if (isValidPassword(userPassword, user)) {
-                return res.status(400).json({ error: "La nueva contraseña no puede ser igual a la anterior"});
+                return res.status(400).json({ error: "La nueva contraseña no puede ser igual a la anterior" });
             }
 
             // Actualizar la contraseña del usuario
@@ -320,12 +341,12 @@ export class UserController {
             user.resetToken = undefined; // Marcar el token como utilizado
             await user.save();
 
-            return res.status(200).json({message: "Contraseña reestablecida con exito"});
+            return res.status(200).json({ message: "Contraseña reestablecida con exito" });
 
-           
+
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ error: error});
+            return res.status(500).json({ error: error });
         }
     }
 }

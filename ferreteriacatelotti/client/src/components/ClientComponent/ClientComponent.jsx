@@ -62,6 +62,7 @@ const ClientComponent = () => {
       throw error;
     }
   };
+  
   const getClients = async () => {
     try {
       const queryParam =
@@ -75,7 +76,8 @@ const ClientComponent = () => {
           credentials: "include",
         }
       );
-
+      
+      
       if (response.status === 404 && searchCriteria === "clientLastName") {
         showAlert({
           title: "Cliente no enconctrado con ese apellido",

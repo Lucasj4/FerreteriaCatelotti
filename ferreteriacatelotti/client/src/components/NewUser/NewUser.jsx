@@ -43,9 +43,6 @@ const NewUser = () => {
       userRole,
     };
 
-    console.log(" Contrasña confirmacion: ", userConfirmPassword);
-    console.log("Password: ", userPassword);
-
     if (userPassword !== userConfirmPassword) {
       showAlert({
         title: "Las contraseñas no coinciden",
@@ -96,7 +93,7 @@ const NewUser = () => {
         case 409:
           showAlert({
             title: `El email ${userEmail} ya esta registrado`,
-            icon: "success",
+            icon: "warning",
             
           });
           break;

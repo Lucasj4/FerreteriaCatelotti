@@ -170,6 +170,20 @@ const BudgetDetailLine = ({ isNewBudget }) => {
     }
   };
 
+  const handlePriceChange = (e) => {
+    // Detectar si se intenta modificar el precio unitario
+    e.preventDefault();
+    
+    showAlert({
+      title: "Error",
+      text: "El precio unitario solo puede ser modificado desde los productos.",
+      icon: "warning",
+    }).then(() => {
+      // Restablecer el valor del campo a su valor original
+      setBudgetDetailUnitCost(originalUnitCost); // Asumiendo que tienes un estado para el costo original
+    });
+  };
+
   return (
     <>
       <div className="budgetdetailline__container">
@@ -223,7 +237,7 @@ const BudgetDetailLine = ({ isNewBudget }) => {
               label="Precio Unitario"
               labelClassname="form__label"
               value={budgetDetailUnitCost}
-              onChange={(e) => setBudgetDetailUnitCost(e.target.value)}
+              onChange={handlePriceChange}
             />
           </form>
           <div className="budgetdetailline__containerbutton">

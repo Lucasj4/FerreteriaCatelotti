@@ -13,6 +13,7 @@ userRouter.post('/requestresetpassword', userController.requestPasswordReset);
 userRouter.post('/resetpassword', userController.resetPassword);
 userRouter.get("/", authMiddleware, checkUserRole(["Admin"]), userController.getUsers);
 userRouter.get("/rol",  userController.getUserRole);
+userRouter.get("/search", authMiddleware, checkUserRole(["Admin"]), userController.getUserByFilter);
 userRouter.get("/:id", authMiddleware, checkUserRole(["Admin"]),  userController.getUserById);
 userRouter.put('/:id', userValidator, authMiddleware, checkUserRole(["Admin"]), userController.updateUser);
 userRouter.delete('/:id', authMiddleware, checkUserRole(["Admin"]), userController.deleteUser);

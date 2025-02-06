@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import TableCustom from "../TableCustom/TableCustom";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import './UserComponent.css'
+import "./UserComponent.css";
 const UserComponent = () => {
   const [row, setRows] = useState([]);
-
+  const [user, setUser] = useState("");
   const tableHeaders = [
     { value: "userUsername", label: "Usuario" },
     { value: "userRole", label: "Rol" },
@@ -19,39 +19,88 @@ const UserComponent = () => {
       icon,
       showCancelButton,
       confirmButtonText: "Aceptar",
-      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined,
       customClass: {
         title: "my-title-class",
         popup: "my-popup-class",
         confirmButton: "my-confirm-button-class",
         overlay: "my-overlay-class",
-        cancelButton: "my-cancel-button-class", 
+        cancelButton: "my-cancel-button-class",
       },
     });
   };
 
-  useEffect(()=> {
-
+  useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await fetch("http://localhost:8080/api/users", {
-          credentials: 'include',
+          credentials: "include",
         });
         const data = await response.json();
 
-        if(response.status === 200){
-          setRows(data.users)
+        if (response.status === 200) {
+          setRows(data.users);
         }
-
-
       } catch (error) {
         console.error("Error en la solicitud:", error.message);
       }
-    }
+    };
 
     fetchUsers();
+  }, []);
 
-  }, [])
+  const getUser = async (e) => {
+    e.preventDefault;
+
+    console.log(user);
+    
+
+   
+    try {
+      const queryString = new URLSearchParams({ userUsername: user }).toString();
+
+      console.log("queryString:", queryString); // Asegúrate de que la cadena se construya correctamente
+  
+      const response = await fetch(
+        `http://localhost:8080/api/users/search?${queryString}`,
+        {
+          credentials: "include",
+        }
+      );
+      const data = await response.json();
+
+      console.log(data.user);
+      console.log(response);
+      
+      if (response.status === 200) {
+        setRows(data.user);
+      } else {
+        showAlert({
+          title: data.message,
+          icon: "error",
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  const getUsers = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/users', {
+        credentials: "include"
+      })
+      const data = await response.json();
+      if(response.status === 200){
+         setRows(data.users)
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  }
+  const handleUser = (e) => {
+    setUser(e.target.value);
+  };
 
   const handleDeleteCell = async (id, index) => {
     const result = await showAlert({
@@ -63,21 +112,17 @@ const UserComponent = () => {
 
     if (result.isConfirmed) {
       try {
-        const response = await fetch(
-          `http://localhost:8080/api/users/${id}`,
-          {
-            method: "DELETE",
-            credentials: "include",
-          }
-        );
+        const response = await fetch(`http://localhost:8080/api/users/${id}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
 
         const data = await response.json();
 
         if (response.status === 200) {
-         showAlert({
+          showAlert({
             title: "Usuario eliminado",
             icon: "success",
-            
           });
           // Si la eliminación fue exitosa, eliminamos la fila visualmente
           const newRows = [...row];
@@ -87,7 +132,6 @@ const UserComponent = () => {
           showAlert({
             title: data.message,
             icon: "warning",
-            
           });
           console.error("Error al eliminar el presupuesto en la base de datos");
         }
@@ -95,22 +139,29 @@ const UserComponent = () => {
         console.error("Error en la petición de eliminación", error);
       }
     }
-  }
-  
+  };
+
   return (
     <>
-        <div className="clientcomponent__container">
+      <div className="clientcomponent__container">
         <div className="clientcomponent__table__container">
-        <div className="user__title">
-          <p>Usuarios</p>
-        </div>
+          <div className="user__title">
+            <p>Usuarios</p>
+          </div>
           <div className="clientcomponent__search-container">
             <input
               type="text"
               className="clientecomponent__search-input"
               placeholder="Usuario"
+              onChange={handleUser}
+              value={user}
             />
-            <button className="clientecomponent__search-button">Buscar</button>
+            <button
+              className="clientecomponent__search-button"
+              onClick={getUser}
+            >
+              Buscar
+            </button>
           </div>
           <TableCustom
             tableClassName="table"
@@ -122,16 +173,18 @@ const UserComponent = () => {
             deleteIconClassName="table__deleteIcon"
             editIconClassName="table__editIcon"
             headers={tableHeaders}
-            getEditPath={(id) =>`/usuarios/${id}`}
+            getEditPath={(id) => `/usuarios/${id}`}
             handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
             data={row}
             showActions={true}
           />
           <div className="clientecomponent__actions">
-        
             <Link to={"/usuarios/agregarusuario"}>
-              <button className="clientecomponent__actions__button">Nuevo</button>
+              <button className="clientecomponent__actions__button">
+                Nuevo
+              </button>
             </Link>
+            <button className="clientecomponent__actions__button" onClick={getUsers}>Mostrar todos</button>
             <button className="clientecomponent__actions__button">Salir</button>
           </div>
         </div>

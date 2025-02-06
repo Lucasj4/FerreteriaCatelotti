@@ -136,35 +136,41 @@ const EditDetailOrderLine = () => {
     e.preventDefault();
   
     try {
+      // Primera llamada para verificar el estado del pedido
       const response = await fetch(
-        `http://localhost:8080/api/purchaseorders/purchaseorderswithdetails/${pid}`,
-        {
-          credentials: "include",
-        }
+        `http://localhost:8080/api/purchaseorders/${pid}`,
+        { credentials: "include" }
       );
   
       if (!response.ok) {
         throw new Error("Error al obtener el pedido de compra");
       }
   
-      const data = await response.json();
-      const purchaseOrder = data.purchaseOrder;
-      const detailsOrder = data.detailOrders;
-      
-     
-      
-      // Validar si el pedido de compra está "Recibido"
+      const { purchaseOrder } = await response.json();
+  
       if (purchaseOrder.purchaseOrderStatus === "Recibido") {
         showAlert({
           title: "Error",
-          text: "No se puede modificar el detalle de un pedido de compra recibido",
+          text: "No se puede modificar un pedido que ya ha sido recibido",
           icon: "warning",
         });
         return;
       }
   
+      // Segunda llamada para obtener detalles del pedido
+      const detailsResponse = await fetch(
+        `http://localhost:8080/api/purchaseorders/purchaseorderswithdetails/${pid}`,
+        { credentials: "include" }
+      );
+  
+      if (!detailsResponse.ok) {
+        throw new Error("Error al obtener los detalles del pedido de compra");
+      }
+  
+      const { detailOrders } = await detailsResponse.json();
+  
       // Buscar el detalle original antes de la edición
-      const originalDetail = detailsOrder.find((detail) => detail._id === rowid);
+      const originalDetail = detailOrders.find((detail) => detail._id === rowid);
   
       if (!originalDetail) {
         showAlert({
@@ -215,7 +221,7 @@ const EditDetailOrderLine = () => {
     console.log(":", orderDetailOrderLine);
   
     try {
-      const response = await fetch(
+      const updateResponse = await fetch(
         `http://localhost:8080/api/detailsorder/${rowid}`,
         {
           method: "PUT",
@@ -227,13 +233,10 @@ const EditDetailOrderLine = () => {
         }
       );
   
-      const responseData = await response.json(); // Convertimos la respuesta a JSON
+      const responseData = await updateResponse.json();
   
-      if (response.status === 400) {
-        const errorMessages =
-          responseData.errorMessages && responseData.errorMessages.length > 0
-            ? responseData.errorMessages[0] // Obtiene el primer mensaje de error
-            : "Error desconocido";
+      if (updateResponse.status === 400) {
+        const errorMessages = responseData.errorMessages?.[0] || "Error desconocido";
         showAlert({
           title: "Error",
           text: errorMessages,

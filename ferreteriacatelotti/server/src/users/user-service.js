@@ -47,6 +47,24 @@ export class UserService {
         }
     }
 
+    async getUserByFilter(username) {
+        try {
+            const query = {};
+
+            if (username && username.trim()) { // Asegúrate de que el username no esté vacío o solo tenga espacios
+                query.userUsername = { $regex: username, $options: 'i' }; // Caso sensible a mayúsculas/minúsculas
+            }
+
+            const users = await UserModel.find(query).exec();  // Verifica que esto devuelva los resultados correctamente
+            console.log("Usuarios encontrados:", users);  // Verifica que el arreglo de usuarios esté correcto
+
+            return users;// Retorna los usuarios encontrados
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
     async deleteUser(id) {
         try {
             const deleteUser = await UserModel.findByIdAndDelete(id);
