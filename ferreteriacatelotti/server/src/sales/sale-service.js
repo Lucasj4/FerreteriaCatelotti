@@ -2,6 +2,17 @@ import SaleModel from "./sales-model.js";
 
 export class SaleService {
 
+    async getSalesCount() {
+        try {
+            const count = await SaleModel.countDocuments();
+            return count;
+        } catch (error) {
+            console.error("Error al contar las ventas:", error);
+            throw error;
+        }
+    }
+    
+
     async addSale(data) {
         try {
             const newSale = new SaleModel(data);

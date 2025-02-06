@@ -3,6 +3,17 @@ import { SupplierService } from "./supplier-service.js";
 const supplierService = new SupplierService();
 
 export class SupplierController {
+    
+    async getSuppliersCount(req, res) {
+        try {
+            const count = await supplierService.getSuppliersCount();
+            return res.status(200).json({ count });
+        } catch (error) {
+            console.error("Error al obtener la cantidad de proveedores:", error);
+            res.status(500).json({ error: "Error al obtener la cantidad de proveedores" });
+        }
+    }
+    
    
     async addSupplier(req, res){
         const { supplierFirstName, supplierLastName, supplierEmail, supplierDni } = req.body;

@@ -13,6 +13,18 @@ const budgetDetailService = new BudgetDetaiLService();
 
 export class BudgetController {
 
+    async getBudgetsCount(req, res) {
+        try {
+            const count = await budgetService.getBudgetsCount();
+            return res.status(200).json({ count });
+        } catch (error) {
+            console.error("Error al obtener la cantidad de presupuestos:", error);
+            res.status(500).json({ error: "Error al obtener la cantidad de presupuestos" });
+        }
+    }
+    
+    
+
     async addBudget(req, res) {
         const { clientId, budgetDate, budgetAmount, budgetStatus, detailIds } = req.body;
 
