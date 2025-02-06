@@ -9,7 +9,16 @@ const emailController = new EmailManager();
 
 export class UserController {
 
-
+    async getUsersCount(req, res) {
+        try {
+            const count = await userService.getUsersCount();
+            return res.status(200).json({ count });
+        } catch (error) {
+            console.error("Error al obtener la cantidad de usuarios:", error);
+            res.status(500).json({ error: "Error al obtener la cantidad de usuarios" });
+        }
+    }
+    
 
     async createUser(req, res) {
         const { userUsername, userPassword, userEmail, userRole, userConfirmPassword } = req.body;

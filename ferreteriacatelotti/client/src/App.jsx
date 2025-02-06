@@ -34,6 +34,8 @@ import SupplierComponent from "./components/SupplierComponent/SupplierComponent"
 import EditSupplier from "./components/EditSupplier/EditSupplier";
 import EditUser from './components/EditUser/EditUser'
 import HomeComponent from "./components/HomeComponent/HomeComponent";
+import InsideHome from "./components/InsideHome/InsideHome";
+
 
 function App() {
   return (
@@ -56,6 +58,7 @@ function App() {
                 <BudgetProvider>
                   <SideBar>
                     <Routes>
+                    <Route path="/insideHome" element={<InsideHome />} /> 
                       {/* Rutas de presupuesto */}
                       <Route
                         path="/presupuesto"

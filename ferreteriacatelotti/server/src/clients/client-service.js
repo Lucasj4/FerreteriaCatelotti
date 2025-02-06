@@ -2,6 +2,17 @@ import ClientModel from './client-model.js'
 
 export class ClientService {
 
+    async getClientsCount() {
+        try {
+            const count = await ClientModel.countDocuments();
+            return count;
+        } catch (error) {
+            console.error("Error al contar los clientes:", error);
+            throw error;
+        }
+    }
+    
+
     async addClient(data){
         try {
             const newClient = new ClientModel(data);

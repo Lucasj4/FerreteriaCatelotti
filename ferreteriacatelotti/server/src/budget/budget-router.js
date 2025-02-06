@@ -8,7 +8,7 @@ export const budgetRouter = express.Router();
 
 
 
-
+budgetRouter.get('/count', authMiddleware, checkUserRole(["Admin", "Empleado", "Dueño"]), budgetController.getBudgetsCount);
 budgetRouter.get('/', authMiddleware, checkUserRole(["Admin", "Empleado", "Dueño"]), budgetController.getBudgets);
 budgetRouter.get('/search', authMiddleware, checkUserRole(["Admin", "Empleado"]), budgetController.searchBudgets);
 budgetRouter.get('/budgetwithdetails/:pid', authMiddleware, checkUserRole(["Admin", "Empleado"]), budgetController.getBudgetWithDetail);

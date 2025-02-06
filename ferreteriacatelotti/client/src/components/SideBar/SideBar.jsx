@@ -95,7 +95,7 @@ const Sidebar = ({ children }) => {
       <div className={sidebarClasses}>
   <div className={topSectionClass}>
     {isOpen && (
-      <h2 className="sidebar-title" onClick={() => navigate("/")}>
+      <h2 className="sidebar-title" onClick={() => navigate("/insideHome")}>
         Ferretería Catelotti
       </h2>
     )}

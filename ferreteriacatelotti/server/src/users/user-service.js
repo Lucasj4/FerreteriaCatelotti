@@ -2,6 +2,17 @@ import UserModel from './user-model.js'
 
 export class UserService {
 
+    async getUsersCount() {
+        try {
+            const count = await UserModel.countDocuments(); 
+            return count;
+        } catch (error) {
+            console.error("Error al contar los usuarios:", error);
+            throw error;
+        }
+    }
+    
+
     async createUser(user) {
         try {
             const newUser = new UserModel(user);
