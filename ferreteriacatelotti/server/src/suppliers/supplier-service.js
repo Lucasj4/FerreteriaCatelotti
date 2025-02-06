@@ -1,6 +1,17 @@
 import SupplierModel from "./supplier-model.js";
 
 export class SupplierService{
+
+    async getSuppliersCount() {
+        try {
+            const count = await SupplierModel.countDocuments();
+            return count;
+        } catch (error) {
+            console.error("Error al contar los proveedores:", error);
+            throw error;
+        }
+    }
+    
     
     async addSupplier(data){
         try {

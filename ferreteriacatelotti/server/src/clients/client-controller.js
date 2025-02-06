@@ -3,6 +3,16 @@ import { ClientService } from "./client-service.js";
 const clientService = new ClientService();
 
 export class ClientController {
+    async getClientsCount(req, res) {
+        try {
+            const count = await clientService.getClientsCount();
+            return res.status(200).json({ count });
+        } catch (error) {
+            console.error("Error al obtener la cantidad de clientes:", error);
+            res.status(500).json({ error: "Error al obtener la cantidad de clientes" });
+        }
+    }
+    
 
     async addCliente(req, res) {
         const { clientFirstName, clientLastName, clientEmail, clientDni } = req.body;

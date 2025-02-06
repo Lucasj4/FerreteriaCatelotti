@@ -46,6 +46,17 @@ export class ProductController {
         }
     }
 
+    async getProductsCount(req, res) {
+        try {
+            const count = await productService.getProductsCount();
+            return res.status(200).json({ count });
+        } catch (error) {
+            console.error("Error al obtener la cantidad de productos:", error);
+            res.status(500).json({ error: "Error al obtener la cantidad de productos" });
+        }
+    }
+    
+
     async updateProduct(req, res) {
 
         const { productName, productStock, productUnit, productPrice, productCategory, productCost, } = req.body;

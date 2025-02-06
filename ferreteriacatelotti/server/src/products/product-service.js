@@ -1,6 +1,17 @@
 import ProductModel from "./product-model.js";
 import CategoryModel from "../categories/category-model.js";
 export class ProductService{
+
+    async getProductsCount() {
+        try {
+            const count = await ProductModel.countDocuments();
+            return count;
+        } catch (error) {
+            console.error("Error al contar los productos:", error);
+            throw error;
+        }
+    }
+    
     
     async addProduct(data){
         try{

@@ -36,6 +36,17 @@ export class SaleController {
 
     }
 
+    async getSalesCount(req, res) {
+        try {
+            const count = await saleService.getSalesCount();
+            return res.status(200).json({ count });
+        } catch (error) {
+            console.error("Error al obtener la cantidad de ventas:", error);
+            res.status(500).json({ error: "Error al obtener la cantidad de ventas" });
+        }
+    }
+    
+
     async printInvoiceSale(req, res) {
         const { saleTotalAmount, saleDate, client, details, invoiceNumber} = req.body;
     

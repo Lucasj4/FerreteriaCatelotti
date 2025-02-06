@@ -4,6 +4,18 @@ import mongoose from "mongoose";
 
 export class BudgetService {
 
+    async getBudgetsCount() {
+        try {
+            const count = await BudgetModel.countDocuments();
+            return count;
+        } catch (error) {
+            console.error("Error al contar los presupuestos:", error);
+            throw error;
+        }
+    }
+    
+
+
     async createBudget(data) {
         try {
             const newBudget = new BudgetModel(data);
