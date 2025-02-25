@@ -5,10 +5,11 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import BudgetContext from "../context/BudgetContext";
-import { Logger } from "sass";
+
 const BudgetDetail = () => {
   const [selectedOption, setSelectedOption] = useState([]);
   const [row, setRow] = useState([]);
+  const [currentBudget, setCurrentBudget] = useState(null);
   const [clients, setClients] = useState([]);
   const [budgetStatus, setBudgetStatus] = useState("Pendiente");
   const [amount, setAmount] = useState(0);
@@ -35,15 +36,23 @@ const BudgetDetail = () => {
     });
   };
 
+  const showWarningAlert = (message) => {
+    showAlert({ title: "Advertencia", text: message, icon: "warning" , confirmButtonText: "Aceptar", });
+  };
+  
+  const showErrorAlert = (message) => {
+    showAlert({ title: "Error", text: message, icon: "error" , confirmButtonText: "Aceptar" });
+  };
+
   const tableHeaders = [
     { value: "budgetDetailItem", label: "Producto" },
     { value: "budgetDetailQuantity", label: "Cantidad" },
-    { value: "budgetDetailUnitCost", label: "Precio unitario" },
+    { value: "budgetDetailSalePrice", label: "Precio de venta" },
   ];
 
   useEffect(() => {
     const fetchData = async () => {
-      clearBudgetId();
+      
       try {
         const response = await fetch(
           `http://localhost:8080/api/budgets/budgetwithdetails/${pid}`,
@@ -67,7 +76,7 @@ const BudgetDetail = () => {
         
   
           const total = budgetdetails.reduce((acc, order) => {
-            return acc + order.budgetDetailQuantity * order.budgetDetailUnitCost;
+            return acc + order.budgetDetailQuantity * order.budgetDetailSalePrice;
           }, 0);
   
           setAmount(total);
@@ -94,7 +103,7 @@ const BudgetDetail = () => {
         if (response.ok) {
           const data = await response.json();
           const budget = data.budget;
-  
+          setCurrentBudget(data.budget);
           const formattedDate = budget.budgetDate
             ? budget.budgetDate.split("/").reverse().join("-")
             : "";
@@ -115,6 +124,8 @@ const BudgetDetail = () => {
                 ]
               : []
           );
+          console.log(selectedOption);
+          
         } else {
           console.error("Error al obtener el presupuesto:", response.status);
         }
@@ -209,8 +220,9 @@ const BudgetDetail = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const clientId = selectedOption[0]?.value || selectedOption[0]?._id;
-
+    const clientId = selectedOption.value || selectedOption[0].value;
+   
+    
     if (!budgetDate) {
       showAlert({
         title: "Debes seleccionar una fecha",
@@ -226,24 +238,8 @@ const BudgetDetail = () => {
         confirmButtonText: "Aceptar",
       });
     }
-    const updateBudget = {
-      budgetAmount: amount,
-      budgetDate: new Date(budgetDate),
-      budgetStatus,
-      clientId,
-    };
-
-    const response = await fetch(`http://localhost:8080/api/budgets/${pid}`, {
-      credentials: "include",
-    });
-
-    const data = await response.json();
-
-    const budget = data.budget;
-
-    console.log("dATA: ", data);
-
-    if (budget.budgetStatus === "Facturado") {
+    
+    if (currentBudget?.budgetStatus === "Facturado") {
       showAlert({
         title: "Error",
         text: "No se puede modificar un presupuesto que ya ha sido facturado",
@@ -251,7 +247,15 @@ const BudgetDetail = () => {
       });
       return;
     }
+    
 
+    const updateBudget = {
+      budgetAmount: amount,
+      budgetDate: new Date(budgetDate),
+      budgetStatus,
+      clientId,
+    };
+    
     try {
       const response = await fetch(`http://localhost:8080/api/budgets/${pid}`, {
         method: "PUT",
@@ -297,24 +301,10 @@ const BudgetDetail = () => {
   //Facturar, crear venta, imprimir factura
 
   const handleInvoice = async () => {
-    try {
-      // Verificar si el presupuesto ya está facturado
-      const response = await fetch(`http://localhost:8080/api/budgets/${pid}`, {
-        credentials: "include",
-      });
-      const budgetData = await response.json();
-
-      if (budgetData.budget.budgetStatus === "Facturado") {
-        // Si el presupuesto ya está facturado, mostrar un mensaje de error
-        showAlert({
-          title: "Este presupuesto ya está facturado",
-          text: "No se puede facturar nuevamente.",
-          icon: "warning",
-        });
-        return; // Detener la ejecución si ya está facturado
-      }
-    } catch (error) {
-      console.error("Error en el proceso:", error);
+   
+    if (currentBudget?.budgetStatus === "Facturado") {
+      showErrorAlert("No se puede modificar un presupuesto que ya ha sido facturado")
+      return;
     }
 
     // Si no está facturado, pedir confirmación para facturar
@@ -352,11 +342,7 @@ const BudgetDetail = () => {
         console.log(stockData);
 
         if (stockResponse.status === 400 || stockResponse.status === 404) {
-          showAlert({
-            title: "Error",
-            text: stockData.message,
-            icon: "warning",
-          });
+          showErrorAlert(stockData.message)
           return; // Detener la ejecución si stockResponse es 400 o 404
         }
 

@@ -24,7 +24,6 @@ const SupplierComponent = () => {
       });
 
       const data = await response.json();
-      
 
       if (response.status === 200) {
         setRows(data.suppliers);
@@ -34,53 +33,54 @@ const SupplierComponent = () => {
     fetchSupplier();
   }, []);
 
-   const showAlert = ({ title, text, icon, showCancelButton = false }) => {
-      return Swal.fire({
-        title,
-        text,
-        icon,
-        showCancelButton,
-        confirmButtonText: "Aceptar",
-        cancelButtonText: showCancelButton ? "Cancelar" : undefined,
-        customClass: {
-          title: "my-title-class",
-          popup: "my-popup-class",
-          confirmButton: "my-confirm-button-class",
-          overlay: "my-overlay-class",
-          cancelButton: "my-cancel-button-class",
-        },
-      });
-    };
+  const showAlert = ({ title, text, icon, showCancelButton = false }) => {
+    return Swal.fire({
+      title,
+      text,
+      icon,
+      showCancelButton,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined,
+      customClass: {
+        title: "my-title-class",
+        popup: "my-popup-class",
+        confirmButton: "my-confirm-button-class",
+        overlay: "my-overlay-class",
+        cancelButton: "my-cancel-button-class",
+      },
+    });
+  };
 
   const getSuppliers = async () => {
     try {
-      const queryParam = filter === "name" ? `name=${firstName}` : `lastname=${lastName}`;
+      const queryParam =
+        filter === "name" ? `name=${firstName}` : `lastname=${lastName}`;
 
-      const response = await fetch(`http://localhost:8080/api/suppliers/search?${queryParam}`, {
-        credentials: "include",
-      });
+      const response = await fetch(
+        `http://localhost:8080/api/suppliers/search?${queryParam}`,
+        {
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
 
       console.log("data: ", data);
-      console.log("response status ",  response.status);
-      
-      if(response.status === 404){
+      console.log("response status ", response.status);
+
+      if (response.status === 404) {
         showAlert({
           title: "Error",
           text: data.message,
-          icon: 'error'
+          icon: "error",
         });
 
         return;
       }
 
-      
-      
-      setRows(data.suppliers)
-  } catch (error) {
+      setRows(data.suppliers);
+    } catch (error) {
       console.error(error);
-      
     }
   };
   const handleDeleteSupplier = async (supplierId) => {
@@ -104,8 +104,7 @@ const SupplierComponent = () => {
             credentials: "include",
           }
         );
-        
-        
+
         switch (response.status) {
           case 200:
             showAlert({
@@ -142,19 +141,16 @@ const SupplierComponent = () => {
   };
 
   const getAllSuppliers = async () => {
-      const response = await fetch("http://localhost:8080/api/suppliers", {
-        credentials: "include",
-      });
+    const response = await fetch("http://localhost:8080/api/suppliers", {
+      credentials: "include",
+    });
 
-      const data = await response.json();
-      
+    const data = await response.json();
 
-      if (response.status === 200) {
-        setRows(data.suppliers);
-      }
+    if (response.status === 200) {
+      setRows(data.suppliers);
+    }
   };
-  
-
 
   const handleInputChange = (e) => {
     if (filter === "name") {
@@ -191,30 +187,41 @@ const SupplierComponent = () => {
               className="component__search-input"
             />
 
-            <button className="component__actions__button" onClick={getSuppliers}>
+            <button
+              className="component__actions__button"
+              onClick={getSuppliers}
+            >
               Buscar
             </button>
           </div>
-          <TableCustom
-            tableClassName="table"
-            trClassName="table__row"
-            thClassName="table__header"
-            theadClassName="table__thead"
-            tbodyClassName="table__body"
-            tdClassName="table__cell"
-            deleteIconClassName="table__deleteIcon"
-            editIconClassName="table__editIcon"
-            handleDeleteCell={handleDeleteSupplier}
-            getEditPath={(id) => `/proveedores/${id}`}
-            headers={tableHeaders}
-            data={rows}
-            showActions={true}
-          />
+          <div className="supplier__table__container">
+            <TableCustom
+              tableClassName="table"
+              trClassName="table__row"
+              thClassName="table__header"
+              theadClassName="table__thead"
+              tbodyClassName="table__body"
+              tdClassName="table__cell"
+              deleteIconClassName="table__deleteIcon"
+              editIconClassName="table__editIcon"
+              handleDeleteCell={handleDeleteSupplier}
+              getEditPath={(id) => `/proveedores/${id}`}
+              headers={tableHeaders}
+              data={rows}
+              showActions={true}
+            />
+          </div>
+
           <div className="component__actions">
             <Link to={"/proveedores/agregarproveedor"}>
               <button className="component__actions__button">Nuevo</button>
             </Link>
-            <button className="component__actions__button" onClick={getAllSuppliers}>Mostrar todos</button>
+            <button
+              className="component__actions__button"
+              onClick={getAllSuppliers}
+            >
+              Mostrar todos
+            </button>
             <button className="component__actions__button">Salir</button>
           </div>
         </div>

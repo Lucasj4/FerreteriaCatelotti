@@ -209,7 +209,7 @@ const NewBudget = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const clientId = selectedOption[0]?.value || selectedOption[0]?._id;
+    const clientId = selectedOption.value;
 
     console.log("clientId: ", clientId);
 

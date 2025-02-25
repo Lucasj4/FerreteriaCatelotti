@@ -42,6 +42,7 @@ const Home = () => {
 
   return (
     <div className="home-container">
+    <h2 className="home-title">Ferreteria Catelotti</h2>
       <div className="indicators-container">
         {indicators.map((item, index) => (
           <div key={index} className="indicator-card">

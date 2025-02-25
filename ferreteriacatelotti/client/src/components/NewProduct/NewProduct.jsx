@@ -53,7 +53,8 @@ const NewProduct = () => {
           throw new Error("Error al obtener las categorías");
         }
         const data = await response.json();
-
+        console.log(data);
+        
         setProductCategories(data.categories); // Actualiza el estado con las categorías recibidas
       } catch (error) {
         console.error("Error en la solicitud", error);

@@ -91,7 +91,7 @@
     position: sticky; 
     top: 0px;
     width: 100px;
-    overflow-y: auto; /* Aparecerá una barra de desplazamiento vertical si es necesario */
+    overflow-y: auto; 
     
     height: 50px;
     background-color: var(--color-primary);

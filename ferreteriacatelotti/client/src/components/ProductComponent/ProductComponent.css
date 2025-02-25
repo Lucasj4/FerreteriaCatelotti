@@ -16,6 +16,17 @@
   padding: 1rem;
   color: var(--color-primary);
 }
+.products__tablecontainer{
+  width: 90%;
+  height: auto;
+  overflow-y: scroll;
+  max-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 30px;
+  /* padding-bottom: 20px; */
+}
 
 .modal {
   position: fixed;

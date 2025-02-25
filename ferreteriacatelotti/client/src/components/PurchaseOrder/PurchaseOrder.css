@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  width: 60%;
+  width: 100%;
   height: 100vh;
   margin: 0 auto;
   color: #212121;
@@ -46,14 +46,16 @@
 }
 
 .purchaseOrder__tablecontainer {
-  width: 100%;
+
+  width: 90%;
+  height: auto;
+  overflow-y: scroll;
+  max-height: 300px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  overflow-y: scroll;
-  max-height: 500px;
-  background-color: var(--background2);
+  margin: 30px;
+  padding-bottom: 20px;
 }
 .purchaseOrder__supplier {
   background-color: var(--background2);
@@ -86,7 +88,7 @@
 .purchaseOrder__table {
   color: #fff;
   padding: 1rem 0;
-  width: 60%;
+  width: 90%;
   overflow-y: scroll;
   max-height: 500px;
 }

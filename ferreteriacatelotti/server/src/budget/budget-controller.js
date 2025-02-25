@@ -22,8 +22,8 @@ export class BudgetController {
             res.status(500).json({ error: "Error al obtener la cantidad de presupuestos" });
         }
     }
-    
-    
+
+
 
     async addBudget(req, res) {
         const { clientId, budgetDate, budgetAmount, budgetStatus, detailIds } = req.body;
@@ -185,8 +185,8 @@ export class BudgetController {
         const { budgetAmount, budgetDate, budgetStatus, clientId } = req.body;
         const { pid } = req.params;
 
-        req.logger.info("Id budget: " + pid);
-        req.logger.info("Desde controlador actualizar presupuesto");
+        
+        
 
 
         const updateBudget = {
@@ -196,26 +196,26 @@ export class BudgetController {
             clientId
         }
 
-        req.logger.info("update budget: " + updateBudget);
+        req.logger.info("update budget: " + JSON.stringify(updateBudget, null, 2) );
 
         try {
             if (!updateBudget || !pid) {
                 return res.status(400).json({ message: "Datos insuficientes para actualizar el presupuesto." });
             }
 
-            const existingBudget = await budgetService.getBudgetById(pid);
-            const createdAt = new Date(existingBudget.budgetDate); // Convertimos a objeto Date
-            const now = new Date();
-            const timeDiff = now - createdAt; // Diferencia en milisegundos
+            // const existingBudget = await budgetService.getBudgetById(pid);
+            // const createdAt = new Date(existingBudget.budgetDate); // Convertimos a objeto Date
+            // const now = new Date();
+            // const timeDiff = now - createdAt; // Diferencia en milisegundos
 
-            const hoursPassed = timeDiff / (1000 * 60 * 60); // Convertimos a horas
-           
-            
-            req.logger.info("Horas desde que se facturo: " + hoursPassed);
+            // const hoursPassed = timeDiff / (1000 * 60 * 60); // Convertimos a horas
 
-            if (hoursPassed > 24) {
-                return res.status(403).json({ message: "No puedes modificar este presupuesto después de 24 horas." });
-            }
+
+            // req.logger.info("Horas desde que se facturo: " + hoursPassed);
+
+            // if (hoursPassed > 24) {
+            //     return res.status(403).json({ message: "No puedes modificar este presupuesto después de 24 horas." });
+            // }
 
             const budget = await budgetService.updateBudget(updateBudget, pid);
 
@@ -255,11 +255,11 @@ export class BudgetController {
 
             // const hoursPassed = timeDiff / (1000 * 60 * 60); // Convertimos a horas
 
-            
+
             // if (hoursPassed > 24) {
             //     return res.status(403).json({ message: "No puedes modificar este presupuesto después de 24 horas." });
             // }
-            
+
             // req.logger.info("Horas desde que se facturo: ", hoursPassed);
 
             const budget = await budgetService.updateBudgetStatusAndBudgetAmount(updateBudget, pid);
@@ -284,6 +284,13 @@ export class BudgetController {
         req.logger.info('Id budget: ' + idBudget)
 
         try {
+
+            const budget = await budgetService.getBudgetById(idBudget);
+
+            // Verificar si está facturado
+            if (budget.budgetStatus === "Facturado") {
+                return res.status(400).json({ message: "No se puede eliminar un presupuesto facturado" });
+            }
             req.logger.info("Desde controllador deleteBudget")
             const deletedDetails = await BudgetDetaiLModel.deleteMany({ budgetID: idBudget });
             console.log(`Detalles eliminados: `, deletedDetails);

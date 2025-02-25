@@ -53,14 +53,14 @@ const UserComponent = () => {
     e.preventDefault;
 
     console.log(user);
-    
 
-   
     try {
-      const queryString = new URLSearchParams({ userUsername: user }).toString();
+      const queryString = new URLSearchParams({
+        userUsername: user,
+      }).toString();
 
       console.log("queryString:", queryString); // Asegúrate de que la cadena se construya correctamente
-  
+
       const response = await fetch(
         `http://localhost:8080/api/users/search?${queryString}`,
         {
@@ -69,11 +69,10 @@ const UserComponent = () => {
       );
       const data = await response.json();
 
-      console.log(data.user);
       console.log(response);
-      
+      console.log(data.users);
       if (response.status === 200) {
-        setRows(data.user);
+        setRows(data.users);
       } else {
         showAlert({
           title: data.message,
@@ -87,17 +86,17 @@ const UserComponent = () => {
 
   const getUsers = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/users', {
-        credentials: "include"
-      })
+      const response = await fetch("http://localhost:8080/api/users", {
+        credentials: "include",
+      });
       const data = await response.json();
-      if(response.status === 200){
-         setRows(data.users)
+      if (response.status === 200) {
+        setRows(data.users);
       }
     } catch (error) {
       console.error("Error fetching products:", error);
     }
-  }
+  };
   const handleUser = (e) => {
     setUser(e.target.value);
   };
@@ -163,29 +162,41 @@ const UserComponent = () => {
               Buscar
             </button>
           </div>
-          <TableCustom
-            tableClassName="table"
-            trClassName="table__row"
-            thClassName="table__header"
-            theadClassName="table__thead"
-            tbodyClassName="table__body"
-            tdClassName="table__cell"
-            deleteIconClassName="table__deleteIcon"
-            editIconClassName="table__editIcon"
-            headers={tableHeaders}
-            getEditPath={(id) => `/usuarios/${id}`}
-            handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
-            data={row}
-            showActions={true}
-          />
+          <div className="client__tablecontainer">
+            <TableCustom
+              tableClassName="table"
+              trClassName="table__row"
+              thClassName="table__header"
+              theadClassName="table__thead"
+              tbodyClassName="table__body"
+              tdClassName="table__cell"
+              deleteIconClassName="table__deleteIcon"
+              editIconClassName="table__editIcon"
+              headers={tableHeaders}
+              getEditPath={(id) => `/usuarios/${id}`}
+              handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
+              data={row}
+              showActions={true}
+            />
+          </div>
+
           <div className="clientecomponent__actions">
             <Link to={"/usuarios/agregarusuario"}>
               <button className="clientecomponent__actions__button">
                 Nuevo
               </button>
             </Link>
-            <button className="clientecomponent__actions__button" onClick={getUsers}>Mostrar todos</button>
-            <button className="clientecomponent__actions__button">Salir</button>
+            <button
+              className="clientecomponent__actions__button"
+              onClick={getUsers}
+            >
+              Mostrar todos
+            </button>
+            <Link to={"/insideHome"}>
+              <button className="clientecomponent__actions__button">
+                Salir
+              </button>
+            </Link>
           </div>
         </div>
       </div>

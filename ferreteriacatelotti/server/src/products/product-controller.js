@@ -55,6 +55,19 @@ export class ProductController {
             res.status(500).json({ error: "Error al obtener la cantidad de productos" });
         }
     }
+
+    async getProductUnitByProductId(productId) {
+        try {
+            const product = await productService.getProductById(productId);
+            if (!product) return null;
+            console.log("Unidad id: " + product.unitID);
+            const unitProduct = await unitService.getUnitNameById(product.unitID);
+            return unitProduct;
+        } catch (error) {
+            console.error("Error al obtener la unidad del producto:", error);
+            return null;
+        }
+    }
     
 
     async updateProduct(req, res) {
@@ -262,26 +275,25 @@ export class ProductController {
     }
 
     async getProductsWithLowStock(req, res) {
-        const {stockThreshold} = req.body;
-        req.logger.info("Stock bajo: ", stockThreshold)
+        const { stockThreshold, unitID } = req.body;
+        req.logger.info("Stock bajo:", stockThreshold, "Unidad:", unitID);
+    
         try {
-           
-
-            
-            const lowStockProducts = await productService.getProductsWithLowStock(stockThreshold);
-            console.log("productos con bajo stock: " + lowStockProducts);
+            const lowStockProducts = await productService.getProductsWithLowStock(stockThreshold, unitID);
+            console.log("Productos con bajo stock:", lowStockProducts);
+    
             if (!lowStockProducts.length) {
-                return res.status(404).json({ message: "No se encontraron productos con bajo stock" });
+                return res.status(404).json({ message: "No se encontraron productos con bajo stock para la unidad seleccionada" });
             }
-
-
+    
+            // Mejorar los datos agregando nombres de unidad y categoría
             const enhancedProducts = await Promise.all(
                 lowStockProducts.map(async (product) => {
                     const [unitName, categoryName] = await Promise.all([
                         unitService.getUnitNameById(product.unitID),
                         categoryService.getCategoryId(product.categoryID)
                     ]);
-
+    
                     const productObj = product.toObject();
                     return {
                         ...productObj,
@@ -290,13 +302,14 @@ export class ProductController {
                     };
                 })
             );
-
+    
             return res.status(200).json({ products: enhancedProducts });
         } catch (error) {
-            console.error('Error al obtener productos con bajo stock:', error);
-            return res.status(500).json({ message: 'Error en el servidor', error });
+            console.error("Error al obtener productos con bajo stock:", error);
+            return res.status(500).json({ message: "Error en el servidor", error });
         }
     }
+    
 
 
 }

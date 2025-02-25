@@ -166,7 +166,7 @@ export class UserController {
                 return res.status(404).json({ message: "Usuarios no encontrados" })
             }
 
-            return res.status(200).json({ user });
+           
         } catch (error) {
             req.logger.error("ERROR : ", error);
             res.status(500).json({ message: "Error interno del servidor" });
@@ -316,7 +316,7 @@ export class UserController {
             const user = await userService.findUserByEmail(userEmail)
 
             if (!user) {
-                return res.status(404).json({ error: "Usuario no encontrado" });
+                return res.status(404).json({ message: "Usuario no encontrado" });
             }
 
             // Obtener el token de restablecimiento de la contraseña del usuario
@@ -342,7 +342,7 @@ export class UserController {
 
             // Verificar si la nueva contraseña es igual a la anterior
             if (isValidPassword(userPassword, user)) {
-                return res.status(400).json({ error: "La nueva contraseña no puede ser igual a la anterior" });
+                return res.status(400).json({ message: "La nueva contraseña no puede ser igual a la anterior" });
             }
 
             // Actualizar la contraseña del usuario

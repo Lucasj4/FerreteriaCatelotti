@@ -124,14 +124,21 @@ export class ProductService{
         }
     }
 
-    async getProductsWithLowStock(maxStock = 10) {
+    async getProductsWithLowStock(maxStock = 10, unitID = null) {
         try {
-            const products = await ProductModel.find({  productStock: { $lte: maxStock } });
+            const filter = { productStock: { $lte: maxStock } }; // Filtro base para stock bajo
+    
+            if (unitID) {
+                filter.unitID = unitID; // Si unitID está definido, lo agregamos al filtro
+            }
+    
+            const products = await ProductModel.find(filter);
             return products;
         } catch (error) {
             throw error;
         }
     }
+    
 
     
 }

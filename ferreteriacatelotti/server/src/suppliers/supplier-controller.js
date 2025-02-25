@@ -20,9 +20,6 @@ export class SupplierController {
         
         req.logger.info("Email: " + supplierEmail);
         try {
-            if (!supplierFirstName || !supplierLastName || !supplierEmail || !supplierDni) {
-                return res.status(400).json({ message: 'Missing required fields: firstname, lastname, email, or dni' });
-            }
         
             const existingSupplier = await supplierService.getByDni(supplierDni);
     

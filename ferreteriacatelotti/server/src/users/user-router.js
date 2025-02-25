@@ -7,7 +7,7 @@ import { checkUserRole } from '../middlewares/checkrole.js';
 export const userRouter = express.Router();
 const userController = new UserController();
 
-userRouter.get('/count', authMiddleware, checkUserRole(["Admin"]), userController.getUsersCount);
+userRouter.get('/count', authMiddleware, checkUserRole(['Admin', 'Empleado', 'Dueño']), userController.getUsersCount);
 userRouter.post("/", userValidator, authMiddleware, checkUserRole(["Admin"]), userController.createUser);
 userRouter.post("/login", userController.loginUser);
 userRouter.post('/logout', userController.logoutUser);

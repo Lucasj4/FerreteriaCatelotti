@@ -5,7 +5,7 @@
     justify-content: space-around;
     height: auto;
     color: var(--background2);
-    width: 60%;
+    width: 100%;
     padding: 2px;
 }
 
@@ -30,10 +30,12 @@
 }
 
 .sale__actions{
-    width: 100%;
+  
+    width: 60%;
     display: flex;
     justify-content: space-around;
     background-color: var(--grey);
+    box-sizing: border-box; /* Añadir esta línea */
 }
 
 .sale__actions button{
@@ -44,6 +46,24 @@
     border: 1px solid var(--color-primary);
     cursor: pointer;
     color: var(--text-color);
+    margin-top: 1rem;
+    
 }
+
+.sale__table__container{
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background2);
+  width: 90%;
+  overflow-y: scroll;
+  max-height: 300px;
+  height: 400px;
+  justify-content: center;
+  align-items: center;
+  margin: 30px;
+}
+
+
+
 
 

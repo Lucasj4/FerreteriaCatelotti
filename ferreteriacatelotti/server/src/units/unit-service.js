@@ -20,11 +20,16 @@ export class UnitService{
         }
     }
 
-    async getUnitNameById(id){
+    async getUnitNameById(id) {
         try {
-            const units = await UnitModel.findOne({_id: id})
-            return units.unitName;
+            const unit = await UnitModel.findOne({ _id: id });
+            if (!unit) {
+                console.error(`Unidad no encontrada para ID: ${id}`);
+                return null;
+            }
+            return unit.unitName;
         } catch (error) {
+            console.error("Error en getUnitNameById:", error);
             throw error;
         }
     }

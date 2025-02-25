@@ -4,7 +4,7 @@ import { Errors } from '../errors/enum-error.js';
 
 export const ValidateBudgetDetail = (req, res, next) => {
     const schema = Joi.object({
-        budgetDetailUnitCost:  Joi.number().positive().required().custom((value, helpers) => {
+        budgetDetailSalePrice:  Joi.number().positive().required().custom((value, helpers) => {
             // Expresión regular para permitir solo hasta 2 decimales
             if (!/^\d+(\.\d{1,2})?$/.test(value)) {
                 return helpers.error('number.precision'); // Lanza un error si hay más de 2 decimales

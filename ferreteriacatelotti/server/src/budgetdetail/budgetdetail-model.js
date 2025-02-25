@@ -12,7 +12,7 @@ const budgetDetailSchema = new mongoose.Schema({
         ref: 'budgets',
         
     },
-    budgetDetailUnitCost: {
+    budgetDetailSalePrice: {
         type: Number,
         required: true
     },

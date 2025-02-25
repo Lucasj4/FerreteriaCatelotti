@@ -8,7 +8,7 @@ export default class BudgetDetaiLController{
     
   async addBudgetDetail(req, res){
 
-    const {budgetID, budgetDetailQuantity, budgetDetailUnitCost, budgetDetailItem, productID} = req.body;
+    const {budgetID, budgetDetailQuantity, budgetDetailSalePrice, budgetDetailItem, productID} = req.body;
 
     try {
 
@@ -43,7 +43,7 @@ export default class BudgetDetaiLController{
         const newBudgetDetail = {
             budgetID,
             budgetDetailQuantity,
-            budgetDetailUnitCost,
+            budgetDetailSalePrice,
             budgetDetailItem,
             productID
         }

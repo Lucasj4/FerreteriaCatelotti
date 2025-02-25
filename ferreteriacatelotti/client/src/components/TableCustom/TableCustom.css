@@ -1,43 +1,47 @@
-.table{
-    color: #212121;
-    padding: 2rem 0;
-    width: 60%;
-     
-  }
-  .table__header{
-    width: 100px;
-    overflow-y: auto; /* Aparecerá una barra de desplazamiento vertical si es necesario */
-    max-height: 400px;
-    height: 50px;
-    background-color: var(--color-primary);
-    color: var(--text-color);
-  }
-  .table__row{
-    text-align: center;
-    background-color: var(--text-color);
-    border: 1px solid #212121;
-  }
-  .table__cell{
-    width: 100px;
-    height: 50px;
-  }
-  .table__editIcon{
-    color: var(--color-primary);
-    margin-right: 10px;
-    background: none;
-    outline: none;
-    border: none;
-    cursor: pointer;
-  }
-  .table__deleteIcon{
-    color: var(--color-primary);
-    background: none;
-    outline: none;
-    border: none;
-    cursor: pointer;
-  }
+.table {
+  color: #212121;
+  /* padding: 1rem 0; */
 
-.view-button{
+}
+/* Contenedor de la tabla para hacer scroll */
+.table-container {
+  max-height: 400px; /* Ajusta según lo que necesites */
+  overflow-y: auto;
+  border: 1px solid #ddd; /* Opcional, para separar visualmente */
+}
+
+.table__header {
+  background-color: var(--color-primary);
+  color: var(--text-color);
+  position: sticky;
+  top: 0;
+  padding: 1rem;
+  z-index: 1; /* Asegura que el encabezado quede por encima del contenido */
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1); /* Para darle un poco de sombra si se desea */
+}
+
+
+
+.table__row {
+  text-align: center;
+  background-color: var(--text-color);
+
+}
+.table__cell {
+  width: auto;
+  height: 50px;
+  
+  padding: 0 1rem;
+}
+.table__editIcon {
+  color: var(--color-primary);
+  margin-right: 10px;
+  background: none;
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+.table__deleteIcon {
   color: var(--color-primary);
   background: none;
   outline: none;
@@ -45,4 +49,10 @@
   cursor: pointer;
 }
 
-  
+.view-button {
+  color: var(--color-primary);
+  background: none;
+  outline: none;
+  border: none;
+  cursor: pointer;
+}

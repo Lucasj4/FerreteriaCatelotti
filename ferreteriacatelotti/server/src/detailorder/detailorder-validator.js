@@ -22,7 +22,8 @@ export const validateDetailOrder = (req, res, next) => {
             "number.positive": "El precio unitario del producto debe ser un número positivo",
             "number.precision": "El precio unitario debe tener como máximo dos decimales"
         }),
-        detailOrderQuantity: Joi.number().required().positive().messages({
+        detailOrderQuantity: Joi.number().required().empty("").positive().messages({
+            "any.required": "La cantidad del producto es obligatoria",
             "number.base": "La cantidad del producto debe ser un número",
             "number.positive": "La cantidad del producto debe ser un numero positivo",
             "any.required": "La cantidad del producto es obligatoria",

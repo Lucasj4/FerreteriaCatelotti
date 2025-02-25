@@ -12,7 +12,6 @@ const OrderDetail = () => {
   const [purchaseOrderDate, setPurchaseOrderDate] = useState("");
   const [purchaseOrderStatus, setPurchaseOrderStatus] = useState("Pendiente");
   const [suppliers, setSuppliers] = useState([]);
-  const [selectedSupplier, setSelectedSupplier] = useState(" ");
   const [selectedSuppliers, setSelectedSuppliers] = useState([]);
   const navigate = useNavigate();
 
@@ -69,11 +68,8 @@ const OrderDetail = () => {
   const handleSupplierChange = (selectedOptions) => {
     setSelectedSuppliers(selectedOptions);
 
-    const selectedProveedorValue =
-      selectedOptions.length > 0 ? selectedOptions[0].value : "";
-
-    setSelectedSupplier(selectedProveedorValue);
-    console.log("provedor: ", selectedProveedorValue);
+    
+    console.log("provedor: ", selectedOptions);
   };
 
   const handleDeleteCell = (indice) => {
@@ -91,10 +87,8 @@ const OrderDetail = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const proveedorValue =
-      selectedSuppliers.length > 0 ? selectedSuppliers[0].value : "";
-    console.log("Fecha", purchaseOrderDate);
-    console.log("Estado: ", purchaseOrderStatus);
+    const proveedorValue = selectedSuppliers.value;
+    
     console.log("Proveedor: ", proveedorValue);
 
     if (!purchaseOrderDate || !purchaseOrderStatus || !proveedorValue) {

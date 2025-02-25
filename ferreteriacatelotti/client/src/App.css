@@ -24,7 +24,7 @@ body {
 
 main {
   width: 100%;
-  background-image: url('../public/ferreteria-nahue_0_1684765165.png');
+  background-image: url("../public/ferreteria-nahue_0_1684765165.png");
   background-size: cover; /* Ajusta la imagen para cubrir todo el contenedor */
   background-position: center; /* Centra la imagen dentro del contenedor */
   background-repeat: no-repeat; /* Evita que la imagen se repita */
@@ -36,13 +36,13 @@ main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  
 }
 .component__table__container {
   display: flex;
   flex-direction: column;
   background-color: var(--background2);
   width: 60%;
+
   justify-content: center;
   align-items: center;
 }
@@ -89,7 +89,7 @@ main {
   display: flex;
   justify-content: space-around;
 }
-.form__item{
+.form__item {
   display: flex;
   flex-direction: column;
   width: 90%;
@@ -97,7 +97,7 @@ main {
   color: #fff;
   margin: 0 auto;
 }
-.form__input{
+.form__input {
   color: #fff;
   padding: 10px 5px;
   margin-top: 5px;
@@ -108,7 +108,7 @@ main {
   background: var(--background2);
 }
 
-.form__label{
+.form__label {
   font-size: 1rem;
   color: #00dfc4;
 }
@@ -129,7 +129,7 @@ main {
   width: 100%;
   display: flex;
   justify-content: space-around;
-  
+
   background-color: var(--grey);
 }
 
@@ -144,7 +144,7 @@ main {
   cursor: pointer;
 }
 
-.component__actions__button:hover{
+.component__actions__button:hover {
   background-color: var(--background);
   color: var(--text-color);
   border: 1px solid var(--background);
@@ -152,17 +152,22 @@ main {
 
 /* Cambiar el fondo del popup */
 .my-popup-class {
-  background-color:#212121 !important;
+  background-color: #212121 !important;
   color: #fff;
   border-radius: 4px;
 }
 
 /* Personaliza el fondo del overlay */
 .swal2-overlay.my-overlay-class {
-  background-color: rgba(0, 0, 0, 0.5) !important; /* Cambia el color del overlay */
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ) !important; /* Cambia el color del overlay */
 }
 
-.my-confirm-button-class{
+.my-confirm-button-class {
   background-color: #f0320a;
 }
 
@@ -221,6 +226,3 @@ main {
   font-size: 1rem;
   display: flex;
 }
-
-
-

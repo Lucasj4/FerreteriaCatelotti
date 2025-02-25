@@ -17,7 +17,6 @@ const MultiSelectOption = ({ options, selectedOptions, onChange, placeholder, la
 
   return (
     <Select
-      isMulti
       options={formattedOptions}
       value={selectedOptions}
       onChange={onChange}

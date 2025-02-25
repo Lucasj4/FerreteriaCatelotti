@@ -6,6 +6,7 @@ const unitController = new UnitController()
 export const unitRouter = express.Router();
 
 
-unitRouter.post("/", unitController.addUnit)
-unitRouter.get("/", unitController.getUnit)
+unitRouter.post("/", unitController.addUnit);
+unitRouter.get("/", unitController.getUnit);
+
 

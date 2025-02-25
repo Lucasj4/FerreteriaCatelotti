@@ -67,7 +67,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
         overlay: "my-overlay-class",
       },
     });
-    return <Navigate to="/home" />;
+    return <Navigate to="/insideHome" />;
   }
 
   return children; 

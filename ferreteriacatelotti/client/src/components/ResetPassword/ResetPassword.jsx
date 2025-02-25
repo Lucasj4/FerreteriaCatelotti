@@ -75,7 +75,7 @@ const ResetPassword = () => {
         navigate('/iniciosesion');
       } else {
         showAlert({
-          title: `${data.error}`,
+          title: `${data.message}`,
           icon: "warning",
         });
       }

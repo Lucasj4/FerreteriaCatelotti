@@ -23,3 +23,14 @@
     background-color: var(--color-primary);
     color: var(--text-color);
 }
+
+.supplier__table__container{
+    width: 90%;
+    height: auto;
+    overflow-y: scroll;
+    max-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 30px;
+}

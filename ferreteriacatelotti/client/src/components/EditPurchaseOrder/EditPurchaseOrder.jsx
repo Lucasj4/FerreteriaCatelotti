@@ -45,6 +45,7 @@ const EditPurchaseOrder = () => {
     { value: "detailOrderProduct", label: "Producto" },
     { value: "detailOrderQuantity", label: "Cantidad" },
     { value: "detailOrderUnitCost", label: "Costo Unitario" },
+    { value: "productUnit", label: "Unidad"}
   ];
 
   const navigate = useNavigate();
@@ -91,6 +92,8 @@ const EditPurchaseOrder = () => {
 
         setAmount(total);
 
+        console.log("Detalles: ", detailOrders);
+        
         setRows(detailOrders);
         
         console.log(purchaseOrder.purchaseOrderDate);
@@ -189,16 +192,12 @@ const EditPurchaseOrder = () => {
       return; 
     }
 
-    const proveedorValue =
-      selectedSuppliers.length > 0 ? selectedSuppliers[0].value : "";
+    console.log("supplier: ", selectedSuppliers);
+    
 
-    const updatedPurchaseOrder = {
-      purchaseOrderDate: new Date(orderDate),
-      purchaseOrderStatus: purchaseOrderStatus || "Pendiente",
-      supplierID: proveedorValue,
-      purchaseOrderAmount: amount,
-      detalleIds: Array.from(detalleIds),
-    };
+    const proveedorValue = selectedSuppliers.value;
+     
+
 
     if (purchaseOrderStatus === "Recibido") {
       try {
@@ -237,6 +236,15 @@ const EditPurchaseOrder = () => {
         
       }
     }
+
+    
+    const updatedPurchaseOrder = {
+      purchaseOrderDate: new Date(orderDate),
+      purchaseOrderStatus: purchaseOrderStatus || "Pendiente",
+      supplierID: proveedorValue,
+      purchaseOrderAmount: amount,
+      detalleIds: Array.from(detalleIds),
+    };
 
     try {
       const response = await fetch(
@@ -363,12 +371,13 @@ const EditPurchaseOrder = () => {
     e.preventDefault();
 
     const proveedorValue =
-      selectedSuppliers.length > 0 ? selectedSuppliers[0].label : "";
+      selectedSuppliers.length > 0 ? selectedSuppliers[0].value : "";
 
     const purchaseOrder = {
       amount: amount,
       date: orderDate,
       supplier: proveedorValue,
+
       details: rows.map((row) => ({
         producto: row.detailOrderProduct,
         cantidad: row.detailOrderQuantity,
@@ -427,7 +436,7 @@ const EditPurchaseOrder = () => {
 
   return (
     <>
-      <div className="orderdetail__container">
+      <div className="component__container">
         <div className="orderdetail__table-container">
           <div className="orderdetail__title">
             <p>Detalle de pedido de compra</p>

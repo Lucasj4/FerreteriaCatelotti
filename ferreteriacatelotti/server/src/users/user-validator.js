@@ -7,8 +7,7 @@ export const userValidator = (req, res, next) => {
     // Esquema de validación
     const schema = Joi.object({
         userUsername: Joi.string()
-            .trim()
-            .pattern(/^[A-Za-z0-9._]+$/)
+            .pattern(/^[A-Za-z0-9._]+$/) // Permite solo caracteres válidos y prohíbe espacios
             .required()
             .messages({
                 "string.base": "El username debe contener solo letras, números, guiones bajos o puntos",
@@ -56,8 +55,8 @@ export const userValidator = (req, res, next) => {
     }).unknown();
 
     // Validar con contexto
-    const { error } = schema.validate(req.body, { 
-        abortEarly: false, 
+    const { error } = schema.validate(req.body, {
+        abortEarly: false,
         context: { isUpdate }
     });
 

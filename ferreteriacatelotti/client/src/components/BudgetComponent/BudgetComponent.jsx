@@ -9,7 +9,7 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
 const BudgetComponent = () => {
-  const [filas, setFilas] = useState([]);
+  const [rows, setRows] = useState([]);
   const [clients, setClients] = useState([]);
   const [selectedClients, setSelectedClients] = useState([]);
   const [selectedProveedores, setSelectedProveedores] = useState(null);
@@ -61,7 +61,7 @@ const BudgetComponent = () => {
         if (response) {
           const budgets = await response.json();
 
-          setFilas(budgets.budgets);
+          setRows(budgets.budgets);
         }
       } catch (error) {
         throw error;
@@ -80,7 +80,7 @@ const BudgetComponent = () => {
       if (response) {
         const budgets = await response.json();
 
-        setFilas(budgets.budgets);
+        setRows(budgets.budgets);
       }
     } catch (error) {
       console.log("Error: ", error);
@@ -121,10 +121,7 @@ const BudgetComponent = () => {
 
   const handleSearch = async () => {
     // Filtra los presupuestos según cliente y estado
-    const clientId =
-      selectedClients.length > 0
-        ? selectedClients.map((client) => client.value)
-        : null; // Si no hay clientes seleccionados, se deja null
+    const clientId = selectedClients.value
     const budgetStatus = showOnlyPendiente
       ? "Pendiente"
       : showOnlySelected
@@ -133,8 +130,9 @@ const BudgetComponent = () => {
 
     const startDate = dateRange[0]?.startDate;
     const endDate = dateRange[0]?.endDate;
-    console.log("start date: ", startDate);
-    console.log("end date: ", endDate);
+
+    console.log(clientId);
+    
 
     if (startDate > endDate) {
       showAlert({
@@ -164,7 +162,7 @@ const BudgetComponent = () => {
         const result = await response.json();
         console.log("Resultado: ", result.budgets);
 
-        setFilas(result.budgets); // Actualiza el estado de las filas con los presupuestos encontrados
+        setRows(result.budgets); // Actualiza el estado de las rows con los presupuestos encontrados
       } else if (response.status === 404) {
         const result = await response.json();
         showAlert({
@@ -188,33 +186,19 @@ const BudgetComponent = () => {
 
     if (result.isConfirmed) {
       try {
-        // Elimina el presupuesto de la base de datos
-        const response = await fetch(
-          `http://localhost:8080/api/budgets/${idBudget}`,
-          {
-            
-            credentials: "include",
+        try {
+          const deleteResponse = await fetch(
+            `http://localhost:8080/api/budgets/${idBudget}`,
+            { method: "DELETE", credentials: "include" }
+          );
+        
+          if (deleteResponse.status === 400) {
+            showAlert({ text: "No se puede eliminar un presupuesto facturado", icon: "error" });
+            return;
           }
-        );
-        const data = await response.json();
-        const budget = data.budget;
-
-        if(budget.budgetStatus === "Facturado" ){
-          showAlert({
-            text: "No se puede eliminar un presupuesto facturado",
-            icon: "error"
-
-          });
-          return;
+        } catch (error) {
+          console.error("Error en la petición de eliminación", error);
         }
-
-        const deleteResponse = await fetch(
-          `http://localhost:8080/api/budgets/${idBudget}`,
-          {
-            method: "Delete",
-            credentials: "include",
-          }
-        );
 
         if (deleteResponse.status === 200) {
           showAlert({
@@ -222,9 +206,9 @@ const BudgetComponent = () => {
             icon: "success",
           });
           // Si la eliminación fue exitosa, eliminamos la fila visualmente
-          const nuevasFilas = [...filas];
+          const nuevasFilas = [...rows];
           nuevasFilas.splice(index, 1);
-          setFilas(nuevasFilas);
+          setRows(nuevasFilas);
         } else {
           console.error("Error al eliminar el presupuesto en la base de datos");
         }
@@ -319,7 +303,7 @@ const BudgetComponent = () => {
           <div className="budgettable__container">
             <Table
               headers={tableHeaders}
-              data={filas}
+              data={rows}
               tableClassName="budget__table"
               trClassName="budget__table__row"
               thClassName="budget__table__header"
@@ -347,7 +331,9 @@ const BudgetComponent = () => {
             <button className="component__actions__button" onClick={handleSearch}>
               Buscar
             </button>
+            <Link to={"/insideHome"}>
             <button className="component__actions__button">Salir</button>
+            </Link>
           </div>
         </div>
       </div>

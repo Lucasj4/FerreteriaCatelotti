@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Table from "../TableCustom/TableCustom";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import DropdownSelect from "../DropDownSelect/DropDownSelect";
 import "./ProductComponent.css";
 
 const ProductComponent = () => {
@@ -10,6 +11,8 @@ const ProductComponent = () => {
   const [productCategory, setProductCategory] = useState("");
   const [searchCriteria, setSearchCriteria] = useState("name");
   const [filas, setFilas] = useState([]);
+  const [productUnit, setProductUnit] = useState({ id: "", name: "" });
+    const [productsUnitsOptions, setProductsUnitsOptions] = useState([]);
   const [showModal, setShowModal] = useState(false); // Para mostrar/ocultar el modal
   const [stockThreshold, setStockThreshold] = useState(""); // Para el valor de quiebre de stock
   const [alarmStock, setAlarmStock] = useState(""); // Para el valor de alarma de stock
@@ -27,12 +30,10 @@ const ProductComponent = () => {
 
   const handleSaveSettings = () => {
     // Puedes agregar lógica aquí para guardar las configuraciones, como por ejemplo hacer un fetch a un API
-    console.log("Configuraciones guardadas:", { stockThreshold});
+   
     handleCloseModal();
   };
   useEffect(() => {
- 
-
     const fetchProducts = async () => {
       try {
         const response = await fetch("http://localhost:8080/api/products", {
@@ -53,6 +54,33 @@ const ProductComponent = () => {
     fetchProducts();
   }, []);
 
+   useEffect(() => {
+      const fetchUnits = async () => {
+        try {
+          const response = await fetch("http://localhost:8080/api/units", {
+            credentials: "include",
+          });
+          if (!response.ok) {
+            throw new Error("Error al obtener las categorías");
+          }
+          const data = await response.json();
+          console.log("Data: ", data);
+  
+          const productsUnitsOptions = data.units.map((unit) => ({
+            value: unit._id,
+            label: unit.unitName,
+          }));
+        
+  
+          setProductsUnitsOptions(productsUnitsOptions);
+        } catch (error) {
+          console.error("Error en la solicitud", error);
+        }
+      };
+  
+      fetchUnits();
+    }, []);
+
   const getAllProducts = async () => {
     try {
       const response = await fetch("http://localhost:8080/api/products", {
@@ -62,7 +90,6 @@ const ProductComponent = () => {
       if (response.status === 200) {
         const products = await response.json();
 
-        console.log("Productos: ", products);
 
         setFilas(products.products);
       }
@@ -90,6 +117,8 @@ const ProductComponent = () => {
 
   const getProductsWithLowStock = async () => {
     try {
+     
+      
       const response = await fetch(
         "http://localhost:8080/api/products/lowstock",
         {
@@ -100,7 +129,7 @@ const ProductComponent = () => {
 
           credentials: "include",
 
-          body: JSON.stringify({stockThreshold}),
+          body: JSON.stringify({ stockThreshold, unitID: productUnit.id }),
         }
       );
       if (response.status === 200) {
@@ -119,11 +148,12 @@ const ProductComponent = () => {
           ? `name=${productName}`
           : `category=${productCategory}`;
 
-      console.log("producto: ", queryParam);
-      
+  
+
       const response = await fetch(
-        `http://localhost:8080/api/products/search?${queryParam}`, {
-          credentials: 'include',
+        `http://localhost:8080/api/products/search?${queryParam}`,
+        {
+          credentials: "include",
         }
       );
 
@@ -248,21 +278,24 @@ const ProductComponent = () => {
               Buscar
             </button>
           </div>
-          <Table
-            tableClassName="table"
-            trClassName="table__row"
-            thClassName="table__header"
-            theadClassName="table__thead"
-            tbodyClassName="table__body"
-            tdClassName="table__cell"
-            deleteIconClassName="table__deleteIcon"
-            editIconClassName="table__editIcon"
-            handleDeleteCell={handleDeleteProduct}
-            headers={tableHeaders}
-            data={filas}
-            getEditPath={(id) => `/productos/${id}`}
-            showActions={true}
-          />
+          <div className="products__tablecontainer">
+            <Table
+              tableClassName="table"
+              trClassName="table__row"
+              thClassName="table__header"
+              theadClassName="table__thead"
+              tbodyClassName="table__body"
+              tdClassName="table__cell"
+              deleteIconClassName="table__deleteIcon"
+              editIconClassName="table__editIcon"
+              handleDeleteCell={handleDeleteProduct}
+              headers={tableHeaders}
+              data={filas}
+              getEditPath={(id) => `/productos/${id}`}
+              showActions={true}
+            />
+          </div>
+
           <div className="component__actions">
             <Link to={"/productos/agregarproducto"}>
               <button className="component__actions__button">Nuevo</button>
@@ -301,6 +334,20 @@ const ProductComponent = () => {
                     onChange={(e) => setStockThreshold(e.target.value)}
                   />
                 </div>
+                <div className="modal__input">
+                  <DropdownSelect
+                    options={productsUnitsOptions}
+                    value={productUnit.name} // Muestra la etiqueta del producto seleccionado
+                    onChange={(option) =>
+                      setProductUnit({
+                        id: option.value,
+                        name: option.label,
+                      })
+                    }
+                    placeholder="Selecciona una unidad"
+                  />
+                </div>
+
                 {/* <div className="modal__input">
                   <label>Alarma de stock:</label>
                   <input

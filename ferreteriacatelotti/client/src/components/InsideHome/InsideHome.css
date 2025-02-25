@@ -10,7 +10,10 @@
   align-items: center;
   justify-content: center;
 }
-
+.home-title{
+  color: var(--color-primary);
+  font-size: 3rem;
+}
 .indicators-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

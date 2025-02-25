@@ -95,7 +95,7 @@ export class DetailOrderController {
         try {
             const { rowid } = req.params;
             const detailOrder = await detailOrderService.getDetailOrderById(rowid);
-
+            
             if (detailOrder) {
                 res.status(200).json({ detailOrder });
             } else {
