@@ -74,7 +74,7 @@ const NewClient = () => {
         body: JSON.stringify(clientData),
       });
 
-      console.log("clientData:", clientData);
+     
       const result = await response.json();
 
       switch (response.status) {

@@ -5,7 +5,7 @@
 }
 /* Contenedor de la tabla para hacer scroll */
 .table-container {
-  max-height: 400px; /* Ajusta según lo que necesites */
+  /* Ajusta según lo que necesites */
   overflow-y: auto;
   border: 1px solid #ddd; /* Opcional, para separar visualmente */
 }
@@ -55,4 +55,21 @@
   outline: none;
   border: none;
   cursor: pointer;
+}
+.paginations-and-controls{
+  margin-top: 1rem;
+}
+.paginations-and-controls button{
+  background-color: var(--color-primary);
+  color: var(--text-color);
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin: 0 0.5rem;
+  outline: none;
+  border: 1px solid var(--color-primary);
+  cursor: pointer;
+}
+
+.paginations-and-controls span{
+  color: var(--text-color);
 }

@@ -22,7 +22,7 @@ export class ClientController {
             const existingClientByEmail = await clientService.getClientByEmail(clientEmail);
 
             if (existingClient) {
-                return res.status(409).json({ error: `El client con el dni ${clientDni} ya está registrado.` });
+                return res.status(409).json({ error: `El cliente con el dni ${clientDni} ya está registrado.` });
             }
 
             

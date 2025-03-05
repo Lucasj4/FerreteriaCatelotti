@@ -177,6 +177,7 @@ const UserComponent = () => {
               handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
               data={row}
               showActions={true}
+              paginationandcontrols="paginations-and-controls"
             />
           </div>
 

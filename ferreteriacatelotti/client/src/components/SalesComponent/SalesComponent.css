@@ -55,8 +55,7 @@
   flex-direction: column;
   background-color: var(--background2);
   width: 90%;
-  overflow-y: scroll;
-  max-height: 300px;
+
   height: 400px;
   justify-content: center;
   align-items: center;

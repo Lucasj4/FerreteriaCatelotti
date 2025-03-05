@@ -17,7 +17,7 @@ const ViewSale = () => {
   const tableHeaders = [
     { value: "budgetDetailItem", label: "Producto" },
     { value: "budgetDetailQuantity", label: "Cantidad" },
-    { value: "budgetDetailUnitCost", label: "Precio unitario" },
+    { value: "budgetDetailSalePrice", label: "Precio de venta" },
   ];
 
   useEffect(() => {
@@ -174,6 +174,7 @@ const ViewSale = () => {
               getEditPath={(id) => `/users/${id}`}
               handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
               data={rows}
+              paginationandcontrols="paginations-and-controls"
             />
           </div>
 

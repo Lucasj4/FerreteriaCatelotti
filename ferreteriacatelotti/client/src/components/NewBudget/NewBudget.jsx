@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import MultiSelectOption from "../MultipleSelect/MultipleSelect";
 import BudgetContext from "../context/BudgetContext";
 const NewBudget = () => {
-  const [row, setRow] = useState([]);
+  const [row, setRow] = useState([,]);
   const [clients, setClients] = useState([]);
   const [amount, setAmount] = useState(0);
   const navigate = useNavigate();
@@ -44,42 +44,9 @@ const NewBudget = () => {
   const tableHeaders = [
     { value: "budgetDetailItem", label: "Producto" },
     { value: "budgetDetailQuantity", label: "Cantidad" },
-    { value: "budgetDetailUnitCost", label: "Precio unitario" },
+    { value: "budgetDetailSalePrice", label: "Precio de venta" },
   ];
 
-  // useEffect(() => {
-  //   clearDetailIds();
-  //   const fetchBudgetDetails = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         "http://localhost:8080/api/budgetsdetails/details-by-ids",
-  //         {
-  //           method: "Post",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify({ detailIds }),
-  //         }
-  //       );
-
-  //       const data = await response.json();
-
-  //       const total = data.budgetDetails.reduce((acc, order) => {
-  //         return acc + order.budgetDetailQuantity * order.budgetDetailUnitCost;
-  //       }, 0);
-
-  //       setAmount(total);
-
-  //       if (response.status === 200) {
-  //         setRow(data.budgetDetails);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching clients: ", error);
-  //     }
-  //   };
-
-  //   fetchBudgetDetails();
-  // }, []);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -97,7 +64,7 @@ const NewBudget = () => {
     };
 
     fetchClients();
-    console.log("Ids de detalles", detailIds);
+
   }, []);
 
   const handleOptions = (selectedOptions) => {
@@ -183,7 +150,7 @@ const NewBudget = () => {
           title: "Presupuesto creado con éxito",
           icon: "success",
         });
-        navigate("/presupuesto/agregardetalle");
+        navigate(`/presupuesto/${result.budget._id}/detalle/nuevalinea`);
       } else if (response.status === 400) {
         const errorMessages =
           result.errorMessages && result.errorMessages.length > 0
@@ -211,7 +178,14 @@ const NewBudget = () => {
 
     const clientId = selectedOption.value;
 
-    console.log("clientId: ", clientId);
+    if(budgetStatus === "Facturado"){
+      showAlert({
+        title: "Error",
+        text: "No se puede facturar un presupuesto vacio",
+        icon: "error"
+      })
+      return;
+    }
 
     if (!budgetDate || !clientId || !budgetStatus) {
       await showAlert({
@@ -287,6 +261,7 @@ const NewBudget = () => {
             deleteIconClassName="table__deleteIcon"
             editIconClassName="table__editIcon"
             getEditPath={(id) => `/presupuesto/detalle/${id}`}
+            paginationandcontrols="paginations-and-controls"
           />
           <div className="budgetdetail__containeramount">
             <p className="budgetdetail__amount">Total: ${amount}</p>
@@ -299,7 +274,7 @@ const NewBudget = () => {
                 Nueva línea
               </button>
             </Link>
-            <button className="budgetdetail__button">Guardar</button>
+           
             <Link to="/presupuesto">
               <button className="budgetdetail__button">Salir</button>
             </Link>

@@ -222,7 +222,7 @@ function App() {
                         path="/productos"
                         element={
                           <ProtectedRoute
-                            allowedRoles={["Admin", "Empleado", "Dueño"]}
+                            allowedRoles={["Admin", "Dueño"]}
                           >
                             <ProductComponent />
                           </ProtectedRoute>
@@ -232,7 +232,7 @@ function App() {
                         path="/productos/:pid"
                         element={
                           <ProtectedRoute
-                            allowedRoles={["Admin", "Empleado", "Dueño"]}
+                            allowedRoles={["Admin", "Dueño"]}
                           >
                             <EditProduct />
                           </ProtectedRoute>
@@ -242,7 +242,7 @@ function App() {
                         path="/productos/agregarproducto"
                         element={
                           <ProtectedRoute
-                            allowedRoles={["Admin", "Empleado", "Dueño"]}
+                            allowedRoles={["Admin", "Dueño"]}
                           >
                             <NewProduct />
                           </ProtectedRoute>

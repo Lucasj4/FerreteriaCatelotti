@@ -3,3 +3,10 @@
     color: var(--background2);
     
 }
+
+@media only screen and (max-width: 480px){
+    .custom-multi-select{
+        width: auto;
+        font-size: 0.8rem;
+    }
+}

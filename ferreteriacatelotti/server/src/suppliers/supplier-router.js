@@ -7,7 +7,7 @@ import { ValidateSupplier } from './supplier-validator.js';
 const supplierController = new SupplierController();
 export const supplierRouter = express.Router();
 
-supplierRouter.get('/count', authMiddleware, checkUserRole(["Admin", "Dueño"]), supplierController.getSuppliersCount); 
+supplierRouter.get('/count', authMiddleware, checkUserRole(["Admin", "Dueño", "Empleado"]), supplierController.getSuppliersCount); 
 supplierRouter.post('/', authMiddleware, checkUserRole(["Admin", "Dueño"]), ValidateSupplier, supplierController.addSupplier);
 supplierRouter.get('/search', authMiddleware, checkUserRole(["Admin", "Dueño"]), supplierController.getSuppliersByFilter);
 supplierRouter.get('/', authMiddleware, checkUserRole(["Admin", "Dueño"]), supplierController.getSuppliers);

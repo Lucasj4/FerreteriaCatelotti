@@ -11,7 +11,7 @@ import { useAppContext } from "../context/OrderContext";
 import Swal from "sweetalert2";
 
 const EditPurchaseOrder = () => {
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState([,]);
   const { detalleIds, clearDetalleIds, addDetalleId } = useAppContext();
   const { pid } = useParams();
   const [orderDate, setOrderDate] = useState("");
@@ -29,23 +29,22 @@ const EditPurchaseOrder = () => {
       icon,
       showCancelButton,
       confirmButtonText: "Aceptar",
-      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined,
       customClass: {
         title: "my-title-class",
         popup: "my-popup-class",
         confirmButton: "my-confirm-button-class",
         overlay: "my-overlay-class",
-        cancelButton: "my-cancel-button-class", 
+        cancelButton: "my-cancel-button-class",
       },
     });
   };
-  
 
   const tableHeaders = [
     { value: "detailOrderProduct", label: "Producto" },
     { value: "detailOrderQuantity", label: "Cantidad" },
     { value: "detailOrderUnitCost", label: "Costo Unitario" },
-    { value: "productUnit", label: "Unidad"}
+    { value: "productUnit", label: "Unidad" },
   ];
 
   const navigate = useNavigate();
@@ -68,6 +67,7 @@ const EditPurchaseOrder = () => {
   }, []);
 
   useEffect(() => {
+    console.log("Id: ", pid);
     const fetchPurchaseOrderWithDetails = async () => {
       try {
         const response = await fetch(
@@ -93,12 +93,11 @@ const EditPurchaseOrder = () => {
         setAmount(total);
 
         console.log("Detalles: ", detailOrders);
-        
+
         setRows(detailOrders);
-        
+
         console.log(purchaseOrder.purchaseOrderDate);
-        
-       
+
         const formattedDate = purchaseOrder.purchaseOrderDate
           ? purchaseOrder.purchaseOrderDate
               .split("/")
@@ -108,7 +107,7 @@ const EditPurchaseOrder = () => {
           : "";
 
         console.log("FORMATED FECHA: ", formattedDate);
-        
+
         setOrderDate(formattedDate);
 
         setPurchaseOrderStatus(purchaseOrder.purchaseOrderStatus);
@@ -171,7 +170,6 @@ const EditPurchaseOrder = () => {
   };
 
   const handleUpdateOrder = async () => {
-
     const response = await fetch(
       `http://localhost:8080/api/purchaseorders/${pid}`,
       {
@@ -182,22 +180,40 @@ const EditPurchaseOrder = () => {
     const data = await response.json();
 
     const purchaseOrder = data.purchaseOrder;
-    
+
     if (purchaseOrder.purchaseOrderStatus === "Recibido") {
       showAlert({
         title: "Error",
         text: "No se puede modificar un pedido que ya ha sido recibido",
         icon: "warning",
       });
-      return; 
+      return;
     }
 
-    console.log("supplier: ", selectedSuppliers);
-    
-
     const proveedorValue = selectedSuppliers.value;
-     
 
+    const formattedDate = purchaseOrder.purchaseOrderDate
+      ? purchaseOrder.purchaseOrderDate
+          .split("/")
+          .reverse()
+          .map((part) => part.padStart(2, "0")) // Formatea correctamente
+          .join("-")
+      : "";
+
+    const date1 = new Date(orderDate);
+    const date2 = new Date(formattedDate);
+
+    console.log("Fecha 1 (Date):", date1);
+    console.log("Fecha 2 (Date):", date2);
+
+    if (date1 < date2) {
+      showAlert({
+        title: "Error",
+        text: "La fecha no puede ser anterior a la establecida",
+        icon: "error",
+      });
+      return;
+    }
 
     if (purchaseOrderStatus === "Recibido") {
       try {
@@ -220,24 +236,21 @@ const EditPurchaseOrder = () => {
           }
         );
 
-        const stockData = await stockResponse.json()
+        const stockData = await stockResponse.json();
 
         if (stockResponse.status === 400 || stockResponse.status === 404) {
-
           showAlert({
             title: "Error",
             text: stockData.message,
             icon: "warning",
-          })
+          });
           return; // Detener la ejecución si stockResponse es 400 o 404
         }
       } catch (error) {
-        console.log(`Error al actualizar el stock del producto` , error);
-        
+        console.log(`Error al actualizar el stock del producto`, error);
       }
     }
 
-    
     const updatedPurchaseOrder = {
       purchaseOrderDate: new Date(orderDate),
       purchaseOrderStatus: purchaseOrderStatus || "Pendiente",
@@ -305,7 +318,7 @@ const EditPurchaseOrder = () => {
         text: "No se puede modificar un pedido que ya ha sido recibido",
         icon: "warning",
       });
-      return; 
+      return;
     }
 
     const result = await Swal.fire({
@@ -342,7 +355,7 @@ const EditPurchaseOrder = () => {
           const updatedDetails = rows.filter((order) => order._id !== id);
 
           const newTotal = updatedDetails.reduce((acc, order) => {
-            return acc + order.budgetDetailQuantity * order.detailOrderUnitCost;
+            return acc + order.detailOrderQuantity * order.detailOrderUnitCost;
           }, 0);
 
           setAmount(newTotal);
@@ -489,6 +502,7 @@ const EditPurchaseOrder = () => {
               linkPrefix="/detallepedido/editarpedido/"
               getEditPath={(id) => `/pedido/${pid}/detalle/${id}`}
               showActions={true}
+              paginationandcontrols="paginations-and-controls"
             />
           </div>
           <div className="orderdetail__total">

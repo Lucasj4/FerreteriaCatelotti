@@ -399,7 +399,7 @@ const PurchaseOrder = () => {
 
           <div className="purchaseOrder__tablecontainer">
             <Table
-              tableClassName="purchaseOrder__table"
+              tableClassName="budget__table"
               trClassName="purchaseOrder__table__row"
               thClassName="table__header"
               theadClassName="table__thead"
@@ -412,6 +412,7 @@ const PurchaseOrder = () => {
               handleDeleteCell={(id, index) => handleDeleteRow(id, index)}
               getEditPath={(id) => `/pedido/${id}`}
               showActions={true}
+              paginationandcontrols="paginations-and-controls"
             />
           </div>
 

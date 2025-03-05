@@ -49,8 +49,6 @@
 
   width: 90%;
   height: auto;
-  overflow-y: scroll;
-  max-height: 300px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -89,12 +87,12 @@
   color: #fff;
   padding: 1rem 0;
   width: 90%;
-  overflow-y: scroll;
+ 
   max-height: 500px;
 }
 .purchaseOrder__table__header {
   width: 100px;
-  overflow-y: auto; /* Aparecerá una barra de desplazamiento vertical si es necesario */
+ /* Aparecerá una barra de desplazamiento vertical si es necesario */
   max-height: 400px;
   height: 50px;
   background-color: var(--color-primary);
@@ -145,3 +143,32 @@
 }
 
 
+
+@media only screen and (max-width: 1200px) {
+  .purchaseOrder__filter{
+    height: 200px;
+  }
+ }
+
+@media only screen and (max-width: 480px) {
+  .purchaseorder__title{
+    font-size: 1.3rem;
+  }
+
+  .purchaseOrder__filter{
+    flex-direction: column;
+    width: 100%;
+  }
+  .dateselector{
+    width: 100%;
+  }
+  .purchaseOrder__supplier{
+    width: 100%;
+    padding: 0.3rem 0;
+  }
+
+  .purchaseOrder__supplier h4{
+    font-size: 1rem;
+    font-weight: 300;
+  }
+}

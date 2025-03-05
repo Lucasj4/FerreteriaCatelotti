@@ -56,59 +56,6 @@ const ClientComponent = () => {
         : `clientEmail=${clientEmail}`;
     getClients(query);
   };
-  // const getAllClients = async () => {
-  //   try {
-  //     const response = await fetch("http://localhost:8080/api/clients", {
-  //       credentials: "include",
-  //     });
-
-  //     if (response) {
-  //       const clients = await response.json();
-  //       setRows(clients.clients);
-  //     }
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
-
-  // const getClients = async () => {
-  //   try {
-  //     const queryParam =
-  //       searchCriteria === "clientLastName"
-  //         ? `clientLastName=${clientLastName}`
-  //         : `clientEmail=${clientEmail}`;
-
-  //     const response = await fetch(
-  //       `http://localhost:8080/api/clients/search?${queryParam}`,
-  //       {
-  //         credentials: "include",
-  //       }
-  //     );
-
-  //     if (response.status === 404 && searchCriteria === "clientLastName") {
-  //       showAlert({
-  //         title: "Cliente no enconctrado con ese apellido",
-  //         icon: "warning",
-  //       });
-  //     } else if (response.status === 404 && searchCriteria === "clientEmail") {
-  //       showAlert({
-  //         title: "Cliente no encontrado con ese email",
-  //         icon: "warning",
-  //       });
-  //     }
-
-  //     const data = await response.json(); // Convierte la respuesta a JSON
-
-  //     console.log("data: ", data);
-
-  //     // Asegúrate de que 'products' está disponible en la respuesta
-  //     if (data.clients) {
-  //       setRows(data.clients); // Actualiza el estado con los productos encontrados
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching products:", error);
-  //   }
-  // };
 
   const getClients = async (searchQuery = "") => {
     try {
@@ -134,8 +81,6 @@ const ClientComponent = () => {
   useEffect(() => {
     getClients(); // Llamado inicial
   }, []);
-
-  
 
   const handleDeleteClient = async (clientId) => {
     const result = await showAlert({
@@ -245,6 +190,7 @@ const ClientComponent = () => {
               headers={tableHeaders}
               data={rows}
               showActions={true}
+              paginationandcontrols="paginations-and-controls"
             />
           </div>
 
@@ -254,8 +200,9 @@ const ClientComponent = () => {
             </Link>
 
             <button className="component__actions__button">Guardar</button>
-         
-            <button className="component__actions__button">Salir</button>
+            <Link to={"/insideHome"}>
+              <button className="component__actions__button">Salir</button>
+            </Link>
           </div>
         </div>
       </div>

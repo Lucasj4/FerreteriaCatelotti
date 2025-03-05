@@ -276,6 +276,7 @@ const SalesComponent = () => {
               showActions={(row) => "view"}
               data={rows}
               viewIconClassName="view-button"
+              paginationandcontrols="paginations-and-controls"
             />
           </div>
 

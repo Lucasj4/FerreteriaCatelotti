@@ -15,10 +15,6 @@ const OrderDetail = () => {
   const [selectedSuppliers, setSelectedSuppliers] = useState([]);
   const navigate = useNavigate();
 
-  const options2 = [
-    { value: "pendiente", label: "Pendiente" },
-    { value: "recibido", label: "Recibido" },
-  ];
 
   const showAlert = ({ title, text, icon, showCancelButton = false }) => {
     return Swal.fire({
@@ -52,7 +48,7 @@ const OrderDetail = () => {
           credentials: "include",
         });
         const result = await response.json();
-        console.log(result);
+      
         
         setSuppliers(result.suppliers);
       } catch (error) {
@@ -89,7 +85,17 @@ const OrderDetail = () => {
 
     const proveedorValue = selectedSuppliers.value;
     
-    console.log("Proveedor: ", proveedorValue);
+    
+
+    if(purchaseOrderStatus === "Recibido"){
+      showAlert({
+        title: "Error",
+        text: "El estado Recibido no puede asignarse a un pedido de compra sin productos.",
+        error: "error"
+      })
+
+      return;
+    }
 
     if (!purchaseOrderDate || !purchaseOrderStatus || !proveedorValue) {
       await showAlert({
@@ -203,6 +209,7 @@ const OrderDetail = () => {
               data={filas}
               handleDeleteCell={handleDeleteCell}
               getEditPath={(id) => `/pedido/${id}`}
+              paginationandcontrols="paginations-and-controls"
             />
           </div>
           <div className="orderdetail__total">
@@ -214,7 +221,7 @@ const OrderDetail = () => {
               <button>Guardar</button>
             </Link>
 
-            <Link to="/">
+            <Link to="/pedido">
               <button>Salir</button>
             </Link>
           </div>

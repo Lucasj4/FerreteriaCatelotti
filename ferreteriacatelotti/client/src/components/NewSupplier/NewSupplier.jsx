@@ -71,7 +71,7 @@ const NewSupplier = () => {
         case 409:
           showAlert({
             title: "Error",
-            text: data.message,
+            text: data.error,
             icon: "error",
           });
           break;

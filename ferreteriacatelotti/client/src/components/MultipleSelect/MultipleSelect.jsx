@@ -21,6 +21,7 @@ const MultiSelectOption = ({ options, selectedOptions, onChange, placeholder, la
       value={selectedOptions}
       onChange={onChange}
       placeholder={placeholder}
+      menuPortalTarget={document.body} 
       className="custom-multi-select"
     />
   );

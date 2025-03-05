@@ -19,8 +19,8 @@
 .products__tablecontainer{
   width: 90%;
   height: auto;
-  overflow-y: scroll;
-  max-height: 300px;
+  overflow-y: auto;
+  overflow-x: auto;
   display: flex;
   flex-direction: column;
   align-items: center;

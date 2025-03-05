@@ -52,6 +52,8 @@ const BudgetDetail = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+
+      console.log("Id: ", pid);
       
       try {
         const response = await fetch(
@@ -72,6 +74,7 @@ const BudgetDetail = () => {
           const formattedDate = data.budget.budgetDate ? formatDate(data.budget.budgetDate) : "";
           setBudgetDate(formattedDate);
           
+          console.log("Data: ", data);
           
         
   
@@ -195,7 +198,7 @@ const BudgetDetail = () => {
 
           const newTotal = updatedDetails.reduce((acc, order) => {
             return (
-              acc + order.budgetDetailQuantity * order.budgetDetailUnitCost
+              acc + order.budgetDetailQuantity * order.budgetDetailSalePrice
             );
           }, 0);
 
@@ -470,6 +473,7 @@ const BudgetDetail = () => {
               editIconClassName="table__editIcon"
               getEditPath={(id) => `/presupuesto/${pid}/detalle/${id}`}
               showActions={true}
+              paginationandcontrols="paginations-and-controls"
             />
             <div className="budgetdetail__containeramount">
               <p className="budgetdetail__amount">Total: ${amount}</p>

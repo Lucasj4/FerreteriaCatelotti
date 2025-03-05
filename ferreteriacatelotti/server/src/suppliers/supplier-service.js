@@ -40,6 +40,15 @@ export class SupplierService{
         }
     }
 
+    async getSupplierByEmail(email){
+        try {
+            const supplier = await SupplierModel.findOne({supplierEmail: email});
+            return supplier
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async getSuppliers(){
         try {
             const suppliers = await SupplierModel.find();

@@ -78,6 +78,8 @@ const BudgetDetailLine = () => {
           (product) => product.value === data.budgetDetail.productID
         );
 
+        console.log(product);
+        
         if (product) {
           setBudgetDetailItem({
             id: data.budgetDetail.productID,
@@ -86,7 +88,7 @@ const BudgetDetailLine = () => {
         }
 
         setBudgetDetailQuantity(data.budgetDetail.budgetDetailQuantity);
-        setBudgetDetailUnitCost(data.budgetDetail.budgetDetailUnitCost);
+        setBudgetDetailUnitCost(data.budgetDetail.budgetDetailSalePrice);
       } catch (error) {
         console.error("Error en la solicitud:", error.message);
       }
@@ -266,7 +268,7 @@ const BudgetDetailLine = () => {
               id="precioUnitario"
               inputClassname="form__input"
               typeInput="text"
-              label="Precio Unitario"
+              label="Precio venta"
               labelClassname="form__label"
               value={budgetDetailUnitCost}
               // onChange={(e) => setBudgetDetailUnitCost(e.target.value)}

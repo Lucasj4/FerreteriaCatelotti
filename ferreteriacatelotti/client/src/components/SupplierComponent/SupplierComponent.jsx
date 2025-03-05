@@ -209,6 +209,7 @@ const SupplierComponent = () => {
               headers={tableHeaders}
               data={rows}
               showActions={true}
+              paginationandcontrols="paginations-and-controls"
             />
           </div>
 

@@ -56,6 +56,8 @@ const NewDetailOrderLine = () => {
   };
 
   useEffect(() => {
+    console.log("Pid: ", purchaseOrderId);
+    
     const fetchProducts = async () => {
       try {
         const response = await fetch("http://localhost:8080/api/products", {
@@ -134,8 +136,17 @@ const NewDetailOrderLine = () => {
 
     
       const data = await response.json();
-
+      console.log("Estatus: ", response.status);
+      
       switch (response.status) {
+
+        case 200:
+          showAlert({
+            title: "Detalle de presupuesto agregado con exito",
+            icon: "success",
+          });
+          break;
+
         case 201:
           showAlert({
             title: "Detalle de presupuesto agregado con exito",
@@ -231,7 +242,7 @@ const NewDetailOrderLine = () => {
           </form>
 
           <div className="newPurchaseOrder__form__containerbuttons">
-            <Link to={`/pedido/${purchaseOrderId}`}>
+            <Link to={`/pedido/${pid}`}>
               <button className="newPurchaseOrder__form__button">Salir</button>
             </Link>
             <Link to={"/pedido/${purchaseOrderId}"}>

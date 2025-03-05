@@ -18,14 +18,23 @@ export class SupplierController {
     async addSupplier(req, res){
         const { supplierFirstName, supplierLastName, supplierEmail, supplierDni } = req.body;
         
-        req.logger.info("Email: " + supplierEmail);
+        
         try {
         
             const existingSupplier = await supplierService.getByDni(supplierDni);
+            const existingSupplierEmail = await supplierService.getSupplierByEmail(supplierEmail);
+
+            req.logger.info("Email: " + existingSupplierEmail)
     
             if(existingSupplier){
                 return res.status(409).json({ error: "Ya existe un proveedor con el mismo dni" });
             }
+
+            if(existingSupplierEmail){
+                return res.status(409).json({ error: "Ya existe un proveedor con el email que intenta registrar" });
+            }
+
+
 
             const newSupplier = {
                 supplierFirstName,

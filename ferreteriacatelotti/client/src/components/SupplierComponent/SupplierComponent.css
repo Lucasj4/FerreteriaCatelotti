@@ -27,8 +27,8 @@
 .supplier__table__container{
     width: 90%;
     height: auto;
-    overflow-y: scroll;
-    max-height: 300px;
+    overflow-y:auto;
+    
     display: flex;
     flex-direction: column;
     align-items: center;

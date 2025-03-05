@@ -186,7 +186,7 @@ const BudgetComponent = () => {
 
     if (result.isConfirmed) {
       try {
-        try {
+      
           const deleteResponse = await fetch(
             `http://localhost:8080/api/budgets/${idBudget}`,
             { method: "DELETE", credentials: "include" }
@@ -196,9 +196,7 @@ const BudgetComponent = () => {
             showAlert({ text: "No se puede eliminar un presupuesto facturado", icon: "error" });
             return;
           }
-        } catch (error) {
-          console.error("Error en la petición de eliminación", error);
-        }
+        
 
         if (deleteResponse.status === 200) {
           showAlert({
@@ -317,6 +315,7 @@ const BudgetComponent = () => {
               getEditPath={(id) => `/presupuesto/${id}`}
               scrollable
               showActions={true}
+              paginationandcontrols="paginations-and-controls"
             />
           </div>
 

@@ -36,13 +36,6 @@ const DropdownSelect = ({ options = [], value, onChange, placeholder }) => {
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
     setSearchTerm(inputValue);
-    
-    // Si el input está vacío, mostrar el dropdown
-    if (inputValue === "") {
-      setShowDropdown(true);
-    } else {
-      setShowDropdown(filteredOptions.length > 0); // Solo mostrar si hay opciones filtradas
-    }
   };
 
   const handleOptionClick = (option) => {
@@ -63,15 +56,22 @@ const DropdownSelect = ({ options = [], value, onChange, placeholder }) => {
       />
       {showDropdown && (
         <div className="select-dropdown">
-          {filteredOptions.map((option, index) => (
-            <div
-              key={index}
-              onClick={() => handleOptionClick(option)} // Llama a la función con un solo clic
-              className="select-option"
-            >
-              {option.label}
+          {filteredOptions.length > 0 ? (
+            filteredOptions.map((option, index) => (
+              <div
+                key={index}
+                onClick={() => handleOptionClick(option)}
+                className="select-option"
+              >
+                {option.label}
+              </div>
+            ))
+          ) : (
+            <div className="select-option no-match">
+             No encontrado
+             
             </div>
-          ))}
+          )}
         </div>
       )}
     </div>

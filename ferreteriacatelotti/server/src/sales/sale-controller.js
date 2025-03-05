@@ -132,17 +132,17 @@ export class SaleController {
     
             // Detalles y filas vacías
             doc.font('Helvetica');
-            [...details, ...Array(emptyRows).fill({ budgetDetailItem: "", budgetDetailQuantity: "", budgetDetailUnitCost: "", budgetDetailSubtotal: "" })]
+            [...details, ...Array(emptyRows).fill({ budgetDetailItem: "", budgetDetailQuantity: "", budgetDetailSalePrice: "", budgetDetailSubtotal: "" })]
                 .slice(0, totalRows) // Asegurar máximo de filas
                 .forEach(detalle => {
                     const row = [
                         detalle.budgetDetailItem || "", // Si no hay item, queda vacío
                         detalle.budgetDetailQuantity || "", // Si no hay cantidad, queda vacío
-                        detalle.budgetDetailUnitCost !== '' 
-                            ? `$${detalle.budgetDetailUnitCost}`
+                        detalle.budgetDetailSalePrice !== '' 
+                            ? `$${detalle.budgetDetailSalePrice}`
                             : "", // Si no hay costo unitario, queda vacío
-                        detalle.budgetDetailQuantity && detalle.budgetDetailUnitCost
-                            ? `$${(detalle.budgetDetailQuantity * detalle.budgetDetailUnitCost)}`
+                        detalle.budgetDetailQuantity && detalle.budgetDetailSalePrice
+                            ? `$${(detalle.budgetDetailQuantity * detalle.budgetDetailSalePrice)}`
                             : "" // Si no hay cantidad o costo unitario, queda vacío
                     ];
     

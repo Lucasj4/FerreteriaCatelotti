@@ -251,7 +251,7 @@ const NewProduct = () => {
                       name: option.label,
                     })
                   }
-                  placeholder="Selecciona un producto"
+                  placeholder="Selecciona una unidad"
                 />
               </div>
             </div>

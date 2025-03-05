@@ -12,7 +12,7 @@ const ProductComponent = () => {
   const [searchCriteria, setSearchCriteria] = useState("name");
   const [filas, setFilas] = useState([]);
   const [productUnit, setProductUnit] = useState({ id: "", name: "" });
-    const [productsUnitsOptions, setProductsUnitsOptions] = useState([]);
+  const [productsUnitsOptions, setProductsUnitsOptions] = useState([]);
   const [showModal, setShowModal] = useState(false); // Para mostrar/ocultar el modal
   const [stockThreshold, setStockThreshold] = useState(""); // Para el valor de quiebre de stock
   const [alarmStock, setAlarmStock] = useState(""); // Para el valor de alarma de stock
@@ -30,7 +30,7 @@ const ProductComponent = () => {
 
   const handleSaveSettings = () => {
     // Puedes agregar lógica aquí para guardar las configuraciones, como por ejemplo hacer un fetch a un API
-   
+
     handleCloseModal();
   };
   useEffect(() => {
@@ -54,32 +54,31 @@ const ProductComponent = () => {
     fetchProducts();
   }, []);
 
-   useEffect(() => {
-      const fetchUnits = async () => {
-        try {
-          const response = await fetch("http://localhost:8080/api/units", {
-            credentials: "include",
-          });
-          if (!response.ok) {
-            throw new Error("Error al obtener las categorías");
-          }
-          const data = await response.json();
-          console.log("Data: ", data);
-  
-          const productsUnitsOptions = data.units.map((unit) => ({
-            value: unit._id,
-            label: unit.unitName,
-          }));
-        
-  
-          setProductsUnitsOptions(productsUnitsOptions);
-        } catch (error) {
-          console.error("Error en la solicitud", error);
+  useEffect(() => {
+    const fetchUnits = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/units", {
+          credentials: "include",
+        });
+        if (!response.ok) {
+          throw new Error("Error al obtener las categorías");
         }
-      };
-  
-      fetchUnits();
-    }, []);
+        const data = await response.json();
+        console.log("Data: ", data);
+
+        const productsUnitsOptions = data.units.map((unit) => ({
+          value: unit._id,
+          label: unit.unitName,
+        }));
+
+        setProductsUnitsOptions(productsUnitsOptions);
+      } catch (error) {
+        console.error("Error en la solicitud", error);
+      }
+    };
+
+    fetchUnits();
+  }, []);
 
   const getAllProducts = async () => {
     try {
@@ -89,7 +88,6 @@ const ProductComponent = () => {
 
       if (response.status === 200) {
         const products = await response.json();
-
 
         setFilas(products.products);
       }
@@ -117,8 +115,6 @@ const ProductComponent = () => {
 
   const getProductsWithLowStock = async () => {
     try {
-     
-      
       const response = await fetch(
         "http://localhost:8080/api/products/lowstock",
         {
@@ -147,8 +143,6 @@ const ProductComponent = () => {
         searchCriteria === "name"
           ? `name=${productName}`
           : `category=${productCategory}`;
-
-  
 
       const response = await fetch(
         `http://localhost:8080/api/products/search?${queryParam}`,
@@ -293,6 +287,7 @@ const ProductComponent = () => {
               data={filas}
               getEditPath={(id) => `/productos/${id}`}
               showActions={true}
+              paginationandcontrols="paginations-and-controls"
             />
           </div>
 
@@ -319,7 +314,9 @@ const ProductComponent = () => {
               Configuraciones
             </button>
 
-            <button className="component__actions__button">Salir</button>
+            <Link to={"/insideHome"}>
+              <button className="component__actions__button">Salir</button>
+            </Link>
           </div>
 
           {showModal && (
