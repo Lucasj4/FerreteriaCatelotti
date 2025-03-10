@@ -18,7 +18,7 @@ export default class BudgetDetaiLController{
         
         if(product.productStock < budgetDetailQuantity){
           return res.status(409).json({
-              message: `Stock insuficiente de ${budgetDetailItem}`,
+              message: `Stock insuficiente de ${budgetDetailItem}. Stock actual ${product.productStock}`,
               availableStock: product.productStock,
           });
       }
@@ -116,7 +116,7 @@ export default class BudgetDetaiLController{
         
         if(product.productStock < budgetDetailQuantity){
           return res.status(409).json({
-              message: `Stock insuficiente de ${budgetDetailItem}`,
+              message: `Stock insuficiente de ${budgetDetailItem}. Stock actual ${product.productStock}`,
               availableStock: product.productStock,
           });
       }
