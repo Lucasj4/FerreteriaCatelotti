@@ -278,7 +278,7 @@ function App() {
                       <Route
                         path="/ventas"
                         element={
-                          <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
+                          <ProtectedRoute allowedRoles={["Admin", "Dueño", "Empleado"]}>
                             <SalesComponent />
                           </ProtectedRoute>
                         }
@@ -287,7 +287,7 @@ function App() {
                       <Route
                         path="/ventas/:sid"
                         element={
-                          <ProtectedRoute allowedRoles={["Admin", "Dueño"]}>
+                          <ProtectedRoute allowedRoles={["Admin", "Dueño", "Empleado"]}>
                             <ViewSale />
                           </ProtectedRoute>
                         }
