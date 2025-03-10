@@ -395,6 +395,7 @@ const BudgetDetail = () => {
                 text: "Presupuesto facturado. Venta agregada",
                 icon: "success",
               });
+              navigate("/presupuesto");
             }
           } catch (error) {
             console.error("Error en el proceso:", error);

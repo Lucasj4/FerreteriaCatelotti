@@ -162,7 +162,7 @@ const BudgetDetailLine = () => {
       const updateBudget = {
         budgetDetailItem: budgetDetailItem.name,
         budgetDetailQuantity,
-        budgetDetailUnitCost,
+        budgetDetailSalePrice: budgetDetailUnitCost,
         productID: budgetDetailItem.id,
         budgetID: pid,
       };
@@ -182,37 +182,38 @@ const BudgetDetailLine = () => {
           }
         );
 
-        const data = await response.json()
-        console.log("Response: ", response);
-        if (response.status === 200) {
-          showAlert({
-            title: "Linea de detalle modificada con exito",
-            icon: "success",
-          }).then(() => {
-            resetForm();
-          });
-        } else if (response.status === 400) {
+       
+        
+  console.log("Response: ", response);
+  const data = await response.json(); 
+  if (response.status === 200) {
+    showAlert({
+      title: "Línea de detalle modificada con éxito",
+      icon: "success",
+    }).then(() => {
+      resetForm();
+    });
+  } else if (response.status === 400) {
+    const errorMessages =
+      data.errorMessages && data.errorMessages.length > 0
+        ? data.errorMessages[0]
+        : "Error desconocido";
 
-          const data = await response.json();
-          const errorMessages =
-            data.errorMessages && data.errorMessages.length > 0
-              ? data.errorMessages[0] // Une los mensajes con saltos de línea
-              : "Error desconocido";
-
-          showAlert({
-            title: "Error al agregar linea de detalle",
-            text: errorMessages,
-            icon: "error",
-          });
-        }else {
-          showAlert({
-            title: data.message ,
-            icon: "error",
-          })
-        }
-      } catch (error) {
-        console.error("Error:", error.message);
-      }
+    showAlert({
+      title: "Error al agregar línea de detalle",
+      text: errorMessages,
+      icon: "error",
+    });
+  } else if (response.status === 409) {
+    showAlert({
+      title: "Error",
+      text: data.message, // ✅ Ahora sí se puede leer
+      icon: "error",
+    });
+  }
+} catch (error) {
+  console.error("Error:", error.message);
+}
     }
   };
 

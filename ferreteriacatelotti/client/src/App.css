@@ -153,11 +153,12 @@ main {
 /* Cambiar el fondo del popup */
 .my-popup-class {
   background-color: #212121 !important;
-  color: #fff;
-  border-radius: 4px;
+  color: #fff !important;  /* Fuerza el color del texto */
+  border-radius: 20px;
 }
 
-/* Personaliza el fondo del overlay */
+
+ /* Personaliza el fondo del overlay  */
 .swal2-overlay.my-overlay-class {
   background-color: rgba(
     0,
@@ -168,8 +169,10 @@ main {
 }
 
 .my-confirm-button-class {
-  background-color: #f0320a;
-}
+  background-color: #f0320a !important;
+  border: 1px solid var(--color-primary) !important;
+  outline: none;
+} 
 
 .dateselector {
   display: flex;
