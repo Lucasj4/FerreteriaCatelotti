@@ -8,7 +8,6 @@ import Swal from "sweetalert2";
 
 
 const OrderDetail = () => {
-  const { purchaseOrderId, setPurchaseOrderId } = useAppContext();
   const [purchaseOrderDate, setPurchaseOrderDate] = useState("");
   const [purchaseOrderStatus, setPurchaseOrderStatus] = useState("Pendiente");
   const [suppliers, setSuppliers] = useState([]);
@@ -126,13 +125,12 @@ const OrderDetail = () => {
       const result = await response.json();
 
       if (response.status === 201) {
-        setPurchaseOrderId(result.purchaseOrder._id);
         await showAlert({
           title: "Pedido de compra creado con éxito",
           icon: "success",
        
         });
-        navigate("/pedido/agregardetalle");
+        navigate(`/pedido/${result.purchaseOrder._id}/detallepedido/nuevalinea`);
       } else if (response.status === 400) {
         const errorMessages =
           result.errorMessages && result.errorMessages.length > 0
