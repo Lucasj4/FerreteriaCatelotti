@@ -325,6 +325,7 @@ const BudgetDetail = () => {
         const products = row.map((item) => ({
           pid: item.productID,
           quantity: item.budgetDetailQuantity,
+          salePrice: item.BudgetDetailSalePrice,
           operationType: "decrease",
         }));
 
@@ -368,7 +369,7 @@ const BudgetDetail = () => {
 
         const data = await updateBudgetResponse.json();
 
-        console.log("data presupuesto: ", data);
+        
 
         const budget = data.budget;
 
@@ -379,6 +380,7 @@ const BudgetDetail = () => {
             clientId: budget.clientId,
             userId: budget.userId,
             budgetId: budget._id,
+            products: products
           };
           try {
             const response = await fetch("http://localhost:8080/api/sales", {

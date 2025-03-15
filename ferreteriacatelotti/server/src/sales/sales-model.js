@@ -19,7 +19,14 @@ const saleSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'budgets',
         required: true
-    }
+    },
+    products: [
+        {
+            productId: { type: mongoose.Schema.Types.ObjectId, ref: "products", required: true },
+            quantity: { type: Number, required: true },
+            salePrice: { type: Number, required: true },
+        }
+    ]
 })
 
 const SaleModel = mongoose.model('sales', saleSchema);

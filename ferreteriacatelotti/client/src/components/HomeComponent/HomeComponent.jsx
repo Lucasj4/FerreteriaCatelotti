@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./HomeComponent.css";
 import { FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
@@ -46,17 +46,17 @@ const Home = () => {
     },
   ];
 
+
+
   return (
     <div className="home-container">
       <nav className="navbar">
         <h1 className="navbar-title">Ferretería Catelotti</h1>
         <div className="login-container">
-         
-            <Link to={"iniciosesion"} className="login-button">
-              <FaUser className="login-icon" />
-              Ingresar
-            </Link>
-         
+          <Link to={"iniciosesion"} className="login-button">
+            <FaUser className="login-icon" />
+            Ingresar
+          </Link>
         </div>
       </nav>
       <div className="title-container">

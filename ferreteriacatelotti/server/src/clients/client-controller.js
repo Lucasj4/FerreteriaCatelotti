@@ -1,4 +1,6 @@
 import { ClientService } from "./client-service.js";
+import SaleModel from "../sales/sales-model.js";
+import BudgetModel from "../budget/budget-model.js";
 
 const clientService = new ClientService();
 
@@ -147,6 +149,20 @@ export class ClientController {
      async deleteClient(req, res){
         const {id} = req.params;
         try {
+
+            const existsInSales= await SaleModel.findOne({clientId: id});
+
+            const clientInBudget = await BudgetModel.findOne({clientId: id});
+
+
+            if(existsInSales){
+                return res.status(400).json({message: "No se puede eliminar un cliente asociado a una venta"});
+            }
+
+            if(clientInBudget){
+                return res.status(400).json({message: "No se puede eliminar un cliente asociado a un presupuesto"});
+            }
+
             const elimantedClient = await clientService.deleteClient(id);
             return res.status(200).json({ message: 'Cliente eliminado con éxito', elimantedClient });
         } catch (error) {

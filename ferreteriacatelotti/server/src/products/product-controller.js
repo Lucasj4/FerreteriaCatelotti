@@ -2,6 +2,8 @@ import { ProductService } from "./product-service.js";
 import { generateRandomCode } from "../utils/generatecode.js";
 import { CategoryService } from "../categories/category-service.js";
 import { UnitService } from "../units/unit-service.js";
+import SaleModel from "../sales/sales-model.js";
+import BudgetDetaiLModel from "../budgetdetail/budgetdetail-model.js";
 import mongoose from "mongoose";
 const productService = new ProductService();
 const categoryService = new CategoryService();
@@ -165,9 +167,24 @@ export class ProductController {
     async deleteProduct(req, res) {
         const { pid } = req.params; // Extrae el ID de los parámetros de la URL
         try {
-            console.log("Id: ", pid);
+
+       
+            const productInBudget = await BudgetDetaiLModel.findOne({productID: pid });
+            const existsInSales = await SaleModel.findOne({ 'products.productId': pid });
+
+            req.logger.info("Producto existente en venta: " + existsInSales);
+
+            if(existsInSales){
+                return res.status(400).json({message: "No se puede eliminar un producto asociado a una venta"});
+            }
+
+            if(productInBudget){
+                return res.status(400).json({message: "No se puede eliminar un producto asociado a un presupuesto"});
+            }
+
+      
             const deleteProduct = await productService.deleteProduct(pid);
-            console.log("Producto eliminado: ", deleteProduct);
+            
             if (!deleteProduct) {
                 return res.status(404).json({ message: "Producto no encontrado" });
             }

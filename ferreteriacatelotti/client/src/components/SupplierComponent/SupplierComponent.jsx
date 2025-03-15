@@ -105,6 +105,8 @@ const SupplierComponent = () => {
           }
         );
 
+        const data = await response.json();
+
         switch (response.status) {
           case 200:
             showAlert({
@@ -113,6 +115,13 @@ const SupplierComponent = () => {
             });
             setRows(rows.filter((supplier) => supplier._id !== supplierId));
             break;
+          case 400:
+              showAlert({
+                title: "Error",
+                text: data.message,
+                icon: "error",
+              });
+              break;
           case 404:
             showAlert({
               title: "Proveedor no encontrado",

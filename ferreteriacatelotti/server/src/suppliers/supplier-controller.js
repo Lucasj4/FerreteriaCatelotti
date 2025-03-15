@@ -1,5 +1,5 @@
 import { SupplierService } from "./supplier-service.js";
-
+import PurchaseOrderModel from "../purchaseorders/purchaseorder-model.js";
 const supplierService = new SupplierService();
 
 export class SupplierController {
@@ -141,6 +141,14 @@ export class SupplierController {
         const {id} = req.params;
 
         try {
+
+            const supplierInOrder = await PurchaseOrderModel.findOne({supplierID: id});
+
+            if(supplierInOrder){
+                return res.status(400).json({message: "No se puede eliminar un proveedor asociado a un pedido de compra"})
+            }
+
+
             const deletedSupplier = await supplierService.deleteSupplierById(id);
 
             return deletedSupplier;

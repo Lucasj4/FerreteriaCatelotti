@@ -196,6 +196,8 @@ const ProductComponent = () => {
           }
         );
 
+        const data = await response.json();
+
         switch (response.status) {
           case 200:
             showAlert({
@@ -209,6 +211,14 @@ const ProductComponent = () => {
               title: "Producto no encontrado",
               icon: "warning",
             });
+            break;
+
+          case 400:
+            showAlert({
+              title: "Error",
+              text: data.message,
+              icon: "error"
+            })
             break;
           default:
             showAlert({
