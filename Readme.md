@@ -89,9 +89,12 @@ cd server
 
 npm install
 
-El backend utiliza la siguiente URL de conexión a MongoDB:
+📄 Crear archivo .env
+Dentro de la carpeta server/, crear un archivo llamado .env con el siguiente contenido:
 
-mongodb+srv://lucasfjulia:Lebronjames23@cluster0.k62q89m.mongodb.net/ferreteriacatelotti?retryWrites=true&w=majority
+PORT=8080
+
+MONGO_URI="mongodb+srv://lucasfjulia:Lebronjames23@cluster0.k62q89m.mongodb.net/ferrete
 
 Iniciar el backend:
 
