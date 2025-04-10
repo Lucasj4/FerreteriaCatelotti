@@ -24,10 +24,14 @@ body {
 
 main {
   width: 100%;
+  margin-left: 60px;
   background-image: url("../public/ferreteria-nahue_0_1684765165.png");
   background-size: cover; /* Ajusta la imagen para cubrir todo el contenedor */
   background-position: center; /* Centra la imagen dentro del contenedor */
   background-repeat: no-repeat; /* Evita que la imagen se repita */
+}
+.container{
+  display: flex;
 }
 .component__container {
   width: 100%;
@@ -42,7 +46,7 @@ main {
   flex-direction: column;
   background-color: var(--background2);
   width: 60%;
-  
+
   justify-content: center;
   align-items: center;
 }
@@ -153,12 +157,11 @@ main {
 /* Cambiar el fondo del popup */
 .my-popup-class {
   background-color: #212121 !important;
-  color: #fff !important;  /* Fuerza el color del texto */
+  color: #fff !important; /* Fuerza el color del texto */
   border-radius: 20px;
 }
 
-
- /* Personaliza el fondo del overlay  */
+/* Personaliza el fondo del overlay  */
 .swal2-overlay.my-overlay-class {
   background-color: rgba(
     0,
@@ -172,7 +175,7 @@ main {
   background-color: #f0320a !important;
   border: 1px solid var(--color-primary) !important;
   outline: none;
-} 
+}
 
 .dateselector {
   display: flex;
@@ -249,11 +252,31 @@ main {
     width: 100%;
     align-items: center;
   }
-
-
 }
 
-@media only screen and (max-width: 480px){
+@media only screen and (max-width: 576px) {
+  .dateselector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--background2);
+    width: 100%;
+    flex-direction: column;
+    padding: 0.5rem;
+  }
+  .dateselector__container {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .dateselector__date {
+    padding: 0.2rem;
+  }
+
+ 
+}
+
+@media only screen and (max-width: 480px) {
   .component__table__container {
     width: 70%;
   }
@@ -275,7 +298,7 @@ main {
     color: var(--text-color);
   }
 
-  .dateselector__date{
+  .dateselector__date {
     padding: 0.3rem;
     border: 1px solid var(--color-primary);
     border-radius: 4px;
@@ -284,6 +307,4 @@ main {
     background-color: var(--color-primary);
     outline: none;
   }
-
- 
 }

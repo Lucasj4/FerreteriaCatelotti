@@ -1,6 +1,7 @@
 .table {
   color: #212121;
   /* padding: 1rem 0; */
+  min-width: 350px;
 
 }
 /* Contenedor de la tabla para hacer scroll */
@@ -72,4 +73,11 @@
 
 .paginations-and-controls span{
   color: var(--text-color);
+}
+
+
+@media only screen and (max-width: 576px) {
+  .table{
+    width: 50%;
+  }
 }

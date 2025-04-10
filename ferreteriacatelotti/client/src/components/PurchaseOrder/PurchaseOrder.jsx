@@ -399,7 +399,7 @@ const PurchaseOrder = () => {
 
           <div className="purchaseOrder__tablecontainer">
             <Table
-              tableClassName="budget__table"
+              tableClassName="table"
               trClassName="purchaseOrder__table__row"
               thClassName="table__header"
               theadClassName="table__thead"
