@@ -36,7 +36,7 @@ const ProductComponent = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/products", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
           credentials: "include",
         });
 
@@ -57,7 +57,7 @@ const ProductComponent = () => {
   useEffect(() => {
     const fetchUnits = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/units", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/units`, {
           credentials: "include",
         });
         if (!response.ok) {
@@ -82,7 +82,7 @@ const ProductComponent = () => {
 
   const getAllProducts = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/products", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
         credentials: "include",
       });
 
@@ -116,7 +116,7 @@ const ProductComponent = () => {
   const getProductsWithLowStock = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/products/lowstock",
+        `${import.meta.env.VITE_API_URL}/api/products/lowstock`,
         {
           method: "POST",
           headers: {
@@ -145,7 +145,7 @@ const ProductComponent = () => {
           : `category=${productCategory}`;
 
       const response = await fetch(
-        `http://localhost:8080/api/products/search?${queryParam}`,
+        `${import.meta.env.VITE_API_URL}/api/products/search?${queryParam}`,
         {
           credentials: "include",
         }
@@ -186,7 +186,7 @@ const ProductComponent = () => {
     if (result.isConfirmed) {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/products/${productId}`,
+          `${import.meta.env.VITE_API_URL}/api/products/${productId}`,
           {
             method: "DELETE",
             headers: {

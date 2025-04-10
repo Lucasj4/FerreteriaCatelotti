@@ -64,7 +64,7 @@ const PurchaseOrder = () => {
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/suppliers", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/suppliers`, {
           credentials: "include",
         });
         const result = await response.json();
@@ -82,7 +82,7 @@ const PurchaseOrder = () => {
     const fetchPurchaseOrders = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/purchaseorders",
+          `${import.meta.env.VITE_API_URL}/api/purchaseorders`,
           {
             credentials: "include",
           }
@@ -96,7 +96,7 @@ const PurchaseOrder = () => {
             try {
               // Hacer fetch de proveedor por supplierID
               const supplierResponse = await fetch(
-                `http://localhost:8080/api/suppliers/${order.supplierID}`,
+                `${import.meta.env.VITE_API_URL}/api/suppliers/${order.supplierID}`,
                 {
                   credentials: "include",
                 }
@@ -160,7 +160,7 @@ const PurchaseOrder = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/purchaseorders/search?${searchParams.toString()}`,
+        `${import.meta.env.VITE_API_URL}/api/purchaseorders/search?${searchParams.toString()}`,
         {
           credentials: "include",
         }
@@ -184,7 +184,7 @@ const PurchaseOrder = () => {
           try {
             // Hacer fetch de proveedor por supplierID
             const supplierResponse = await fetch(
-              `http://localhost:8080/api/suppliers/${order.supplierID}`,
+              `${import.meta.env.VITE_API_URL}/api/suppliers/${order.supplierID}`,
               {
                 credentials: "include",
               }
@@ -228,7 +228,7 @@ const PurchaseOrder = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/purchaseorders/${purchaseOrderId}`,
+        `${import.meta.env.VITE_API_URL}/api/purchaseorders/${purchaseOrderId}`,
         { credentials: "include" }
       );
 
@@ -245,7 +245,7 @@ const PurchaseOrder = () => {
       }
 
       const deleteResponse = await fetch(
-        `http://localhost:8080/api/purchaseorders/${purchaseOrderId}`,
+        `${import.meta.env.VITE_API_URL}/api/purchaseorders/${purchaseOrderId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -276,7 +276,7 @@ const PurchaseOrder = () => {
 
   const getAllProducts = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/purchaseorders", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/purchaseorders`, {
         credentials: "include",
       });
       const data = await response.json();
@@ -290,7 +290,7 @@ const PurchaseOrder = () => {
           try {
             // Hacer fetch de proveedor por supplierID
             const supplierResponse = await fetch(
-              `http://localhost:8080/api/suppliers/${order.supplierID}`,
+              `${import.meta.env.VITE_API_URL}/api/suppliers/${order.supplierID}`,
               {
                 credentials: "include",
               }

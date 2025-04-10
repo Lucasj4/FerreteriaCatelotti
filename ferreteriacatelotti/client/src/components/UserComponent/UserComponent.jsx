@@ -33,7 +33,7 @@ const UserComponent = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/users", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
           credentials: "include",
         });
         const data = await response.json();
@@ -62,7 +62,7 @@ const UserComponent = () => {
       console.log("queryString:", queryString); // Asegúrate de que la cadena se construya correctamente
 
       const response = await fetch(
-        `http://localhost:8080/api/users/search?${queryString}`,
+        `${import.meta.env.VITE_API_URL}/api/users/search?${queryString}`,
         {
           credentials: "include",
         }
@@ -86,7 +86,7 @@ const UserComponent = () => {
 
   const getUsers = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/users", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
         credentials: "include",
       });
       const data = await response.json();
@@ -111,7 +111,7 @@ const UserComponent = () => {
 
     if (result.isConfirmed) {
       try {
-        const response = await fetch(`http://localhost:8080/api/users/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
           method: "DELETE",
           credentials: "include",
         });

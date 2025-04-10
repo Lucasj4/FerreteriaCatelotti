@@ -24,7 +24,7 @@ const ViewSale = () => {
     const fetchSale = async () => {
       try {
         const responseSale = await fetch(
-          `http://localhost:8080/api/sales/${sid}`,
+          `${import.meta.env.VITE_API_URL}/api/sales/${sid}`,
           {
             credentials: "include",
           }
@@ -53,7 +53,7 @@ const ViewSale = () => {
     const fetchBudget = async (budgetId) => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/budgets/budgetwithdetails/${budgetId}`,
+          `${import.meta.env.VITE_API_URL}/api/budgets/budgetwithdetails/${budgetId}`,
           {
             credentials: "include",
           }
@@ -88,7 +88,7 @@ const ViewSale = () => {
     
     
     const response = await fetch(
-      "http://localhost:8080/api/sales/printinvoice",
+      `${import.meta.env.VITE_API_URL}/api/sales/printinvoice`,
       {
         method: "POST",
         credentials: "include",

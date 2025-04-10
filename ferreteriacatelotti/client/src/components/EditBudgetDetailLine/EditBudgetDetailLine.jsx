@@ -36,7 +36,7 @@ const BudgetDetailLine = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/products", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
           credentials: "include",
         });
 
@@ -65,7 +65,7 @@ const BudgetDetailLine = () => {
     const fetchBudgetDetail = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/budgetsdetails/${rowid}`,
+          `${import.meta.env.VITE_API_URL}/api/budgetsdetails/${rowid}`,
           {
             credentials: "include",
           }
@@ -133,7 +133,7 @@ const BudgetDetailLine = () => {
   const hundleSubtmit = async (e) => {
     e.preventDefault();
 
-    const response = await fetch(`http://localhost:8080/api/budgets/${pid}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/budgets/${pid}`, {
       credentials: "include",
     });
 
@@ -171,7 +171,7 @@ const BudgetDetailLine = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:8080/api/budgetsdetails/${rowid}`,
+          `${import.meta.env.VITE_API_URL}/api/budgetsdetails/${rowid}`,
           {
             method: "PUT",
             headers: {
@@ -207,7 +207,7 @@ const BudgetDetailLine = () => {
   } else if (response.status === 409) {
     showAlert({
       title: "Error",
-      text: data.message, // ✅ Ahora sí se puede leer
+      text: data.message, 
       icon: "error",
     });
   }
@@ -223,24 +223,6 @@ const BudgetDetailLine = () => {
         <div className="budgetdetailline__formcontainer">
           <h2 className="budgetdetailline__form__title"> Editar Linea </h2>
           <form action="" className="budgetdetailline__form">
-            {/* <div className="form__item">
-              <label
-                htmlFor="producto"
-                className="form__label"
-              >
-                Producto
-              </label>
-              <div className="budgetdetailline__form__item-product">
-                <input
-                  type="text"
-                  className="form__input"
-                  id="producto"
-                />
-                <button className="budgetdetailline__form__item__button">
-                  Producto
-                </button>
-              </div>
-            </div> */}
 
             <div className="product__item__select">
               <label htmlFor="productUnit">Productos</label>

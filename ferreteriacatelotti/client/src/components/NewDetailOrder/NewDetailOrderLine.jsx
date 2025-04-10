@@ -60,7 +60,7 @@ const NewDetailOrderLine = () => {
     
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/products", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
           credentials: "include",
         });
 
@@ -125,7 +125,7 @@ const NewDetailOrderLine = () => {
     console.log("orderDetailOrderLine: ", orderDetailOrderLine);
 
     try {
-      const response = await fetch("http://localhost:8080/api/detailsorder", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/detailsorder`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

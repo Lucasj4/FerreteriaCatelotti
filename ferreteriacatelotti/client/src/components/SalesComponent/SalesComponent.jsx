@@ -46,7 +46,7 @@ const SalesComponent = () => {
   useEffect(() => {
     const fetchSales = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/sales", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/sales`, {
           credentials: "include",
         });
 
@@ -66,7 +66,7 @@ const SalesComponent = () => {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/clients", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/clients`, {
           credentials: "include",
         });
 
@@ -85,7 +85,7 @@ const SalesComponent = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/users", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
           credentials: "include",
         });
 
@@ -138,7 +138,7 @@ const SalesComponent = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/sales/search?${queryParams.toString()}`,
+        `${import.meta.env.VITE_API_URL}/api/sales/search?${queryParams.toString()}`,
         {
           credentials: "include",
         }
@@ -173,7 +173,7 @@ const SalesComponent = () => {
 
   const getAll = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/sales", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/sales`, {
         credentials: "include",
       });
 

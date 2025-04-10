@@ -19,7 +19,7 @@ const SupplierComponent = () => {
 
   useEffect(() => {
     const fetchSupplier = async () => {
-      const response = await fetch("http://localhost:8080/api/suppliers", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/suppliers`, {
         credentials: "include",
       });
 
@@ -95,7 +95,7 @@ const SupplierComponent = () => {
     if (result.isConfirmed) {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/suppliers/${supplierId}`,
+          `${import.meta.env.VITE_API_URL}/api/suppliers/${supplierId}`,
           {
             method: "DELETE",
             headers: {
@@ -150,7 +150,7 @@ const SupplierComponent = () => {
   };
 
   const getAllSuppliers = async () => {
-    const response = await fetch("http://localhost:8080/api/suppliers", {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/suppliers`, {
       credentials: "include",
     });
 

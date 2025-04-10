@@ -43,7 +43,7 @@ const OrderDetail = () => {
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/suppliers", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/suppliers`, {
           credentials: "include",
         });
         const result = await response.json();
@@ -111,7 +111,7 @@ const OrderDetail = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:8080/api/purchaseorders", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/purchaseorders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

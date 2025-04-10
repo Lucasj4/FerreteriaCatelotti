@@ -57,7 +57,7 @@ const EditDetailOrderLine = () => {
     
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/products`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
           credentials: "include",
         });
 
@@ -88,7 +88,7 @@ const EditDetailOrderLine = () => {
     const fetchDetailOrder = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/detailsorder/${rowid}`,
+          `${import.meta.env.VITE_API_URL}/api/detailsorder/${rowid}`,
           {
             credentials: "include",
           }
@@ -138,7 +138,7 @@ const EditDetailOrderLine = () => {
     try {
       // Primera llamada para verificar el estado del pedido
       const response = await fetch(
-        `http://localhost:8080/api/purchaseorders/${pid}`,
+        `${import.meta.env.VITE_API_URL}/api/purchaseorders/${pid}`,
         { credentials: "include" }
       );
   
@@ -159,7 +159,7 @@ const EditDetailOrderLine = () => {
   
       // Segunda llamada para obtener detalles del pedido
       const detailsResponse = await fetch(
-        `http://localhost:8080/api/purchaseorders/purchaseorderswithdetails/${pid}`,
+        `${import.meta.env.VITE_API_URL}/api/purchaseorders/purchaseorderswithdetails/${pid}`,
         { credentials: "include" }
       );
   
@@ -222,7 +222,7 @@ const EditDetailOrderLine = () => {
   
     try {
       const updateResponse = await fetch(
-        `http://localhost:8080/api/detailsorder/${rowid}`,
+        `${import.meta.env.VITE_API_URL}/api/detailsorder/${rowid}`,
         {
           method: "PUT",
           headers: {

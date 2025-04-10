@@ -52,7 +52,7 @@ const EditPurchaseOrder = () => {
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/suppliers", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/suppliers`, {
           credentials: "include",
         });
 
@@ -71,7 +71,7 @@ const EditPurchaseOrder = () => {
     const fetchPurchaseOrderWithDetails = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/purchaseorders/purchaseorderswithdetails/${pid}`,
+          `${import.meta.env.VITE_API_URL}/api/purchaseorders/purchaseorderswithdetails/${pid}`,
           {
             credentials: "include",
           }
@@ -171,7 +171,7 @@ const EditPurchaseOrder = () => {
 
   const handleUpdateOrder = async () => {
     const response = await fetch(
-      `http://localhost:8080/api/purchaseorders/${pid}`,
+      `${import.meta.env.VITE_API_URL}/api/purchaseorders/${pid}`,
       {
         credentials: "include",
       }
@@ -225,7 +225,7 @@ const EditPurchaseOrder = () => {
 
         // Actualizar el stock del producto
         const stockResponse = await fetch(
-          `http://localhost:8080/api/products/updateproductstock`,
+          `${import.meta.env.VITE_API_URL}/api/products/updateproductstock`,
           {
             method: "PUT",
             headers: {
@@ -261,7 +261,7 @@ const EditPurchaseOrder = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/purchaseorders/${pid}`,
+        `${import.meta.env.VITE_API_URL}/api/purchaseorders/${pid}`,
         {
           method: "PUT",
           headers: {
@@ -340,7 +340,7 @@ const EditPurchaseOrder = () => {
     if (result.isConfirmed) {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/detailsorder/${id}`,
+          `${import.meta.env.VITE_API_URL}/api/detailsorder/${id}`,
           {
             method: "DELETE",
 
@@ -401,7 +401,7 @@ const EditPurchaseOrder = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/purchaseorders/factura",
+        `${import.meta.env.VITE_API_URL}/api/purchaseorders/factura`,
         {
           method: "POST",
           credentials: "include",

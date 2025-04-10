@@ -31,7 +31,7 @@ const EditUser = () => {
       console.log(id);
 
       try {
-        const response = await fetch(`http://localhost:8080/api/users/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
           credentials: "include",
         });
 
@@ -70,7 +70,7 @@ const EditUser = () => {
           userRole,
         };
 
-        const response = await fetch(`http://localhost:8080/api/users/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/${id}`, {
           credentials: "include",
           headers: {
             "Content-Type": "application/json",

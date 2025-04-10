@@ -54,7 +54,7 @@ const NewEditDetailOrderLine = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/products");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`);
 
         if (!response.ok) {
           throw new Error("Error al obtener los productos");
@@ -92,7 +92,7 @@ const NewEditDetailOrderLine = () => {
     console.log("orderDetailOrderLine: ", orderDetailOrderLine);
     
     try {
-      const response = await fetch("http://localhost:8080/api/detailsorder/editdetailorderline", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/detailsorder/editdetailorderline`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

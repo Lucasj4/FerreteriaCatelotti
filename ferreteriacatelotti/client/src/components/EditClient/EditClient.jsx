@@ -34,7 +34,7 @@ const EditClient = () => {
     const fetchClient = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/clients/${cid}`,
+          `${import.meta.env.VITE_API_URL}/api/clients/${cid}`,
           {
             credentials: "include",
           }
@@ -95,7 +95,7 @@ const EditClient = () => {
       console.log("Cliente modificado", clientData);
       try {
         const response = await fetch(
-          `http://localhost:8080/api/clients/${cid}`,
+          `${import.meta.env.VITE_API_URL}/api/clients/${cid}`,
           {
             method: "PUT",
             headers: {

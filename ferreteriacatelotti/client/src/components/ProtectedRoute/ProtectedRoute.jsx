@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   useEffect(() => {
     const fetchUserRole = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/users/rol', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/rol`, {
           method: 'GET',
           credentials: 'include',
         });

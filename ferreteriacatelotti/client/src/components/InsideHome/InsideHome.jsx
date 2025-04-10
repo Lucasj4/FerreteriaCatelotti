@@ -23,12 +23,12 @@ const Home = () => {
       }
     };
 
-    fetchData("http://localhost:8080/api/budgets/count", setBudgetCount);
-    fetchData("http://localhost:8080/api/clients/count", setClientCount);
-    fetchData("http://localhost:8080/api/products/count", setProductCount);
-    fetchData("http://localhost:8080/api/users/count", setUserCount);
-    fetchData("http://localhost:8080/api/sales/count", setSaleCount);
-    fetchData("http://localhost:8080/api/suppliers/count", setSupplierCount);
+    fetchData(`${import.meta.env.VITE_API_URL}/api/budgets/count`, setBudgetCount);
+    fetchData(`${import.meta.env.VITE_API_URL}/api/clients/count`, setClientCount);
+    fetchData(`${import.meta.env.VITE_API_URL}/api/products/count`, setProductCount);
+    fetchData(`${import.meta.env.VITE_API_URL}/api/users/count`, setUserCount);
+    fetchData(`${import.meta.env.VITE_API_URL}/api/sales/count`, setSaleCount);
+    fetchData(`${import.meta.env.VITE_API_URL}/api/suppliers/count`, setSupplierCount);
   }, []);
 
   const indicators = [

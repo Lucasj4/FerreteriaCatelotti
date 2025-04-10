@@ -46,7 +46,7 @@ const NewProduct = () => {
     // Función asíncrona para obtener las categorías desde la API
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/categories", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/categories`, {
           credentials: "include",
         });
         if (!response.ok) {
@@ -67,7 +67,7 @@ const NewProduct = () => {
   useEffect(() => {
     const fetchUnits = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/units", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/units`, {
           credentials: "include",
         });
         if (!response.ok) {
@@ -106,7 +106,7 @@ const NewProduct = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/products/addproduct",
+        `${import.meta.env.VITE_API_URL}/api/products/addproduct`,
         {
           method: "POST",
           headers: {

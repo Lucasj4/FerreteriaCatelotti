@@ -57,7 +57,7 @@ const BudgetDetail = () => {
       
       try {
         const response = await fetch(
-          `http://localhost:8080/api/budgets/budgetwithdetails/${pid}`,
+          `${import.meta.env.VITE_API_URL}/api/budgets/budgetwithdetails/${pid}`,
           {
             credentials: "include",
           }
@@ -97,7 +97,7 @@ const BudgetDetail = () => {
     const fetchBudget = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/budgets/${pid}`,
+          `${import.meta.env.VITE_API_URL}/api/budgets/${pid}`,
           {
             credentials: "include",
           }
@@ -144,7 +144,7 @@ const BudgetDetail = () => {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/clients", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/clients`, {
           credentials: "include",
         });
   
@@ -179,7 +179,7 @@ const BudgetDetail = () => {
     if (result.isConfirmed) {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/budgetsdetails/${budgetDetailId}`,
+          `${import.meta.env.VITE_API_URL}/api/budgetsdetails/${budgetDetailId}`,
           {
             method: "DELETE",
 
@@ -260,7 +260,7 @@ const BudgetDetail = () => {
     };
     
     try {
-      const response = await fetch(`http://localhost:8080/api/budgets/${pid}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/budgets/${pid}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -330,7 +330,7 @@ const BudgetDetail = () => {
         }));
 
         const stockResponse = await fetch(
-          `http://localhost:8080/api/products/updateproductstock`,
+          `${import.meta.env.VITE_API_URL}/api/products/updateproductstock`,
           {
             method: "PUT",
             headers: {
@@ -356,7 +356,7 @@ const BudgetDetail = () => {
         };
 
         const updateBudgetResponse = await fetch(
-          `http://localhost:8080/api/budgets/updatestatusandamount/${pid}`,
+          `${import.meta.env.VITE_API_URL}/api/budgets/updatestatusandamount/${pid}`,
           {
             method: "PUT",
             headers: {
@@ -383,7 +383,7 @@ const BudgetDetail = () => {
             products: products
           };
           try {
-            const response = await fetch("http://localhost:8080/api/sales", {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/sales`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",

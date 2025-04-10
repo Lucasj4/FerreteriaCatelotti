@@ -31,7 +31,7 @@ const EditSupplier  = () => {
 
   useEffect(() => {
     const fetchSupplier = async () => {
-        const response = await fetch(`http://localhost:8080/api/suppliers/${id}`, {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/suppliers/${id}`, {
             credentials: 'include'
         });
         console.log(id);
@@ -75,7 +75,7 @@ const EditSupplier  = () => {
           };
       
           try {
-            const response = await fetch(`http://localhost:8080/api/suppliers/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/suppliers/${id}`, {
               method: "PUT",
               headers: {
                 "Content-Type": "application/json",

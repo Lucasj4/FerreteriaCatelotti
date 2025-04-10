@@ -39,7 +39,7 @@ const BudgetDetailLine = ({ isNewBudget }) => {
 
     const fetchProducts = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/products", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
           credentials: "include",
         });
 
@@ -104,7 +104,7 @@ const BudgetDetailLine = ({ isNewBudget }) => {
       budgetID: pid,
     };
     try {
-      const response = await fetch("http://localhost:8080/api/budgetsdetails", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/budgetsdetails`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -51,7 +51,7 @@ const NewBudget = () => {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/clients", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/clients`, {
           credentials: "include",
         });
 
@@ -88,7 +88,7 @@ const NewBudget = () => {
     if (result.isConfirmed) {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/budgetsdetails/${budgetDetailId}`,
+          `${import.meta.env.VITE_API_URL}/api/budgetsdetails/${budgetDetailId}`,
           {
             method: "DELETE",
             credentials: "include",
@@ -133,7 +133,7 @@ const NewBudget = () => {
 
   const postBudget = async (newBudget) => {
     try {
-      const response = await fetch("http://localhost:8080/api/budgets", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/budgets`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

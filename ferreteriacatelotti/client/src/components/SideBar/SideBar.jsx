@@ -22,7 +22,7 @@ const Sidebar = ({ children }) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:8080/api/users/logout", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

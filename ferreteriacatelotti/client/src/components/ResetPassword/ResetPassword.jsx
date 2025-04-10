@@ -38,7 +38,7 @@ const ResetPassword = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/api/users/resetpassword",
+        `${import.meta.env.VITE_API_URL}/api/users/resetpassword`,
         {
           method: "POST",
           headers: {

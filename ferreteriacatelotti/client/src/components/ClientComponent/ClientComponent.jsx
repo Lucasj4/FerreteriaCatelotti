@@ -60,8 +60,8 @@ const ClientComponent = () => {
   const getClients = async (searchQuery = "") => {
     try {
       const url = searchQuery
-        ? `http://localhost:8080/api/clients/search?${searchQuery}`
-        : "http://localhost:8080/api/clients";
+        ? `${import.meta.env.VITE_API_URL}/api/clients/search?${searchQuery}`
+        : `${import.meta.env.VITE_API_URL}/api/clients`;
 
       const response = await fetch(url, {
         credentials: "include",
@@ -94,7 +94,7 @@ const ClientComponent = () => {
     if (result.isConfirmed) {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/clients/${clientId}`,
+          `${import.meta.env.VITE_API_URL}/api/clients/${clientId}`,
           {
             method: "DELETE",
             headers: {

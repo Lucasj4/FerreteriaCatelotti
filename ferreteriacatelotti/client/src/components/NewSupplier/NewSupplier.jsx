@@ -39,7 +39,7 @@ const NewSupplier = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:8080/api/suppliers", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/suppliers`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
