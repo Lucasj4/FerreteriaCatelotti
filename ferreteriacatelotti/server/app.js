@@ -29,7 +29,7 @@ app.use(addLogger)
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-    origin: "http://localhost:5173", // Dominio del frontend
+    origin: ["http://localhost:5173", "https://ferreteria-catelotti.vercel.app" ] , // Dominio del frontend
     credentials: true,   
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     allowedHeaders: ["Content-Type", "Authorization"],            // Permite enviar cookies
