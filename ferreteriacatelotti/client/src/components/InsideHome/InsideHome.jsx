@@ -10,13 +10,26 @@ const Home = () => {
   const [supplierCount, setSupplierCount] = useState(null);
 
   useEffect(() => {
+    const token = localStorage.getItem("token")
+
+    console.log("Token: ", token);
+    
     const fetchData = async (url, setter) => {
       try {
-        const response = await fetch(url, { credentials: "include" });
-
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          credentials: "include"
+        });
+  
         if (response.ok) {
           const data = await response.json();
           setter(data.count);
+        } else {
+          console.error(`Error desde ${url}: ${response.status}`);
         }
       } catch (error) {
         console.error(`Error obteniendo los datos desde ${url}:`, error);
