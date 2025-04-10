@@ -1,5 +1,5 @@
 import React from "react";
-import './Formitem.css'
+import './FormItem.css'
 const FormItem = ({
   formItemClassName,
   id,
