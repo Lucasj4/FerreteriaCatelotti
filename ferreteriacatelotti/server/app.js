@@ -66,7 +66,7 @@ app.use('/api/budgets', budgetRouter)
 app.use('/api/budgetsdetails', budgetDetailRouter)
 app.use('/api/sales', saleRouter)
 app.use(errorHandler);
-app.use(authMiddleware);
+
 
 
 

@@ -139,7 +139,8 @@ export class UserController {
                     .cookie("ferreteriaCookieToken", token, {
                         maxAge: 3600000,
                         httpOnly: true,
-                        secure: false,
+                        secure: true,
+                        sameSite: "none"
 
                     })
                     .json({ message: "Login exitoso y cookie establecida", token });

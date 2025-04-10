@@ -3,9 +3,10 @@ import passport from 'passport'
 
 export function authMiddleware(req, res, next) {
 
-
+    console.log("Cookies que llegan al backend:", req.cookies); 
     passport.authenticate('jwt', { session: false }, (err, user, info) => {
-        console.log("🚀 Ejecutando authMiddleware");
+      
+
         
         if (err) {
             console.log("Error en autenticación: ", err);
