@@ -54,7 +54,7 @@ const BudgetComponent = () => {
   useEffect(() => {
     const fetchBudgets = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/budgets", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/budgets`, {
           credentials: "include",
         });
 
@@ -73,7 +73,7 @@ const BudgetComponent = () => {
 
   const getAll = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/budgets", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/budgets`, {
         credentials: "include",
       });
 
@@ -90,7 +90,7 @@ const BudgetComponent = () => {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/clients", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/clients`, {
           credentials: "include",
         });
 
@@ -152,7 +152,7 @@ const BudgetComponent = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/budgets/search?${queryParams.toString()}`,
+        `${import.meta.env.VITE_API_URL}/api/budgets/search?${queryParams.toString()}`,
         {
           credentials: "include",
         }
@@ -188,7 +188,7 @@ const BudgetComponent = () => {
       try {
       
           const deleteResponse = await fetch(
-            `http://localhost:8080/api/budgets/${idBudget}`,
+            `${import.meta.env.VITE_API_URL}/api/budgets/${idBudget}`,
             { method: "DELETE", credentials: "include" }
           );
         
