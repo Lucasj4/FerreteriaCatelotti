@@ -49,11 +49,11 @@ app.use(addLogger)
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
-
+initializePassport();
 app.use(passport.initialize());
 
-app.use(authMiddleware);
-// app.use(authMiddleware);
+
+
 app.use("/api/products", productRouter);
 app.use("/api/suppliers", supplierRouter);
 app.use("/api/units", unitRouter);
@@ -66,8 +66,8 @@ app.use('/api/budgets', budgetRouter)
 app.use('/api/budgetsdetails', budgetDetailRouter)
 app.use('/api/sales', saleRouter)
 app.use(errorHandler);
+app.use(authMiddleware);
 
-initializePassport();
 
 
 const port = process.env.PORT || 8080; 
