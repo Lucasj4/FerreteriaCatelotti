@@ -198,4 +198,9 @@
   .card-description {
     font-size: 0.95rem;
   }
+
+  .cards-container {
+    display: flex;
+    flex-direction: column;
+  }
 }
