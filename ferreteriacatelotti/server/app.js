@@ -28,12 +28,22 @@ app.use(express.json());
 app.use(addLogger)
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://ferreteria-catelotti.vercel.app"
+];
 app.use(cors({
-    origin: ["http://localhost:5173", "https://ferreteria-catelotti.vercel.app" ] , // Dominio del frontend
-    credentials: true,   
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    allowedHeaders: ["Content-Type", "Authorization"],            // Permite enviar cookies
-  }));
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
 
 app.use(passport.initialize());
