@@ -5,6 +5,8 @@ export function authMiddleware(req, res, next) {
 
 
     passport.authenticate('jwt', { session: false }, (err, user, info) => {
+        console.log("🚀 Ejecutando authMiddleware");
+        
         if (err) {
             console.log("Error en autenticación: ", err);
             return next(err);

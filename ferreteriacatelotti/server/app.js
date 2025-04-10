@@ -52,6 +52,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(passport.initialize());
 
+app.use(authMiddleware);
 // app.use(authMiddleware);
 app.use("/api/products", productRouter);
 app.use("/api/suppliers", supplierRouter);
@@ -64,7 +65,6 @@ app.use("/api/detailsorder", detailOrderRoute)
 app.use('/api/budgets', budgetRouter)
 app.use('/api/budgetsdetails', budgetDetailRouter)
 app.use('/api/sales', saleRouter)
-app.use(authMiddleware);
 app.use(errorHandler);
 
 initializePassport();

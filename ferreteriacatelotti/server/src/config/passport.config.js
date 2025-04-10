@@ -58,25 +58,7 @@ export const initializePassport = () => {
     }));
     
 
-    // //Agregamos otra estrategia, ahora para el "login":
-    // passport.use("login", new LocalStrategy({
-    //     usernameField: "email"
-    // }, async (email, password, done) => {
-    //     try {
-    //         //Primero verifico si existe un usuario con ese mail.
-    //         const user = await UserModel.findOne({ email });
-    //         if (!user) {
-    //             console.log("Usuario no existe");
-    //             return done(null, false);
-    //         }
-    //         //Si existe verifico la contraseña: 
-    //         if (!isValidPassword(password, user)) return done(null, false);
-    //         return done(null, user);
 
-    //     } catch (error) {
-    //         return done(error);
-    //     }
-    // }))
 
     passport.serializeUser((user, done) => {
         done(null, user._id);
@@ -87,32 +69,7 @@ export const initializePassport = () => {
         done(null, user);
     })
 
-    // passport.use('github', new GitHubStrategy({
-    //     clientID: "Iv1.f1f3e5af3de42293",
-    //     clientSecret: "ea80de5f4e06fc73ef8008267a03e67f14bd06bc",
-    //     callbackURL: "http://localhost:8080/api/sessions/githubcallback"
-    // }, async (accessToken, refreshToken, profile, done) => {
-    //     console.log("Profile: nuevo ", profile);
-    //     try {
-    //         let user = await UserModel.findOne({ email: profile._json.email })
-    //         if (!user) {
-    //             let newUser = {
-    //                 first_name: profile._json.name,
-    //                 last_name: "",
-    //                 age: 36,
-    //                 email: profile._json.email,
-    //                 password: "",
-    //                 rol: ''
-    //             }
-    //             let result = await UserModel.create(newUser)
-    //             done(null, result)
-    //         } else {
-    //             done(null, user)
-    //         }
-    //     } catch (error) {
-    //         return done(error)
-    //     }
-    // }));
+   
 }
 
 const cookieExtractor = (req) => {
