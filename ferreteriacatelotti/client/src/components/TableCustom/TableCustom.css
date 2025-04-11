@@ -2,7 +2,6 @@
   color: #212121;
   /* padding: 1rem 0; */
   min-width: 350px;
-
 }
 /* Contenedor de la tabla para hacer scroll */
 .table-container {
@@ -21,17 +20,14 @@
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1); /* Para darle un poco de sombra si se desea */
 }
 
-
-
 .table__row {
   text-align: center;
   background-color: var(--text-color);
-
 }
 .table__cell {
   width: auto;
   height: 50px;
-  
+
   padding: 0 1rem;
 }
 .table__editIcon {
@@ -57,10 +53,10 @@
   border: none;
   cursor: pointer;
 }
-.paginations-and-controls{
+.paginations-and-controls {
   margin-top: 1rem;
 }
-.paginations-and-controls button{
+.paginations-and-controls button {
   background-color: var(--color-primary);
   color: var(--text-color);
   padding: 0.5rem;
@@ -71,13 +67,24 @@
   cursor: pointer;
 }
 
-.paginations-and-controls span{
+.paginations-and-controls span {
   color: var(--text-color);
 }
 
-
 @media only screen and (max-width: 576px) {
-  .table{
+  .table {
     width: 50%;
   }
+}
+
+@media only screen and (max-width: 478px) {
+  .paginations-and-controls span {
+    font-size: 0.8rem ;
+  }
+
+  .paginations-and-controls button {
+    font-size: 0.8rem ;
+    padding: 0.3rem;
+  }
+  
 }

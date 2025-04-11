@@ -6,14 +6,12 @@ import { useAppContext } from "../context/OrderContext";
 import Table from "../TableCustom/TableCustom";
 import Swal from "sweetalert2";
 
-
 const OrderDetail = () => {
   const [purchaseOrderDate, setPurchaseOrderDate] = useState("");
   const [purchaseOrderStatus, setPurchaseOrderStatus] = useState("Pendiente");
   const [suppliers, setSuppliers] = useState([]);
   const [selectedSuppliers, setSelectedSuppliers] = useState([]);
   const navigate = useNavigate();
-
 
   const showAlert = ({ title, text, icon, showCancelButton = false }) => {
     return Swal.fire({
@@ -22,13 +20,13 @@ const OrderDetail = () => {
       icon,
       showCancelButton,
       confirmButtonText: "Aceptar",
-      cancelButtonText: showCancelButton ? "Cancelar" : undefined, 
+      cancelButtonText: showCancelButton ? "Cancelar" : undefined,
       customClass: {
         title: "my-title-class",
         popup: "my-popup-class",
         confirmButton: "my-confirm-button-class",
         overlay: "my-overlay-class",
-        cancelButton: "my-cancel-button-class", 
+        cancelButton: "my-cancel-button-class",
       },
     });
   };
@@ -43,12 +41,14 @@ const OrderDetail = () => {
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/suppliers`, {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/suppliers`,
+          {
+            credentials: "include",
+          }
+        );
         const result = await response.json();
-      
-        
+
         setSuppliers(result.suppliers);
       } catch (error) {
         console.error("Error fetching suppliers: ", error);
@@ -58,12 +58,9 @@ const OrderDetail = () => {
     fetchSuppliers();
   }, []);
 
-
-
   const handleSupplierChange = (selectedOptions) => {
     setSelectedSuppliers(selectedOptions);
 
-    
     console.log("provedor: ", selectedOptions);
   };
 
@@ -83,15 +80,13 @@ const OrderDetail = () => {
     e.preventDefault();
 
     const proveedorValue = selectedSuppliers.value;
-    
-    
 
-    if(purchaseOrderStatus === "Recibido"){
+    if (purchaseOrderStatus === "Recibido") {
       showAlert({
         title: "Error",
         text: "El estado Recibido no puede asignarse a un pedido de compra sin productos.",
-        error: "error"
-      })
+        error: "error",
+      });
 
       return;
     }
@@ -111,16 +106,19 @@ const OrderDetail = () => {
     };
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/purchaseorders`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/purchaseorders`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
 
-        credentials: "include",
+          credentials: "include",
 
-        body: JSON.stringify(newPurchaseOrder),
-      });
+          body: JSON.stringify(newPurchaseOrder),
+        }
+      );
 
       const result = await response.json();
 
@@ -128,9 +126,10 @@ const OrderDetail = () => {
         await showAlert({
           title: "Pedido de compra creado con éxito",
           icon: "success",
-       
         });
-        navigate(`/pedido/${result.purchaseOrder._id}/detallepedido/nuevalinea`);
+        navigate(
+          `/pedido/${result.purchaseOrder._id}/detallepedido/nuevalinea`
+        );
       } else if (response.status === 400) {
         const errorMessages =
           result.errorMessages && result.errorMessages.length > 0
@@ -141,7 +140,6 @@ const OrderDetail = () => {
           title: "Error al crear presupuesto",
           text: errorMessages,
           icon: "error",
-          
         });
       }
     } catch (error) {
@@ -162,35 +160,37 @@ const OrderDetail = () => {
             <h2>Agregar pedido</h2>
           </div>
           <div className="date-selector">
-            <div className="date-selector__item">
-              <p>Fecha</p>
-              <input
-                type="date"
-                className="date-selector__item__date"
-                value={purchaseOrderDate}
-                onChange={(e) => setPurchaseOrderDate(e.target.value)}
-              />
-            </div>
-            <div className="date-selector__item">
-              <p>Proveedor</p>
-              <MultiSelectOption
-                options={suppliers}
-                selectedProveedores={selectedSuppliers}
-                onChange={handleSupplierChange}
-                placeholder="Seleccionar Proveedor"
-                labelKey="supplierLastName"
-              />
-            </div>
-            <div className="date-selector__item">
-              <p>Estado</p>
-              <select
-                value={purchaseOrderStatus || "Pendiente"} // Asegúrate de que nunca sea undefined
-                onChange={handleStatusChange}
-                className="purchaseOrder__status"
-              >
-                <option value="Pendiente">Pendiente</option>
-                <option value="Recibido">Recibido</option>
-              </select>
+            <div className="date-selector-container">
+              <div className="date-selector__item">
+                <p>Fecha</p>
+                <input
+                  type="date"
+                  className="date-selector__item__date"
+                  value={purchaseOrderDate}
+                  onChange={(e) => setPurchaseOrderDate(e.target.value)}
+                />
+              </div>
+              <div className="date-selector__item">
+                <p>Estado</p>
+                <select
+                  value={purchaseOrderStatus || "Pendiente"} // Asegúrate de que nunca sea undefined
+                  onChange={handleStatusChange}
+                  className="purchaseOrder__status"
+                >
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Recibido">Recibido</option>
+                </select>
+              </div>
+              <div className="date-selector__item">
+                <p>Proveedor</p>
+                <MultiSelectOption
+                  options={suppliers}
+                  selectedProveedores={selectedSuppliers}
+                  onChange={handleSupplierChange}
+                  placeholder="Seleccionar Proveedor"
+                  labelKey="supplierLastName"
+                />
+              </div>
             </div>
           </div>
           <div className="orderdetail__tablecontainer">

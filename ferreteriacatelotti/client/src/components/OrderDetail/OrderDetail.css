@@ -1,148 +1,243 @@
-.orderdetail__container{
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.orderdetail__container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.orderdetail__tablecontainer{
-    width: 1000px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--background2);
-   
+.orderdetail__table-container {
+  width: 50%;
+}
+.orderdetail__tablecontainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--background2);
 }
 
-.orderdetail__table{
-    margin: 0 auto;
-    width: inherit;
-    padding: 1rem 0;
-    color: var(--background2);
+.orderdetail__table {
+  margin: 0 auto;
+  width: inherit;
+  padding: 1rem 0;
+  color: var(--background2);
+  width: 80%;
+}
+.orderdetail__table__header {
+  width: 100px;
+  overflow-y: auto;
+  max-height: 400px;
+  height: 50px;
+  background-color: var(--color-primary);
+  color: var(--text-color);
+}
+.orderdetail__table__cell {
+  width: 200px;
+  height: 50px;
+}
+
+.orderdetail__table__row {
+  text-align: center;
+  background-color: var(--text-color);
+  border: 3px solid #fff;
+  color: var(--background2);
+}
+
+.orderdetail__table__deleteIcon,
+.orderdetail__table__editIcon {
+  color: var(--color-primary);
+  margin-right: 10px;
+  background: none;
+  outline: none;
+  border: none;
+  cursor: pointer;
+}
+.date-selector {
+  background-color: var(--grey);
+  display: flex;
+  align-items: center;
+
+  height: 70px;
+  color: #fff;
+}
+
+.date-selector-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 1000px;
+  width: 100%;
+  padding: 5px;
+  flex-wrap: wrap;
+}
+.date-selector button {
+  background-color: var(--secondary);
+  outline: none;
+  border: 1px solid var(--secondary);
+  border-radius: 30px;
+  padding: 5px 10px;
+  color: #fff;
+}
+.date-selector__item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.date-selector__item p {
+  color: var(--background2);
+  font-size: 1.5rem;
+}
+.date-selector__item__date {
+  background-color: var(--color-primary);
+  padding: 10px;
+  border-radius: 5px;
+  outline: none;
+  border: 1px solid var(--color-primary);
+  color: #fff;
+  font-size: 1rem;
+}
+.custom-select {
+  width: 200px;
+  background: var(--background2);
+  color: #101418;
+}
+
+.orderdetail__buttons {
+  background: var(--grey);
+  padding: 10px 5px;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+}
+.orderdetail__buttons button {
+  padding: 10px 10px;
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  outline: none;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.orderdetail__buttons button:hover {
+  background: var(--background2);
+  border: 1px solid var(--dark-blue);
+}
+
+.orderdetail__total {
+  background: var(--background2);
+  text-align: right;
+}
+.orderdetail__total p {
+  width: 90%;
+  color: #fff;
+}
+
+.purchaseOrder__status {
+  padding: 10px;
+  outline: none;
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  color: #fff;
+  border-radius: 5px;
+}
+
+.orderdetail__table__thead {
+  background-color: var(--color-primary);
+}
+.orderdetail__title h2 {
+  font-size: 2rem;
+}
+
+@media only screen and (max-width: 1200px) {
+  .orderdetail__table-container {
     width: 80%;
-}
-.orderdetail__table__header{
-    width: 100px;
-    overflow-y: auto; 
-    max-height: 400px;
-    height: 50px;
-    background-color: var(--color-primary);
-    color: var(--text-color);
-}
-.orderdetail__table__cell{
-    width: 200px;
-    height: 50px;
+  }
+
+  .date-selector__item p {
+    font-size: 1.2rem;
+  }
 }
 
-.orderdetail__table__row{
-    text-align: center;
-    background-color: var(--text-color);
-    border: 3px solid #fff;
-    color: var(--background2);
-}
-
-.orderdetail__table__deleteIcon, .orderdetail__table__editIcon{
-       color: var(--color-primary);
-    margin-right: 10px;
-    background: none;
-    outline: none;
-    border: none;
-    cursor: pointer;
-}
-.date-selector{
-    background-color: var(--grey);
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
-    height: 70px;
-    color: #fff;
-    width: 1000px;
-}
-.date-selector button{
-    background-color: var(--secondary);
-    outline: none;
-    border: 1px solid var(--secondary);
-    border-radius: 30px;
-    padding: 5px 10px;
-    color: #fff;
-}
-.date-selector__item{
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    
-}
-.date-selector__item p{
-    color: var(--background2);
-    font-size: 1.5rem;
-}
-.date-selector__item__date{
-    background-color: var(--color-primary);
-    padding: 10px;
-    border-radius: 5px;
-    outline: none;
-    border: 1px solid var(--color-primary);
-    color: #fff;
-    font-size: 1rem;
-}
-.custom-select{
-    width: 200px;
-    background: var(--background2);
-    color: #101418;
-}
-
-.orderdetail__buttons{
-    background: var(--grey);
-    padding: 10px 5px;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    
-}
-.orderdetail__buttons button{
-    padding: 10px 10px;
-    background: var(--color-primary);
-    border: 1px solid var(--color-primary); 
-    outline: none;
-    color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.orderdetail__buttons button:hover{
-    
-    background: var(--background2);
-    border: 1px solid var(--dark-blue); 
-   
-}
-
-
-.orderdetail__total{
-    
-    background: var(--background2);
-    text-align: right;
-    
-
-}
-.orderdetail__total p{
+@media only screen and (max-width: 992px) {
+  .orderdetail__table-container {
     width: 90%;
-    color: #fff;
+  }
+
+  .date-selector {
+    padding: 5px;
+    flex-direction: column;
+    height: auto;
+    justify-content: space-between;
+    gap: 5px;
+  }
+
+  .date-selector__item__date {
+    padding: 5px;
+    height: 35px;
+  }
+  .purchaseOrder__status {
+    padding: 5px;
+    height: 35px;
+  }
 }
 
-.purchaseOrder__status{
-    padding: 10px;
-    outline: none;
-    background: var(--color-primary);
-    border: 1px solid var(--color-primary); 
-    color: #fff;
-    border-radius: 5px;
+@media only screen and (max-width: 576px) {
+  .orderdetail__table-container {
+    width: 90%;
+  }
+
+  .date-selector {
+    padding: 5px;
+    flex-direction: column;
+    height: auto;
+    justify-content: space-between;
+    gap: 5px;
+  }
+
+  .date-selector__item__date {
+    padding: 5px;
+    height: 30px;
+  }
+  .purchaseOrder__status {
+    padding: 5px;
+    height: 30px;
+  }
+
+  .date-selector__item p {
+    width: 80px; /* Ajustalo según el largo de las etiquetas */
+    margin: 0;
+    font-weight: 500;
+  }
 }
 
-.orderdetail__table__thead{
-    background-color: var(--color-primary);
-}
-.orderdetail__title h2{
-    font-size: 2rem;
-}
+@media only screen and (max-width: 480px) {
+  .orderdetail__title h2 {
+    font-size: 1.3rem;
+  }
 
+  .date-selector__item p {
+    font-size: 1rem;
+  }
+
+  .date-selector__item p {
+    width: 60px; /* Ajustalo según el largo de las etiquetas */
+    margin: 0;
+    font-weight: 500;
+  }
+  .orderdetail__table{
+    font-size: 0.7rem;
+  }
+  .orderdetail__table__header{
+    font-size: 0.7rem;
+    
+  }
+
+  .orderdetail__total{
+    padding: 0.5rem;
+  }
+  .orderdetail__buttons button{
+    padding: 5px;
+  }
+}

@@ -4,9 +4,26 @@
     
 }
 
+
+@media only screen and (max-width: 768px){
+    .custom-multi-select{
+        width: auto;
+        font-size: 0.8rem;
+       
+    }
+}
+@media only screen and (max-width: 576px){
+    .custom-multi-select{
+        width: auto;
+        font-size: 0.8rem;
+       
+    }
+}
+
 @media only screen and (max-width: 480px){
     .custom-multi-select{
         width: auto;
         font-size: 0.8rem;
+        padding: 0.3px;
     }
 }
