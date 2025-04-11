@@ -13,7 +13,7 @@ Aplicación web para gestionar productos, proveedores, ventas, órdenes de compr
 
 🔑 **Usuario Demo (admin):**
 
-📧 Usuario: admin@admin.com
+📧 Usuario: admin
 
 🔒 Contraseña: Admin123
 
