@@ -1,145 +1,74 @@
-🛠️ Ferretería Catelotti
+# 🛠️ Ferretería Catelotti
 
-Aplicación web para gestionar productos, proveedores, ventas, órdenes de compra y presupuestos de una ferretería. Permite llevar un control de inventario, registrar ventas, gestionar clientes, proveedores y presupuestos, y realizar seguimiento de órdenes de compra.
+[![Deploy en Vercel](https://img.shields.io/badge/Vercel-Online-success?style=for-the-badge&logo=vercel)](https://ferreteria-catelotti.vercel.app/)
 
-🚀 Tecnologías Utilizadas
+Aplicación web para gestionar productos, proveedores, ventas, órdenes de compra y presupuestos de una ferretería. Control de inventario, gestión de clientes y proveedores, generación de presupuestos, seguimiento de órdenes de compra y más.
 
-Backend (📁 server/)
+---
 
-🟢 Node.js con Express.js: API REST para la gestión de datos.
+## 🚀 Acceso a la Aplicación
 
-🔒 Autenticación con Passport.js y JWT: Seguridad y gestión de usuarios.
+🔗 **Frontend (Vercel):**  
+👉 [https://ferreteria-catelotti.vercel.app/](https://ferreteria-catelotti.vercel.app/)
 
-🗄️ MongoDB con Mongoose: Base de datos NoSQL.
+🔑 **Usuario Demo (admin):**
 
-📡 CORS habilitado: Permite la comunicación entre frontend y backend.
+📧 Usuario: admin@admin.com
 
-⚠️ Validaciones con Joi: Validación de datos en las rutas del backend.
+🔒 Contraseña: Admin123
 
-🛠️ Manejo de errores centralizado con middleware personalizado.
 
-Frontend (📁 client/)
+## 👥 Gestión de Roles
 
-⚛️ React con Vite: Framework moderno para la UI.
+La app cuenta con diferentes roles de usuario, cada uno con distintos permisos:
 
-🎨 Material UI (MUI): Diseño moderno y responsivo.
+- 👑 **Dueño**: Acceso total, gestión completa del sistema.
+- 🧑‍💼 **Admin**: Gestión de productos, presupuestos, órdenes, etc.
+- 👷 **Empleado**: Acceso limitado a ventas y presupuestos.
 
-🔀 React Select: Selects avanzados con búsqueda y selección múltiple.
+---
 
-⚡ SweetAlert2: Alertas y notificaciones interactivas.
+## 🧰 Tecnologías Utilizadas
 
-🌍 React Router: Navegación entre vistas y rutas dinámicas.
+### 🔧 Backend (`/server`)
 
-📌 Características Principales
+- 🟢 **Node.js + Express.js**: API REST
+- 🔒 **Passport.js + JWT**: Autenticación segura
+- 🗄️ **MongoDB + Mongoose**: Base de datos NoSQL
+- ⚠️ **Joi**: Validación de datos
+- 🛠️ **Middleware de errores**: Manejo centralizado
+- 🌐 **CORS** habilitado
 
-🔧 Backend:
+### 🎨 Frontend (`/client`)
 
-📦 Gestión de productos: Agregar, editar y eliminar productos con detalles como nombre, categoría, proveedor y stock.
+- ⚛️ **React + Vite**: UI moderna
+- 🎨 **Material UI (MUI)**: Estética responsiva
+- 🔀 **React Select**: Selects dinámicos con búsqueda
+- ⚡ **SweetAlert2**: Alertas interactivas
+- 🌍 **React Router**: Navegación entre vistas
 
-🏷️ Gestión de proveedores y clientes: CRUD completo.
+---
 
-📜 Manejo de órdenes de compra: Crear, editar y visualizar órdenes con sus detalles.
+## 📌 Funcionalidades Principales
 
-📄 Presupuestos: Generar presupuestos para clientes, asignar productos, cambiar estado (Pendiente / Facturado).
+### 🔧 Backend:
 
-📊 Reportes: Generación de informes en PDF y Excel.
+- 📦 Gestión de productos: Agregar, editar, eliminar productos (nombre, categoría, proveedor, stock)
+- 🏷️ CRUD de proveedores y clientes
+- 📜 Órdenes de compra: Crear, editar, visualizar
+- 📄 Presupuestos: Crear, editar, cambiar estado (Pendiente / Facturado)
+- 📊 Reportes: Exportación en PDF y Excel
+- 🔍 Búsqueda avanzada: Por nombre o categoría
+- 📆 Fechas en formato DD/MM/YYYY
 
-🔎 Búsqueda avanzada: Filtros por nombre o categoría.
+### 🎨 Frontend:
 
-📆 Manejo de fechas: Formato DD/MM/YYYY.
-
-🎨 Frontend:
-
-🛒 Interfaz intuitiva y moderna con Material UI.
-
-📌 Selects dinámicos con react-select para productos, proveedores y clientes.
-
-⚡ Notificaciones con SweetAlert2.
-
-📄 Gestión visual de presupuestos y órdenes de compra.
-
-📊 Filtros dinámicos y ordenamiento de información.
-
-📁 Estructura del Proyecto
-El proyecto está dividido en dos carpetas principales:
-
-FerreteriaCatelotti/
-│
-├── client/     # Frontend (React + Vite)
-└── server/     # Backend (Node.js + Express + MongoDB)
-
-
-📥 Instalación y Uso
-
-🔧 Requisitos Previos
-
-Tener instalado Node.js y MongoDB.
-
-Acceso a un archivo .env para configuración del backend (ver ejemplo abajo).
-
-🚀 Clonar el Repositorio
-
-git clone https://github.com/Lucasj4/FerreteriaCatelotti.git
-
-cd FerreteriaCatelotti
-
-🛠️ Instalación del Backend (📁 server)
-
-cd server
-
-npm install
-
-📄 Crear archivo .env
-Dentro de la carpeta server/, crear un archivo llamado .env con el siguiente contenido:
-
-PORT=8080
-
-MONGO_URI="mongodb+srv://lucasfjulia:Lebronjames23@cluster0.k62q89m.mongodb.net/ferrete
-
-Iniciar el backend:
-
-npm start
-
-🎨 Instalación del Frontend (📁 client)
-
-El frontend está desarrollado con React + Vite. Vite se instala automáticamente con las dependencias del proyecto.
-
-cd ../client
-
-npm install
-
-npm run dev
-
-💡 Nota: No es necesario instalar Vite globalmente. Se ejecuta mediante el script npm run dev.
-
-📌 Rutas Principales
-
-🌐 Backend (API REST)
-
-GET /api/products → Obtener todos los productos
-
-POST /api/products → Agregar un producto
-
-GET /api/orders → Obtener órdenes de compra
-
-PUT /api/orders/:id → Actualizar orden de compra
-
-GET /api/budgets → Obtener presupuestos
-
-PUT /api/budgets/:id → Actualizar presupuesto
-
-🖥️ Frontend (Rutas en React)
-
-/productos → Vista de productos
-
-/presupuesto → Vista de presupuestos
-
-/presupuesto/:id → Detalles de un presupuesto
-
-/pedido/:id → Detalles de un pedido
-
-/proveedores → Gestión de proveedores
+- 🛒 UI intuitiva y moderna
+- 📌 Selects inteligentes con `react-select`
+- 📄 Vistas para presupuestos y órdenes
+- 📊 Filtros dinámicos y ordenamiento
+- ⚡ Notificaciones amigables con SweetAlert2
 
 👨‍💻 Autor
-Desarrollador: Lucas Juliá
-📧 Contacto: lucasfjulia@gmail.com
+Lucas Juliá
+📧 lucasfjulia@gmail.com
