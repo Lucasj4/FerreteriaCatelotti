@@ -11,12 +11,9 @@ Aplicación web para gestionar productos, proveedores, ventas, órdenes de compr
 🔗 **Frontend (Vercel):**  
 👉 [https://ferreteria-catelotti.vercel.app/](https://ferreteria-catelotti.vercel.app/)
 
-🔑 **Usuario Demo (admin):**
-
-📧 Usuario: admin
-
+🔑 **Usuario Demo (admin):**  
+📧 Usuario: admin@admin.com  
 🔒 Contraseña: Admin123
-
 
 ## 👥 Gestión de Roles
 
@@ -69,6 +66,9 @@ La app cuenta con diferentes roles de usuario, cada uno con distintos permisos:
 - 📊 Filtros dinámicos y ordenamiento
 - ⚡ Notificaciones amigables con SweetAlert2
 
-👨‍💻 Autor
-Lucas Juliá
+---
+
+## 👨‍💻 Autor
+
+Lucas Juliá  
 📧 lucasfjulia@gmail.com

@@ -102,14 +102,9 @@ export class UserController {
     async loginUser(req, res) {
         const { userUsername, userPassword } = req.body;
 
-        req.logger.info("Usuario: " + userUsername);
-        req.logger.info("Contraseña: " + userPassword);
         try {
 
-
             const existingUser = await userService.getUserByUsername(userUsername);
-
-
 
 
             if (existingUser.length === 0) {
@@ -120,8 +115,6 @@ export class UserController {
 
             const validUser = isValidPassword(userPassword, user)
 
-
-            console.log(validUser);
 
             if (!validUser) {
                 return res.status(401).json({ message: "Contraseña incorrecta" });;
@@ -176,7 +169,7 @@ export class UserController {
 
     async getUserRole(req, res) {
         try {
-            const token = req.cookies.ferreteriaCookieToken; // Asegúrate de que el token esté en las cookies
+            const token = req.cookies.ferreteriaCookieToken; 
 
 
 

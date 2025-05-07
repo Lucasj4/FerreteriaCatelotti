@@ -45,8 +45,8 @@ main {
   display: flex;
   flex-direction: column;
   background-color: var(--background2);
-  width: 60%;
-
+  width: 50%;
+  margin-top: 1rem;
   justify-content: center;
   align-items: center;
 }

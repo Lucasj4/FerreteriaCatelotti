@@ -91,7 +91,7 @@ const Sidebar = ({ children }) => {
     : "top-section";
 
   return (
-    <div className="container">
+    <div className="layout-wrapper">
       <div className={sidebarClasses}>
   <div className={topSectionClass}>
     {isOpen && (

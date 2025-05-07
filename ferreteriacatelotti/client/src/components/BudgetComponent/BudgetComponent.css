@@ -1,29 +1,38 @@
 .budget__container{
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Para alinear el contenido arriba */
     width: 100%;
-    height: 100vh;
-    margin: 0 auto;
+    min-height: 100vh; /* Mejor opción que height fija */
+    padding: 1rem 0;
+    box-sizing: border-box;
 }
 .budget__title{
     font-size: 2rem;
     font-weight: bold;
     color: var(--color-primary);
     text-align: center;
-    padding: 10px;
+    padding: 5px;
     background-color: var(--grey);
     width: 100%;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 .budget__tablecontainer{
-    width: 1000px;
+    /* width: 1000px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: var(--background2);
+    background-color: var(--background2); */
 
+    width: 50%;
+    max-height: 80vh; /* Ajustá según tu diseño */
+    overflow-y: auto;
+    overflow-x: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--background2);
     
 }
 .budget__option{

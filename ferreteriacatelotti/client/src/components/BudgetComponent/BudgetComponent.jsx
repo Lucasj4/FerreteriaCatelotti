@@ -222,7 +222,7 @@ const BudgetComponent = () => {
     <>
       <div className="budget__container">
         <div className="budget__tablecontainer">
-          <div className="budget__title">Presupuestos</div>
+          <div className="budget__title"> <p>Presupuestos</p></div>
           <div className="budget__option">
             <div className="budget__option__item">
               <h4>Fecha</h4>
@@ -302,12 +302,12 @@ const BudgetComponent = () => {
             <Table
               headers={tableHeaders}
               data={rows}
-              tableClassName="budget__table"
-              trClassName="budget__table__row"
-              thClassName="budget__table__header"
-              theadClassName="budget__table__thead"
-              tbodyClassName="budget__table__body"
-              tdClassName="table__cell"
+              // tableClassName="budget__table"
+              // trClassName="budget__table__row"
+              // thClassName="budget__table__header"
+              // theadClassName="budget__table__thead"
+              // tbodyClassName="budget__table__body"
+              // tdClassName="table__cell"
               actionEditClassName="budget__table__action--edit"
               handleDeleteCell={(id, index) => handleDeleteCell(id, index)}
               deleteIconClassName="table__deleteIcon"
