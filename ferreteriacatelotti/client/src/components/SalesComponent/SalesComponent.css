@@ -55,11 +55,11 @@
   flex-direction: column;
   background-color: var(--background2);
   width: 90%;
+  min-height: 400px;
 
-  height: 400px;
   justify-content: center;
   align-items: center;
-  margin: 30px;
+ 
 }
 
 
