@@ -399,12 +399,12 @@ const PurchaseOrder = () => {
 
           <div className="purchaseOrder__tablecontainer">
             <Table
-              tableClassName="table"
-              trClassName="purchaseOrder__table__row"
-              thClassName="table__header"
-              theadClassName="table__thead"
-              tbodyClassName="purchaseOrder__table__body"
-              tdClassName="purchaseOrder__table__cell"
+              // tableClassName="table"
+              // trClassName="purchaseOrder__table__row"
+              // thClassName="table__header"
+              // theadClassName="table__thead"
+              // tbodyClassName="purchaseOrder__table__body"
+              // tdClassName="purchaseOrder__table__cell"
               deleteIconClassName="purchaseOrder__table__deleteIcon"
               editIconClassName="purchaseOrder__table__editIcon"
               headers={tableHeaders}

@@ -65,6 +65,7 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
   gap: 1.5rem;
   padding: 1rem;
   background-color: var(--grey);
@@ -137,7 +138,7 @@ main {
   width: 100%;
   display: flex;
   justify-content: space-around;
-
+  flex-wrap: wrap;
   background-color: var(--grey);
 }
 
@@ -265,6 +266,22 @@ main {
   }
 }
 
+@media only screen and (max-width: 768px){
+  .component__container{
+    align-items: flex-start;
+    margin-left: 10px;
+  }
+
+  .component__table__container{
+    width: 85%;
+  }
+
+  .component__search-button{
+    padding: 5px;
+    height: 31px;
+  }
+}
+
 @media only screen and (max-width: 576px) {
   .dateselector {
     display: flex;
@@ -284,12 +301,24 @@ main {
     padding: 0.2rem;
   }
 
+  .dateselector h4 {
+    font-weight: normal;
+  }
+
+  .component__actions__button {
+    padding: 5px;
+    font-size: 1rem;
+    
+  }
  
 }
 
 @media only screen and (max-width: 480px) {
+
   .component__table__container {
-    width: 70%;
+    /* align-items: flex-start; Alinea contenido interno a la izquierda */
+    margin-left: 0px; /* Mueve el contenedor hacia la izquierda */
+    width: 80%;
   }
 
   .dateselector h4 {
@@ -317,5 +346,15 @@ main {
     color: var(--text-color);
     background-color: var(--color-primary);
     outline: none;
+  }
+
+  .component__actions__button {
+    padding: 4px;
+    border-radius: 10px;
+    margin: 10px 0;
+  
+    color: #fff;
+    font-size: 0.8rem;
+    
   }
 }

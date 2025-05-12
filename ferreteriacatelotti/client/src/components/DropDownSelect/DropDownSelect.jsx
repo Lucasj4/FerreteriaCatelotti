@@ -3,7 +3,7 @@ import "./DropDownSelect.css";
 
 const DropdownSelect = ({ options = [], value, onChange, placeholder }) => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(value ? value.label : "");
+  const [searchTerm, setSearchTerm] = useState(value?.label || "")
   const dropdownRef = useRef(null);
 
   const handleToggleDropdown = () => {
@@ -24,8 +24,8 @@ const DropdownSelect = ({ options = [], value, onChange, placeholder }) => {
   }, []);
 
   useEffect(() => {
-    setSearchTerm(value ? value.label : ""); // Sincroniza searchTerm con el valor seleccionado
-  }, [value]);
+  setSearchTerm(value?.label || ""); // Asegura que searchTerm sea siempre una cadena
+}, [value]);
 
   const filteredOptions = options.filter((option) => {
     const label = option.label || ""; // Asegúrate de que label sea un string

@@ -181,20 +181,20 @@ const UserComponent = () => {
             />
           </div>
 
-          <div className="clientecomponent__actions">
+          <div className="component__actions">
             <Link to={"/usuarios/agregarusuario"}>
-              <button className="clientecomponent__actions__button">
+              <button className="component__actions__button">
                 Nuevo
               </button>
             </Link>
             <button
-              className="clientecomponent__actions__button"
+              className="component__actions__button"
               onClick={getUsers}
             >
               Mostrar todos
             </button>
             <Link to={"/insideHome"}>
-              <button className="clientecomponent__actions__button">
+              <button className="component__actions__button">
                 Salir
               </button>
             </Link>

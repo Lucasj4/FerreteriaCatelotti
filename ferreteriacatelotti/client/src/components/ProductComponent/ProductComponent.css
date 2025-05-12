@@ -104,3 +104,24 @@
 .modal__buttons button {
     background-color: var(--color-primary);
 }
+
+
+
+@media only screen and (max-width: 768px){
+  .component__search-select{
+    padding: 5px;
+  }
+
+ 
+}
+
+
+
+@media only screen and (max-width: 480px) {
+
+ 
+  .component__search-select{
+    padding: 5px;
+    font-size: 0.8rem;
+  }
+}

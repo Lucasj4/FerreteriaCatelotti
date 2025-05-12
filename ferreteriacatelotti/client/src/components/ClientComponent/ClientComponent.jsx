@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import TableCustom from "../TableCustom/TableCustom";
+import Table from "../TableCustom/TableCustom";
 import "./ClientComponent.css";
 import { Link } from "react-router-dom";
 
@@ -185,13 +185,7 @@ const ClientComponent = () => {
             </button>
           </div>
           <div className="client__tablecontainer">
-            <TableCustom
-              tableClassName="table"
-              trClassName="table__row"
-              thClassName="table__header"
-              theadClassName="table__thead"
-              tbodyClassName="table__body"
-              tdClassName="table__cell"
+            <Table
               deleteIconClassName="table__deleteIcon"
               editIconClassName="table__editIcon"
               getEditPath={(id) => `/clientes/${id}`}

@@ -1,5 +1,5 @@
 import React from "react";
-import './FormItem.css'
+import "./FormItem.css";
 const FormItem = ({
   formItemClassName,
   id,
@@ -8,19 +8,21 @@ const FormItem = ({
   labelClassname,
   inputClassname,
   onChange,
-  value
+  value,
 }) => {
   return (
     <>
       <div className={formItemClassName}>
-        <label htmlFor={id} className={labelClassname}>{label}</label>
+        <label htmlFor={id} className={labelClassname}>
+          {label}
+        </label>
         <input
           type={typeInput}
           id={id}
           className={inputClassname}
           onChange={onChange}
-          value={value}
-
+          // Aseguramos que el valor sea una cadena vacía si no está definido
+          value={value ?? ""}
         />
       </div>
     </>

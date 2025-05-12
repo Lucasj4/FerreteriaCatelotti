@@ -15,6 +15,8 @@
   justify-content: center;
   align-items: center;
   margin-top: 1rem;
+  overflow-x: auto; /* ← agregá esto */
+  
 }
 .clientcomponent__search-container {
   width: 100%;
@@ -23,6 +25,7 @@
   align-items: center;
   gap: 1.5rem;
   padding: 1rem;
+  flex-wrap: wrap;
 }
 .clientecomponent__search-input {
   padding: 10px;
@@ -78,4 +81,68 @@
   padding: 1rem;
   color: var(--color-primary);
   font-weight: bold;
+}
+
+@media only screen and (max-width: 1200px){
+
+  .clientcomponent__table__container{
+    width: 60%;
+  }
+}
+
+
+
+@media only screen and (max-width: 900px){
+
+  .clientcomponent__table__container{
+    width: 80%;
+  }
+}
+
+@media only screen and (max-width: 768px){
+  .clientcomponent__table__container{
+    width: 70%;
+  }
+
+  .clientcomponent__search-container{
+    gap: 1rem;
+  }
+
+  .clientecomponent__search-input{
+    width: 150px;
+  }
+}
+
+
+@media only screen and (max-width: 576px) {
+
+
+  .clientcomponent__container{
+    width: 100%;
+    align-items: flex-start;
+    
+  }
+
+  .clientcomponent__table__container{
+    width: 85%;
+    margin-left: 10px;
+  }
+
+} 
+
+@media only screen and (max-width: 480px) {
+
+  .clientcomponent__table__container{
+    width: 80%;
+  }
+  .clientecomponent__search-button{
+    padding: 4px;
+    height: 31px;
+    font-size: 0.8rem;
+  }
+  .component__search-input{
+    padding: 5px;
+    width: 150px;
+  }
+
 }

@@ -21,3 +21,19 @@
     color: var(--color-primary);
     font-weight: bold;
 }
+
+@media only screen and (max-width: 576px) {
+
+
+    .clientcomponent__container{
+      width: 100%;
+      align-items: flex-start;
+      
+    }
+  
+    .clientcomponent__table__container{
+      width: 85%;
+      margin-left: 10px;
+    }
+  
+  } 

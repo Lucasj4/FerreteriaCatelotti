@@ -6,15 +6,6 @@ import { Link } from "react-router-dom";
 import "./TableCustom.css";
 
 const Table = ({
-  tableClassName,
-  trClassName,
-  thClassName,
-  theadClassName,
-  tbodyClassName,
-  tdClassName,
-  deleteIconClassName,
-  editIconClassName,
-  viewIconClassName,
   headers,
   data,
   handleDeleteCell,
@@ -123,59 +114,66 @@ const Table = ({
         </button>
       </div> */}
 
-      <table className="table border border-black rounded-lg">
-        <thead className="table__header">
-          <tr>
-            {headers.map((header, index) => (
-              <th key={index} className="table__cell border border-black">
-                {header.label}
-              </th>
-            ))}
-            {showActions && (
-              <th className="table__cell border border-black">Acciones</th>
-            )}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-black bg-white text-black">
-          {currentRows.map((row, index) => (
-            <tr key={row._id} className="table__row border border-black">
-              {headers.map((header, colIndex) => (
-                <td key={colIndex} className="table__cell border border-black">
-                  {header.value === "userPassword"
-                    ? maskPassword(row[header.value])
-                    : row[header.value]}
-                </td>
-              ))}
-              {showActions && (
-                <td className="table__cell border border-black">
-                  {typeof showActions === "function" &&
-                  showActions(row) === "view" ? (
-                    <Link to={getViewPath(row._id)}>
-                      <button className="view-button">
-                        <VisibilityIcon />
-                      </button>
-                    </Link>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => handleDeleteCell(row._id, index)}
-                        className="table__deleteIcon"
-                      >
-                        <DeleteIcon />
-                      </button>
-                      <Link to={getEditPath(row._id)}>
-                        <button className="table__editIcon">
-                          <EditIcon />
-                        </button>
-                      </Link>
-                    </>
+      <div className="w-full overflow-x-auto">
+        <div className="inline-block min-w-[545px]">
+          <table className="w-full table border border-black rounded-lg">
+            <thead className="table__header">
+              <tr>
+                {headers.map((header, index) => (
+                  <th key={index} className="table__cell border border-black">
+                    {header.label}
+                  </th>
+                ))}
+                {showActions && (
+                  <th className="table__cell border border-black">Acciones</th>
+                )}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-black bg-white text-black">
+              {currentRows.map((row, index) => (
+                <tr key={row._id} className="table__row border border-black">
+                  {headers.map((header, colIndex) => (
+                    <td
+                      key={colIndex}
+                      className="table__cell border border-black"
+                    >
+                      {header.value === "userPassword"
+                        ? maskPassword(row[header.value])
+                        : row[header.value]}
+                    </td>
+                  ))}
+                  {showActions && (
+                    <td className="table__cell border border-black">
+                      {typeof showActions === "function" &&
+                      showActions(row) === "view" ? (
+                        <Link to={getViewPath(row._id)}>
+                          <button className="view-button">
+                            <VisibilityIcon />
+                          </button>
+                        </Link>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleDeleteCell(row._id, index)}
+                            className="table__deleteIcon"
+                          >
+                            <DeleteIcon />
+                          </button>
+                          <Link to={getEditPath(row._id)}>
+                            <button className="table__editIcon">
+                              <EditIcon />
+                            </button>
+                          </Link>
+                        </>
+                      )}
+                    </td>
                   )}
-                </td>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       <div className="paginations-and-controls">
         <button onClick={previousPage} disabled={currentPage === 1}>

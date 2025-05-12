@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./NewDetailOrderLine.css";
 import FormItem from "../FormItem/FormItem";
 import { Link, useParams } from "react-router-dom";
 import { useAppContext } from "../context/OrderContext";
 import DropdownSelect from "../DropDownSelect/DropDownSelect";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 
 const NewDetailOrderLine = () => {
@@ -16,7 +18,7 @@ const NewDetailOrderLine = () => {
   const [detailOrderQuantity, setDetailOrderQuantity] = useState("");
   const [detailOrderUnitCost, setDetailOrderUnitCost] = useState("");
   const [productsOptions, setProductsOption] = useState([]);
-  const [unidad, setUnidad] = useState(option[0]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { pid } = useParams();
 
   const showAlert = ({ title, text, icon, showCancelButton = false }) => {
@@ -57,12 +59,15 @@ const NewDetailOrderLine = () => {
 
   useEffect(() => {
     console.log("Pid: ", purchaseOrderId);
-    
+
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
-          credentials: "include",
-        });
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/products`,
+          {
+            credentials: "include",
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Error al obtener los productos");
@@ -86,6 +91,8 @@ const NewDetailOrderLine = () => {
   }, []);
 
   const handleProductChange = (product) => {
+    console.log(product);
+    
     if (product) {
       // setSelectedProduct(product.label);
       setDetailOrderUnitCost(product.unitPrice || ""); // Actualiza el precio unitario
@@ -100,7 +107,7 @@ const NewDetailOrderLine = () => {
 
   const handleDetailOrderUnitCost = async (e) => {
     e.preventDefault();
-    
+
     showAlert({
       title: "Error",
       text: "El costo unitario solo puede ser modificado desde los productos.",
@@ -109,13 +116,19 @@ const NewDetailOrderLine = () => {
       // Restablecer el valor del campo a su valor original
       setDetailOrderUnitCost(detailOrderUnitCost); // Asumiendo que tienes un estado para el costo original
     });
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Evita múltiples envíos
+    if (isSubmitting) return;
+    console.log("isSubmitting:", isSubmitting);
+
+    setIsSubmitting(true); // Bloquear envíos
+
     const orderDetailOrderLine = {
-      detailOrderProduct: detailOrderProduct.name, // Nombre del producto
+      detailOrderProduct: detailOrderProduct.name,
       detailOrderQuantity,
       detailOrderUnitCost,
       productID: detailOrderProduct.id,
@@ -125,28 +138,23 @@ const NewDetailOrderLine = () => {
     console.log("orderDetailOrderLine: ", orderDetailOrderLine);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/detailsorder`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify(orderDetailOrderLine),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/detailsorder`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify(orderDetailOrderLine),
+        }
+      );
 
-    
       const data = await response.json();
       console.log("Estatus: ", response.status);
-      
+
       switch (response.status) {
-
         case 200:
-          showAlert({
-            title: "Detalle de presupuesto agregado con exito",
-            icon: "success",
-          });
-          break;
-
         case 201:
           showAlert({
             title: "Detalle de presupuesto agregado con exito",
@@ -166,24 +174,24 @@ const NewDetailOrderLine = () => {
             icon: "error",
           });
           break;
-        
-        case 409: 
-        showAlert({
-          title: "Error",
-          text: data.message,
-          icon: "error",
-        });
 
-        break;
+        case 409:
+          showAlert({
+            title: "Error",
+            text: data.message,
+            icon: "error",
+          });
+          break;
 
         default:
           break;
       }
 
-      
       resetForm();
     } catch (error) {
       console.error("Error:", error.message);
+    } finally {
+      setIsSubmitting(false); // Desbloquear envío
     }
   };
   return (
@@ -196,7 +204,14 @@ const NewDetailOrderLine = () => {
               <label htmlFor="productUnit">Productos</label>
               <DropdownSelect
                 options={productsOptions}
-                value={detailOrderProduct.name} // Muestra la etiqueta del producto seleccionado
+                value={
+                  detailOrderProduct?.id
+                    ? {
+                        value: detailOrderProduct.id,
+                        label: detailOrderProduct.name || "",
+                      }
+                    : { value: "", label: "" } // ⚠️ Asegúrate de que sea un objeto válido
+                }
                 onChange={handleProductChange}
                 placeholder="Selecciona un producto"
               />
@@ -208,7 +223,7 @@ const NewDetailOrderLine = () => {
               typeInput="text"
               label="Cantindad"
               labelClassname="newPurchaseOrder__form__label"
-              value={detailOrderQuantity}
+              value={detailOrderQuantity ?? ""}
               onChange={handleQuantity}
             />
             <FormItem
@@ -218,41 +233,37 @@ const NewDetailOrderLine = () => {
               typeInput="text"
               label="Costo Unitario"
               labelClassname="newPurchaseOrder__form__label"
-              value={detailOrderUnitCost}
-              onChange={handleDetailOrderUnitCost }
+              value={detailOrderUnitCost ?? ""}
+              onChange={handleDetailOrderUnitCost}
             />
-            {/* <div className="newPurchaseOrder__form__item">
-              <label htmlFor="unidad" className="newPurchaseOrder__form__label">
-                Unidad
-              </label>
-              <select
-                className="newPurchaseOrder__form__input"
-                id="unidad"
-                onChange={handleUnidad}
-                value={unidad}
-                
-              >
-                {option.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </div> */}
           </form>
 
           <div className="newPurchaseOrder__form__containerbuttons">
             <Link to={`/pedido/${pid}`}>
               <button className="newPurchaseOrder__form__button">Salir</button>
             </Link>
-            <Link to={"/pedido/${purchaseOrderId}"}>
-              <button
-                className="newPurchaseOrder__form__button"
-                onClick={handleSubmit}
-              >
-                Guardar
-              </button>
-            </Link>
+            <button
+              className="newPurchaseOrder__form__button"
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <FontAwesomeIcon
+                    icon={faSpinner}
+                    spin
+                    style={{
+                      marginRight: "8px",
+                      fontSize: "1rem",
+                      color: "#000",
+                    }}
+                  />{" "}
+                  Guardando...
+                </>
+              ) : (
+                "Guardar"
+              )}
+            </button>
           </div>
         </div>
       </div>
